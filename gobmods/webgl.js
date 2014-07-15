@@ -136,6 +136,9 @@
 		p.callback(p);
 	}
 
+
+	// Dynamically locates attributes or uniforms for a given program
+	// Stores pointers in the given program object 
 	WGLC.prototype.qualify = function (p, type) {
 		var res, pname, fname;
 		if(type === 'u') {
