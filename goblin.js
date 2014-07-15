@@ -10,7 +10,7 @@
 		return src.substring(0,index);
 	})();
 
-	var DEBUG = true;
+	var DEBUG = false;
 
 	Goblin.staticModules = [];
 	Goblin.loadStack = [];

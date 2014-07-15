@@ -124,27 +124,39 @@
 			p.state = 'failed';
 			throw new Error("Unable to initialize the shader program.");
 		}
+		
+		this.qualify(p, 'u');
+		this.qualify(p, 'a');
 
-		for (var uniform in p.uniforms) {
-			var name = p.uniforms[uniform];
-			_.dl('Looking for uniform ' + name);
-			p.uniforms[uniform] = this.c.getUniformLocation(p.program, name);
-			_.dl('found : ' + p.uniforms[uniform]);
-		};
-		
-		for (var attribute in p.attributes) {
-			var name = p.attributes[attribute];
-			_.dl('Looking for attribute ' + name);
-			p.attributes[attribute] = this.c.getAttribLocation(p.program, name);
-			_.dl('found : ' + p.attributes[attribute]);
-		};
-		
 		this.c.validateProgram(p.program);
 		if (!this.c.getProgramParameter(p.program, this.c.VALIDATE_STATUS))
 			throw new Error('Unable to validate prgram');
 
 		p.state = 'ready';
 		p.callback(p);
+	}
+
+	WGLC.prototype.qualify = function (p, type) {
+		var res, pname, fname;
+		if(type === 'u') {
+			pname = this.c.ACTIVE_UNIFORMS;
+			fname = 'Uniform';
+			res = p.uniforms;
+		} else if ( type == 'a') {
+			pname = this.c.ACTIVE_ATTRIBUTES;
+			fname = 'Attrib';
+			res = p.attributes;
+		} else { throw new Error(' type must be "u" for uniforms or "a" for attributes');}
+
+		var len = this.c.getProgramParameter(p.program, pname);
+
+		for(var index = 0 ; index < len ; index++) {
+			// Dynamically call appropriate function getActive{uniform || attribute}
+			var qualifier = this.c['getActive' + fname](p.program, index).name;	
+			_.dl('Looking for ' + fname + ' ' + qualifier + ' location.');
+			res[qualifier] = this.c['get'+ fname + 'Location'](p.program, qualifier);
+			_.dl('found : ' + res[qualifier]);
+		}
 	}
 
 	// Changes the program currently used by this context
