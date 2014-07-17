@@ -1,4 +1,4 @@
-(function(window, document, undefined){
+(function(window, document, undefined) {
 	'use strict';
 
 	// Default paths
@@ -33,9 +33,8 @@
 		this._vbos = [];
 		this._programs = [];
 
-		this._projection_mat = mat4.create();
-		this._model_mat = mat4.create();
-		mat4.identity(this._model_mat);
+		this._projection_mat = new _.m4();
+		this._model_mat = _.m4.identity();
 	}
 
 	//	Creates a shader program with given name and associates it with current context object
@@ -47,8 +46,6 @@
 	//		name 					= name of the program to create. Must be unique.
 	//		path (optional)			= path under which the function will look for the shaders.
 	//		callback (optional)		= this callback will be called when the program is ready.
-	//		uniforms (optional)		= list of uniforms defined in the shaders.
-	//		attributes (optional)	= list of attributes defined in the shaders.
 	WGLC.prototype.createProgram = function(options) {
 		options = options || {};
 		if(!options.name) throw new Error('you need to specify a name for your program');
@@ -56,21 +53,19 @@
 		var name = options.name;
 		var path = options.path || DEFAULT_SHADER_PATH + options.name + '/';
 		var callback = options.callback || function(){};
-		var uniforms = options.uniforms || {};
-		var attributes = options.attributes || {};
 
 		var vs_file = path + options.name + '.vert';
 		var fs_file = path + options.name + '.frag';
 
 		var program = {
-			'state': 'notready',
-			'name': name,
-			'vs': undefined,
-			'fs':undefined,
-			'program': undefined,
-			'uniforms': uniforms,
-			'attributes': attributes,
-			'callback': callback
+			state: 'notready',
+			name: name,
+			vs: undefined,
+			fs:undefined,
+			program: undefined,
+			uniforms: {},
+			attributes: {},
+			callback: callback
 		};
 
 		this._programs[name] = program;
@@ -207,17 +202,15 @@
 	}
 
 	WGLC.prototype.linkProjectionUniform = function(uniform) {
-		this.c.uniformMatrix4fv(uniform, false, this._projection_mat);
-		_.l(this._projection_mat);
+		this.c.uniformMatrix4fv(uniform, false, this._projection_mat.m);
 	}
 
 	WGLC.prototype.linkModelUniform = function(uniform) {
-		this.c.uniformMatrix4fv(uniform, false, this._model_mat);
-		_.l(this._model_mat);
+		this.c.uniformMatrix4fv(uniform, false, this._model_mat.m);
 	}
 
 	WGLC.prototype.render = function() {
-		this.c.drawArrays(this.c.TRIANGLES, 0, 3);
+		this.c.drawArrays(this.c.TRIANGLE_STRIP, 0, 4);
 	}
 
 	// Initializes a new webgl context for the current object canvas : this._canvas
@@ -233,14 +226,29 @@
 
 	WGLC.prototype.updateViewport = function() {
 		this.c.viewport(0, 0, this._canvas.width, this._canvas.height);
-		mat4.perspective(this._projection_mat, 45, this._canvas.width / this._canvas.height, 0.1, 100.0);
+		this._projection_mat.perspective(45, this._canvas.width / this._canvas.height, 0, 100.0);
 	};
 
 	// Model change
+	WGLC.prototype.identity = function() {
+		this._model_mat.identity();
+	};
 	WGLC.prototype.translate = function(x,y,z) {
-		mat4.translate(this._model_mat, this._model_mat, [x,y,z]);
+		this._model_mat.translate(x,y,z);
 	};
 
+	// Model change
+	WGLC.prototype.rotateZ = function(r) {
+		this._model_mat.rotateZ(r);
+	};
+
+	WGLC.prototype.rotateY = function(r) {
+		this._model_mat.rotateY(r);
+	};
+
+	WGLC.prototype.rotateX = function(r) {
+		this._model_mat.rotateX(r);
+	}
 	// Changes clear color
 	//	color = array of floats [red, green, blue, alpha]. Floats will be clamped between [0,1]
 	WGLC.prototype.setBackground = function(color) {
