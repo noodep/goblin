@@ -106,8 +106,29 @@
 	};
 
 	v3.prototype.rotateX = function(theta) {
-		this.v[1] =  this.v[1]*Math.cos(theta) + this.v[2]*Math.sin(theta);
-		this.v[2] = -this.v[1]*Math.sin(theta) + this.v[2]*Math.cos(theta);
+		var y = this.v[1], z = this.v[2];
+		var c = Math.cos(theta), s = Math.sin(theta);
+
+		this.v[1] = y * c - z * s;
+		this.v[2] = y * s + z * c;
+		return this;
+	};
+	
+	v3.prototype.rotateY = function(theta) {
+		var x = this.v[0], z = this.v[2];
+		var c = Math.cos(theta), s = Math.sin(theta);
+
+		this.v[0] = x * c + z * s;
+		this.v[2] = -x * s + z * c;
+		return this;
+	};
+	
+	v3.prototype.rotateZ = function(theta) {
+		var x = this.v[0], y = this.v[1];
+		var c = Math.cos(theta), s = Math.sin(theta);
+
+		this.v[0] = x * c - y * s;
+		this.v[1] = x * s + y * c;
 		return this;
 	};
 	
@@ -125,6 +146,13 @@
 	
 	v3.prototype.length = v3.prototype.len = function() {
 		return Math.sqrt(this.v[0] * this.v[0] + this.v[1] * this.v[1] + this.v[2] * this.v[2]);
+	};
+
+	v3.prototype.distance = v3.prototype.len = function(v) {
+		var dx = v.v[0] - this.v[0];
+		var dy = v.v[1] - this.v[1];
+		var dz = v.v[2] - this.v[2];
+		return Math.sqrt(dx*dx + dy*dy + dz*dz);
 	};
 	
 	v3.prototype.normalize = function() {
