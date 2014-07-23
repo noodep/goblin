@@ -91,7 +91,7 @@
 
 		if(this.programExists(name)) {
 			var p = this.getProgram(name);
-			_.l('program already exists with status ' + p.state);
+			_.dl('Program already exists with status ' + p.state);
 			// program already download and compile
 			// directly call the callback
 			if(p.state === 'ready')
@@ -103,7 +103,6 @@
 			return;
 		}
 
-		_.l('after that');
 		var vs_file = path + options.name + '.vert';
 		var fs_file = path + options.name + '.frag';
 
@@ -193,7 +192,6 @@
 
 		for(var c = 0 ; c < p.callbacks.length ; c++) {
 			var callback = p.callbacks[c];
-			_.l(callback);
 			callback(p);
 		}
 	}
