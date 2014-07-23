@@ -44,7 +44,7 @@
 		if(!this._canvas)
 			throw new Error('Unable to retreive the provided canvas element :' + canvas);
 
-		this._context = this.c = this.initContext();
+		this.initContext();
 
 		this._activeBuffer = null;
 		this._vbos = [];
@@ -61,7 +61,7 @@
 	 * @throws {Error} If unable to create a webgl context.
 	 */
 	WGLC.prototype.initContext = function() {
-		this._context = this._canvas.getContext('webgl') || this._canvas.getContext('experimental-webgl');
+		this._context = this.c = this._canvas.getContext('webgl') || this._canvas.getContext('experimental-webgl');
 		if(!this._context)
 			throw new Error('Unable to create webgl context');
 	};
@@ -89,6 +89,21 @@
 		var path = options.path || DEFAULT_SHADER_PATH + options.name + '/';
 		var callback = options.callback || function(){};
 
+		if(this.programExists(name)) {
+			var p = this.getProgram(name);
+			_.l('program already exists with status ' + p.state);
+			// program already download and compile
+			// directly call the callback
+			if(p.state === 'ready')
+				callback(p);
+			// if program not ready yet push current callback to program callback list to be called when ready
+			else
+				p.callbacks.push(callback);
+			
+			return;
+		}
+
+		_.l('after that');
 		var vs_file = path + options.name + '.vert';
 		var fs_file = path + options.name + '.frag';
 
@@ -100,7 +115,7 @@
 			program: undefined,
 			uniforms: {},
 			attributes: {},
-			callback: callback
+			callbacks: [callback]
 		};
 
 		this._programs[name] = program;
@@ -175,7 +190,12 @@
 			throw new Error('Unable to validate prgram');
 
 		p.state = 'ready';
-		p.callback(p);
+
+		for(var c = 0 ; c < p.callbacks.length ; c++) {
+			var callback = p.callbacks[c];
+			_.l(callback);
+			callback(p);
+		}
 	}
 
 	/**
@@ -229,7 +249,7 @@
 	 * @return {program object} The program with identifier program_id
 	 */
 	WGLC.prototype.getProgram = function(program_id) {
-		if(!programExists(program_id)) throw new Error('Unknown program : ' + program_id);
+		if(!this.programExists(program_id)) throw new Error('Unknown program : ' + program_id);
 		var p = this._programs[program_id];		
 		return p;
 	};
