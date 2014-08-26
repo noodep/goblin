@@ -1,4 +1,4 @@
-(function(window, document, undefined) {
+ (function(window, document, undefined) {
 	'use strict';
 
 	// Default paths
@@ -32,14 +32,14 @@
 	 * @this	{WGLC}
 	 * @param	{DOMElement}	canvas	The canvas element on which the context will be instanciated
 	 * @param	{object}		options	A javascript object containing the context parameters
-	 *									- camera
-	 *									- renderCallback
+	 *		camera
+	 *		renderCallback
+	 *		
 	 * @return {WGLC} The new WGLC object.
 	 */
 	function WGLC(canvas, options) {
 		this._canvas = canvas;
 		this._camera = options.camera;
-		this._angle_y = 0;
 
 		if(!this._canvas)
 			throw new Error('Unable to retreive the provided canvas element :' + canvas);
@@ -49,6 +49,7 @@
 		this._activeBuffer = null;
 		this._vbos = [];
 		this._programs = [];
+		this._scenes = [];
 
 		this._projection_mat = new _.m4();
 		this._model_mat = _.m4.identity();
@@ -61,7 +62,7 @@
 	 * @throws {Error} If unable to create a webgl context.
 	 */
 	WGLC.prototype.initContext = function() {
-		this._context = this.c = this._canvas.getContext('webgl') || this._canvas.getContext('experimental-webgl');
+		this._context = this.c = this._canvas.getContext('webgl', {antialias:false}) || this._canvas.getContext('experimental-webgl');
 		if(!this._context)
 			throw new Error('Unable to create webgl context');
 	};
@@ -261,6 +262,50 @@
 		return this._programs[program_id] !== undefined;
 	}
 
+	/**
+	 * Sets the dimension of the canvas in pixels.
+	 * This function updates the viewport and the projection matrix accordingly
+	 * @param {Number} width  width of the canvas in pixels
+	 * @param {Number} height height of the canvas in pixels
+	 */
+	WGLC.prototype.setDimension = function(width, height) {
+		this._canvas.width = width;
+		this._canvas.height = height;
+		this.updateViewport();
+	}
+
+	/**
+	 * Updates the viewport and the projection of the rendering context
+	 */
+	WGLC.prototype.updateViewport = function() {
+		this.c.viewport(0, 0, this._canvas.width, this._canvas.height);
+		this._camera.updateProjection(this._canvas.width / this._canvas.height);
+	}
+
+	/**
+	 * Adds a new scene object
+	 * @param  {object} scene_object scene_object to be added
+	 */
+	WGLC.prototype.addScene = function(scene_object) {
+		this._scenes[scene_object.id] = scene_object;
+	}
+
+	/**
+	 * Runs necessary updates for the selected scene
+	 * @param  {string}} scene_id identifier of the scene to update
+	 */
+	WGLC.prototype.updateScene = function(scene_id, delta_t) {
+		var scene = this._scenes[scene_id];
+	}
+
+	/**
+	 * Renders the Scene identified by the identifier scene_id
+	 * @param  {string} scene_id identifier of the scene to render
+	 */
+	WGLC.prototype.renderScene = function(scene_id) {
+		
+	}
+
 	// VBO Manipulation
 	WGLC.prototype.createVBO = function(id) {
 		this._vbos[id] = this.c.createBuffer();
@@ -286,6 +331,10 @@
 		this.c.uniform1f(uniform, value);
 	}
 
+	WGLC.prototype.linkUniform4f = function(uniform, value) {
+		this.c.uniform4f(uniform, value[0], value[1], value[2], value[3]);
+	}
+
 	WGLC.prototype.linkAtribute = function(attribute) {
 		this.c.enableVertexAttribArray(attribute);	
 		this.c.vertexAttribPointer(attribute, 3, this.c.FLOAT, false, 0, 0);
@@ -302,31 +351,16 @@
 
 	// Initializes a new webgl context for the current object canvas : this._canvas
 
-	WGLC.prototype.setDimension = function(width, height) {
-		this._canvas.width = width;
-		this._canvas.height = height;
-		this.updateViewport();
-	};
-
-	WGLC.prototype.updateViewport = function() {
-		this.c.viewport(0, 0, this._canvas.width, this._canvas.height);
-		this._projection_mat.perspective(45, this._canvas.width / this._canvas.height, 0, 100.0);
-	};
 
 	// Model change
-	WGLC.prototype.getCam = function() {
+	WGLC.prototype.getCamera = function() {
 		return this._camera;
 	}
 
-	WGLC.prototype.rotateY = function(angle) {
-		this._angle_y = angle;
-	}
-
-	WGLC.prototype.updateCamera = function(delta_t) {
+	WGLC.prototype.updateCamera = function(program_name, delta_t) {
 		this._camera.update(delta_t);
 		var view = this._camera.getMatrix();
-		view.rotateY(this._angle_y);
-		this.c.uniformMatrix4fv(this.getProgram('context').uniforms.u_model_view_mat, false, view.m);
+		this.c.uniformMatrix4fv(this.getProgram(program_name).uniforms.u_model_view_mat, false, view.m);
 	}
 
 	// Changes clear color

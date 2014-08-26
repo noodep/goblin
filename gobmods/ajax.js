@@ -1,7 +1,5 @@
 (function(window, document, undefined){
 	'use strict';
-
-	var Goblin = window.Goblin;
 	
 	function AJAXUtils(options) {
 		options = options || {};
@@ -16,6 +14,7 @@
 	AJAXUtils.request = function(file, callback) {
 		var request = new window.XMLHttpRequest();
 		request.open("GET", file, true);
+		request.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
 		request.onreadystatechange = function () {
 			if(request.readyState==4 && request.status==200)
 				callback(request.responseText);
@@ -23,5 +22,5 @@
 		request.send();
 	}
 
-	Goblin.addModule("ajax", AJAXUtils);
+	window.Goblin.addModule("ajax", AJAXUtils);
 })(this, this.document);
