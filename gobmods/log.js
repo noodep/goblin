@@ -34,6 +34,7 @@
 	window.Goblin.addModule('Logger', Logger);
 
 	function ConsoleLogger() {
+		this.setLevel(Logger.levels.INFO);
 	}
 
 	ConsoleLogger.prototype.setLevel = function(level) {

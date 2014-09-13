@@ -1,4 +1,6 @@
-// Matrix manipulation library for computer graphics assuming column major flatenning.
+/**
+ * Matrix manipulation library for computer graphics assuming column major flatenning.
+ */
 (function(window, document, undefined) {
 	'use strict';
 
@@ -28,6 +30,36 @@
 		this.m[15] = 0.0;
 	};
 
+	/**
+	 * Clone the current matrix
+	 * @return {mat4} newly cloned matrix
+	 */
+	m4.prototype.clone = function() {
+		var clone = new m4();
+		clone.m[0] = this.m[0];
+		clone.m[1] = this.m[1];
+		clone.m[2] = this.m[2];
+		clone.m[3] = this.m[3];
+		clone.m[4] = this.m[4];
+		clone.m[5] = this.m[5];
+		clone.m[6] = this.m[6];
+		clone.m[7] = this.m[7];
+		clone.m[8] = this.m[8];
+		clone.m[9] = this.m[9];
+		clone.m[10] = this.m[10];
+		clone.m[11] = this.m[11];
+		clone.m[12] = this.m[12];
+		clone.m[13] = this.m[13];
+		clone.m[14] = this.m[14];
+		clone.m[15] = this.m[15];
+		return clone;
+	};
+
+
+	/**
+	 * Set the matrix to the identity matrix (ones on the diagonal)
+	 * @return {[type]} [description]
+	 */
 	m4.prototype.identity = function() {
 		this.m[0] = 1.0;
 		this.m[1] = 0.0;
@@ -48,11 +80,51 @@
 		return this;
 	};
 
-	// Generates a perspective projection matrix
-	// fovy	= vertical field of view in degrees
-	// ar	= aspect ratio defined by width / height
-	// near	= z distance to the near cliping plane
-	// far	= z distance to the far cliping plane
+	/**
+	 * Set the matrix to the identity matrix (ones on the diagonal)
+	 * @return {[type]} [description]
+	 */
+	m4.prototype.mul = function(mat) {
+		var a00 = this.m[0], a01 = this.m[1], a02 = this.m[2], a03 = this.m[3],
+			a10 = this.m[4], a11 = this.m[5], a12 = this.m[6], a13 = this.m[7],
+			a20 = this.m[8], a21 = this.m[9], a22 = this.m[10], a23 = this.m[11],
+			a30 = this.m[12], a31 = this.m[13], a32 = this.m[14], a33 = this.m[15];
+
+
+		var b0  = mat.m[0], b1 = mat.m[1], b2 = mat.m[2], b3 = mat.m[3];  
+		this.m[0] = b0*a00 + b1*a10 + b2*a20 + b3*a30;
+		this.m[1] = b0*a01 + b1*a11 + b2*a21 + b3*a31;
+		this.m[2] = b0*a02 + b1*a12 + b2*a22 + b3*a32;
+		this.m[3] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
+
+    	b0 = mat.m[4]; b1 = mat.m[5]; b2 = mat.m[6]; b3 = mat.m[7];
+		this.m[4] = b0*a00 + b1*a10 + b2*a20 + b3*a30;
+		this.m[5] = b0*a01 + b1*a11 + b2*a21 + b3*a31;
+		this.m[6] = b0*a02 + b1*a12 + b2*a22 + b3*a32;
+		this.m[7] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
+
+		b0 = mat.m[8]; b1 = mat.m[9]; b2 = mat.m[10]; b3 = mat.m[11];
+		this.m[8] = b0*a00 + b1*a10 + b2*a20 + b3*a30;
+		this.m[9] = b0*a01 + b1*a11 + b2*a21 + b3*a31;
+		this.m[10] = b0*a02 + b1*a12 + b2*a22 + b3*a32;
+		this.m[11] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
+
+		b0 = mat.m[12]; b1 = mat.m[13]; b2 = mat.m[14]; b3 = mat.m[15];
+		this.m[12] = b0*a00 + b1*a10 + b2*a20 + b3*a30;
+		this.m[13] = b0*a01 + b1*a11 + b2*a21 + b3*a31;
+		this.m[14] = b0*a02 + b1*a12 + b2*a22 + b3*a32;
+		this.m[15] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
+
+		return this;
+	};
+
+	/**
+	 * Generates a perspective projection matrix
+	 * @param  {Number} fovy	vertical field of view in degrees
+	 * @param  {Number} ar		aspect ratio defined by width / height
+	 * @param  {Number} near	z distance to the near cliping plane
+	 * @param  {Number} far		z distance to the far cliping plane
+	 */
 	m4.prototype.perspective = function(fovy, ar, near, far) {
 		var depth = (far - near);
 		var scale = 1.0 / Math.tan(fovy * 0.5 * TO_RAD);
@@ -76,6 +148,7 @@
 		return this;
 	};
 
+	
 	m4.prototype.translate = function(x,y,z) {
 		this.m[12] = this.m[0] * x + this.m[4] * y + this.m[8]  * z + this.m[12];
 		this.m[13] = this.m[1] * x + this.m[5] * y + this.m[9]  * z + this.m[13];
@@ -169,6 +242,25 @@
 		this.m[7] = -e03 * s + e13 * c;
 
 		return this;
+	}
+
+	m4.prototype.scale = function(vec3) {
+    	var x = vec3[0];
+    	var y = vec3[1];
+    	var z = vec3[2];
+		this.m[0] *= x;
+		this.m[1] *= x;
+		this.m[2] *= x;
+		this.m[3] *= x;
+		this.m[4] *= y;
+		this.m[5] *= y;
+		this.m[6] *= y;
+		this.m[7] *= y;
+		this.m[8] *= z;
+		this.m[9] *= z;
+		this.m[10] *=  z;
+		this.m[11] *=  z;
+    	return this;
 	}
 	
 	m4.prototype.toString = function() {

@@ -18,6 +18,8 @@
 
 		this._view_matrix = _.m4.identity();
 		this._projection_matrix = _.m4.identity();
+		this._projection_changed = true;
+		this._view_changed = true;
 		this._invert = 1;
 
 		this._looking = false;
@@ -61,6 +63,11 @@
 		this._position.x -= Math.sin(this._yaw) * this._velocity.z * delta;
 	}
 
+	Camera.prototype.staticMove = function(delta, v) {
+		this._position.z += Math.cos(this._yaw) * v * delta;
+		this._position.x -= Math.sin(this._yaw) * v * delta;
+	}
+
 	Camera.prototype.strafe = function(delta) {
 		this._position.z -= Math.sin(this._yaw) * this._velocity.x * delta;
 		this._position.x -= Math.cos(this._yaw) * this._velocity.x * delta;
@@ -80,12 +87,21 @@
 		this._position.y += this._velocity.y * delta;
 	}
 
-	Camera.prototype.getMatrix = function() {
-		this._matrix.identity();
-		this._matrix.rotateX(this._pitch);
-		this._matrix.rotateY(this._yaw);
-		this._matrix.translate(this._position.x,this._position.y,this._position.z);
-		return this._matrix;
+	// Camera.prototype.projectionChanged = function() { return this._projection_changed; }
+
+	Camera.prototype.getProjectionMatrix = function() {
+		this._projection_changed = false;
+		return this._projection_matrix;
+	}
+
+	// Camera.prototype.viewChanged = function() { return this._view_changed; };
+
+	Camera.prototype.getViewMatrix = function() {
+		this._view_matrix.identity();
+		this._view_matrix.rotateX(this._pitch);
+		this._view_matrix.rotateY(this._yaw);
+		this._view_matrix.translate(this._position.x,this._position.y,this._position.z);
+		return this._view_matrix;
 	}
 
 	Camera.prototype.getPosition = function() {
@@ -97,10 +113,11 @@
 	}
 
 	Camera.prototype.updateProjection = function(w, h) {
-		this._projection_matrix.perspective(85, w / h, 0, 100.0);
+		this._projection_matrix.perspective(40, w / h, 0, 100.0);
 	}
 
 	Camera.prototype.update = function(delta) {
+		this._view_changed = true;
 		// delta /= 1000.0;
 		if(!delta) return;
 		// Update velocity based on acceleration 
