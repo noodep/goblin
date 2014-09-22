@@ -1,7 +1,23 @@
-(function(window, document, undefined){
+/**
+ * @fileOverview A javascript utility library
+ * @author Noodep
+ * @version 0.3
+ */
+
+(function(context,undefined) {
 	'use strict';
+
+	var MOD_FOLDER = 'gobmods';
+	var DEBUG = true;
 	
-	var mod_folder = 'gobmods';
+	var document = context.document;
+	/**
+	 * @constructor
+	 * @exports Goblin
+	 */
+	var Goblin = {};
+	var loadStack = [];
+	var readyCallback = undefined;
 
 	// Initialize serve location with current location
 	var serve_location = (function() {
@@ -10,40 +26,43 @@
 		return src.substring(0,index);
 	})();
 
-	var DEBUG = true;
+	// Export Goblin to current context
+	context.G = context.Goblin = Goblin;
 
-	Goblin.staticModules = [];
-	Goblin.loadStack = [];
+	/**
+	 * Extends goblin capabilities.
+	 * @param {String} name Name of the module.
+	 * @param {Object} obj Object extending Goblin's capabilities.
+	 */
+	Goblin.extend = function(name, obj) {
+		Goblin[name] = obj;
+	};
 
-	function Goblin(options) {
-		options = options || {};
-	}
-
-	Goblin.addModule = function(name, module) {
-		Goblin.staticModules[name] = module;
-	}
-
-	window.gobLoad = function(modules, readyCallback) {
-		// export Goblin definition
-		window.Goblin = Goblin;
-
+	/**
+	 * Loads modules given in argument. The callback is called when all modules
+	 * are loaded.
+	 * @param {Array} modules An array of modules configuration object.
+	 * @param {Function} readyCallback Callback to be called when modules are
+	 *     loaded.
+	 */
+	Goblin.gobLoad = function(modules, callback) {
 		if(!Array.isArray(modules))
 			throw new Error('Please specify an array of modules');
 
-		Goblin.readyCallback = readyCallback;
+		readyCallback = callback;
 		modules.forEach(createScript);
 
-		Goblin.loadStack.forEach(function(script){
+		loadStack.forEach(function(script){
 			document.head.appendChild(script);
 		});
-	}
+	};
 
 	function createScript(script_object) {
 		var script_name, script_folder, script_callback;
 		// Plain script : use default mod folder;
 		if(typeof script_object === 'string') {
 			script_name = script_object;
-			script_folder = serve_location + '/' + mod_folder;
+			script_folder = serve_location + '/' + MOD_FOLDER;
 		}
 		// Script object : use defined properties;
 		else {
@@ -57,7 +76,7 @@
 			console.log('Loading script with src : ' + src);
 
 		var script = document.createElement('script');
-		Goblin.loadStack.push(script);
+		loadStack.push(script);
 		script.onload = onLoadCallback.bind(script);
 
 		// Add custom callback if any
@@ -67,31 +86,16 @@
 	}
 
 	function onLoadCallback(e) {
-		var index = Goblin.loadStack.indexOf(this);
+		var index = loadStack.indexOf(this);
 
 		// Remove script from loadStack
-		Goblin.loadStack.splice(index, 1);
+		loadStack.splice(index, 1);
 
 		if(this.custom_callback)
 			this.custom_callback();
 
-		if(Goblin.loadStack.length == 0)
-			finalizeAndExport();
+		if(loadStack.length == 0)
+			if(readyCallback) readyCallback();
 	}
 
-	function finalizeAndExport() {
-		if(DEBUG)
-			console.log('Finalizing Goblin and exporting it');
-
-		// Expand Goblin prototype with modules objects
-		Object.keys(Goblin.staticModules).forEach(function(name) {
-			window.Goblin.prototype[name] = Goblin.staticModules[name];
-		});
-
-		window._ = new window.Goblin();
-
-		// Call user defined ready callback
-		if(Goblin.readyCallback) Goblin.readyCallback();
-	}
-
-})(this, this.document);
+})(this);

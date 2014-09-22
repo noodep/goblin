@@ -1,25 +1,38 @@
+/**
+ * @fileOverview A simple webgl utility class for Goblin
+ * @author Noodep
+ * @version 0.2
+ */
 (function(window, document, undefined) {
 	'use strict';
-
 	/**
-	 * Default paths
-	 * @const {String}
+	 * Default shader path
+	 * @const
+	 * @type {string}
 	 */
 	var DEFAULT_SHADER_PATH = '/shaders/';
+
+	/**
+	 * Default texture path
+	 * @const
+	 * @type {string}
+	 */
 	var DEFAULT_TEXTURE_PATH = '/textures/';
 
 	/**
-	 * Defines local factory
-	 * @type {Object}
+	 * The WEBGLContext factory
+	 * @constructor
+	 * @memberOf module:graphics3d
+	 * @alias WEBGLContext
 	 */
-	var WEBGLContext = {};
+	function WEBGLContext() {}
 
 	/**
 	 * Creates an instance of a WEBGLContext.
-	 * @param {string} canvas The id of the canvas on which the context will be
+	 * @param {string} canvas_id The id of the canvas on which the context will be
 	 *     instanciated.
 	 * @throws {Error} If canvas element with id canvas_id doesn't exist.
-	 * @return {WGLC}  The new WGLC object.
+	 * @return {module:graphics3d.WGLC}  The new WGLC object.
 	 */
 	WEBGLContext.create = function(canvas_id) {
 		var canvas = _.G(canvas_id);
@@ -37,6 +50,8 @@
 	/**
 	 * Creates an instance of a WEBGLContext.
 	 * @constructor
+	 * @memberOf module:graphics3d
+	 * @alias WGLC
 	 * @param {DOMElement} canvas The canvas element on which the context will be
 	 *     instanciated.
 	 * @param {object} options A javascript object containing the context
@@ -45,8 +60,7 @@
 	 *   <li>camera</li>
 	 *   <li>renderCallback</li>
 	 * </ul>
-	 * @this {WGLC}
-	 * @return {WGLC} The new WGLC object.
+	 * @return {module:graphics3d.WGLC} The new WGLC object.
 	 */
 	function WGLC(canvas, options) {
 		this._canvas = canvas;
@@ -74,7 +88,6 @@
 
 	/**
 	 * Initialize the context attribute with an instance of webgl canvas context.
-	 * @this {WGLC}
 	 * @throws {Error} If unable to create a webgl context.
 	 */
 	WGLC.prototype.initContext = function() {
@@ -86,8 +99,7 @@
 
 	/**
 	 * Enables depth testing for the current context.
-	 * @this {WGLC}
-	 * @param {boolean} enable Enable/disable depth testing.
+	 * @param {Boolean} enable Enable/disable depth testing.
 	 */
 	WGLC.prototype.enableDepthTest = function(enable) {
 		if(enable)
@@ -99,8 +111,7 @@
 	/**
 	 * Enables blending for the current context. Sets the default blending
 	 *     function to src/oneminussrc.
-	 * @this {WGLC}
-	 * @param {boolean} enable Enable/disable blending.
+	 * @param {Boolean} enable Enable/disable blending.
 	 */
 	WGLC.prototype.enableBlending = function(enable) {
 		this.c.blendFunc(this.c.SRC_ALPHA, this.c.ONE_MINUS_SRC_ALPHA);
@@ -112,7 +123,6 @@
 
 	/**
 	 * Changes clear color (background color of the canvas).
-	 * @this {WGLC}
 	 * @param {Array} color Array of 4 floats. Values are clamped between [0,1].
 	 */
 	WGLC.prototype.setBackground = function(color) {
@@ -121,8 +131,7 @@
 
 	/**
 	 * Get the camera used by this context.
-	 * @this {WGLC}
-	 * @return {Camera} The camera object.
+	 * @return {module:graphics3d.Camera} The camera object.
 	 */
 	WGLC.prototype.getCamera = function() {
 		return this._camera;
@@ -135,7 +144,6 @@
 	 * This function creates and loads the program. It adds an entry to the
 	 * loading queue.
 	 * If you specify a callback, it will be call when the program is ready.
-	 * @this {WGLC}
 	 * @param {object} options Object containing program options :
 	 * <ul>
 	 *   <li>name Name of the program to create. Must be unique.</li>
@@ -212,7 +220,6 @@
 	/**
 	 * Creates and compiles a new shader object based on the given OPENGL ES
 	 * source code.
-	 * @this {WGLC}
 	 * @param {string} src OPENGL ES source code of the shader.
 	 * @param {constant} type Type of shader to be created. Value can be
 	 *     FRAGMENT_SHADER | VERTEX_SHADER.
@@ -233,8 +240,7 @@
 	/**
 	 * Creates a new program object and attach shaders to it.
 	 * This function initialize references to uniforms and attributes 
-	 * automatically (using reflexion).
-	 * @this {WGLC}
+	 * automatically (using reflection).
 	 * @param {string} name Name of the program to compile. 
 	 * @throws {Error} If the program fails to link or validate.
 	 */
@@ -268,8 +274,7 @@
 	/**
 	 * Dynamically locates attributes or uniforms for a given program.
 	 * Stores pointers in the given program object.
-	 * @this {WGLC}
-	 * @param {program object} p Program on which to look for qualifiers.
+	 * @param {program} p Program on which to look for qualifiers.
 	 * @param {string} type Type of qualifier to identify.
 	 * <ul>
 	 *   <li>'u' for uniforms.</li>
@@ -304,9 +309,8 @@
 
 	/**
 	 * Changes the program currently used by this context.
-	 * @this {WGLC}
 	 * @param {string} program_id The program identifier.
-	 * @return {program object} The program object currently in use.
+	 * @return {program} The program object currently in use.
 	 */
 	WGLC.prototype.useProgram = function(program_id) {
 		var p = this.getProgram(program_id);
@@ -319,10 +323,9 @@
 
 	/**
 	 * Returns a program identified by the identifier program_id.
-	 * @this {WGLC}
 	 * @param {string} program_id Identifier of the program to return.
 	 * @throws {Error} If program with id program_id doesn't exist.
-	 * @return {program object} The program with identifier program_id.
+	 * @return {program} The program with identifier program_id.
 	 */
 	WGLC.prototype.getProgram = function(program_id) {
 		if(!this.programExists(program_id))
@@ -333,7 +336,6 @@
 
 	/**
 	 * Checks if the current program with given id program_id exists.
-	 * @this {WGLC}
 	 * @param {string} program_id The identifier of the program to look for.
 	 * @return {boolean} True if a program with id program_id exists false
 	 *     otherwise.
@@ -345,7 +347,6 @@
 	/**
 	 * Sets the dimension of the canvas in pixels.
 	 * This function updates the viewport and the projection matrix accordingly.
-	 * @this {WGLC}
 	 * @param {Number} width  Width of the canvas in pixels.
 	 * @param {Number} height Height of the canvas in pixels.
 	 */
@@ -358,7 +359,6 @@
 	/**
 	 * Updates the viewport and the projection of the rendering context using
 	 * current canvas dimensions.
-	 * @this {WGLC}
 	 */
 	WGLC.prototype.updateViewport = function() {
 		this.c.viewport(0, 0, this._canvas.width, this._canvas.height);
@@ -367,7 +367,6 @@
 
 	/**
 	 * Adds a new scene object.
-	 * @this {WGLC}
 	 * @param {object} scene_object Scene object to be added.
 	 */
 	WGLC.prototype.addScene = function(scene_object) {
@@ -376,10 +375,9 @@
 
 	/**
 	 * Returns a scene identified by the identifier scene_id
-	 * @this {WGLC}
 	 * @param {string} scene_id Identifier of the scene to return.
 	 * @throws {Error} If scene with id scene_id doesn't exist.
-	 * @return {scene object} The scene with identifier scene_id.
+	 * @return {scene} The scene with identifier scene_id.
 	 */
 	WGLC.prototype.getScene = function(scene_id) {
 		if(!this.sceneExists(scene_id)) throw new Error('Unknown scene : ' + scene_id);
@@ -388,7 +386,6 @@
 
 	/**
 	 * Checks if the scene with given id scene_id exists.
-	 * @this {WGLC}
 	 * @param {string} scene_id The identifier of the scene to look for.
 	 * @return {boolean}	returns true if scene with id scene_id exists.
 	 */
@@ -398,7 +395,6 @@
 
 	/**
 	 * Runs necessary updates for the selected scene.
-	 * @this {WGLC}
 	 * @param {string} scene_id Identifier of the scene to update.
 	 */
 	WGLC.prototype.updateScene = function(scene_id, delta_t) {
@@ -412,7 +408,6 @@
 
 	/**
 	 * Renders the scene identified by the identifier scene_id.
-	 * @this {WGLC}
 	 * @param {string} scene_id Identifier of the scene to render.
 	 */
 	WGLC.prototype.renderScene = function(scene_id) {
@@ -425,16 +420,19 @@
 	};
 
 	/**
-	 * Creates a VertexBufferObject with given id
-	 * @this {WGLC}
-	 * @param {type} id Identifier of the buffer object to be created.
-	 * @return {VertexBufferObject} The created vertex buffer object.
+	 * Creates a WebGLBuffer with given id
+	 * @param {string} id Identifier of the buffer object to be created.
+	 * @return {WebGLBuffer} The created vertex buffer object.
 	 */
 	WGLC.prototype.createVBO = function(id) {
 		this._vbos[id] = this.c.createBuffer();
 		return this._vbos[id];
 	}
 
+	/**
+	 * Activates a WebGLBuffer with given id
+	 * @param {string} id Identifier of the buffer object to be activated.
+	 */
 	WGLC.prototype.makeVBOActive = function(id) {
 		if(this._active_buffer != id) {
 			this.c.bindBuffer(this.c.ARRAY_BUFFER, this._vbos[id]);

@@ -1,13 +1,32 @@
-(function(window, document, undefined) {
+/**
+ * @fileOverview Vector manipulation library.
+ * @author Noodep
+ * @version 0.31
+ */
+(function(context, undefined) {
 	'use strict';
 
-	function v3(x,y,z) {
+	/**
+	 * @constructor
+	 * @memberOf module:math
+	 * @alias v3
+	 * @param {Number} x x value.
+	 * @param {Number} y y value.
+	 * @param {Number} z z value.
+	 * @return {module:math.v3} The newly created vector.
+	 */
+	var v3 = function(x,y,z) {
 		this.v = new Float32Array(3);
 		this.v[0] = x || 0.0;
 		this.v[1] = y || 0.0;
 		this.v[2] = z || 0.0;
 	}
 
+	/**
+	 * Copies values of vector v into this vector.
+	 * @param  {module:math.v3} v Vector from which to copy values. 
+	 * @return {module:math.v3} This vector.
+	 */
 	v3.prototype.copy = function(v) {
 		this.v[0] = v.v[0];
 		this.v[1] = v.v[1];
@@ -15,9 +34,14 @@
 		return this;
 	};
 
+	/**
+	 * Clones the current vector.
+	 * @return {module:math.v3} The newly cloned vector.
+	 */
 	v3.prototype.clone = function() {
 		return new v3(this.v[0],this.v[1],this.v[2]);
 	};
+
 
 	v3.prototype.scaleAdd = function(s, v1, v2) {
 		this.v[0] = s * v1.v[0] + v2.v[0];
@@ -132,18 +156,6 @@
 		return this;
 	};
 	
-	v3.prototype.rotateY = function(theta) {
-		this.v[0] = this.v[0]*Math.cos(theta) - this.v[2]*Math.sin(theta);
-		this.v[2] = this.v[0]*Math.sin(theta) + this.v[2]*Math.cos(theta);
-		return this;
-	};
-
-	v3.prototype.rotateZ = function(theta) {
-		this.v[0] =  this.v[0]*Math.cos(theta) + this.v[1]*Math.sin(theta);
-		this.v[1] = -this.v[0]*Math.sin(theta) + this.v[1]*Math.cos(theta);
-		return this;
-	};
-	
 	v3.prototype.length = v3.prototype.len = function() {
 		return Math.sqrt(this.v[0] * this.v[0] + this.v[1] * this.v[1] + this.v[2] * this.v[2]);
 	};
@@ -183,5 +195,5 @@
 		set : function(value) { this.v[2] = value; }
 	});
 
-	Goblin.addModule('v3', v3);
-})(this, this.document);
+	Goblin.extend('v3', v3);
+})(this);

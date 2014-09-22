@@ -1,3 +1,8 @@
+/**
+ * @fileOverview A simple camera state object.
+ * @author Noodep
+ * @version 0.4
+ */
 (function(window, document, undefined) {
 	'use strict';
 	
@@ -7,6 +12,12 @@
 	var DEFAULT_TRACTION = 0.3;
 	var DEFAULT_SENSITIVITY = 0.005;
 
+	/**
+	 * Creates an instance of a WEBGLContext.
+	 * @constructor
+	 * @memberOf module:graphics3d
+	 * @alias Camera
+	*/
 	function Camera(options) {
 		options = options || {};
 
@@ -30,9 +41,14 @@
 		this._position = (options.position) ? options.position : new _.v3();
 	}
 
+	/**
+	 * Inverts Y axis.
+	 * @return {module:graphics3d.Camera} This camera object.
+	 */
 	Camera.prototype.invert = function() {
 		this._invert *= -1;
-	}
+		return this;
+	};
 
 	Camera.prototype.look = function(looking) {
 		this._looking = looking;
@@ -113,7 +129,7 @@
 	}
 
 	Camera.prototype.updateProjection = function(w, h) {
-		this._projection_matrix.perspective(40, w / h, 0, 100.0);
+		this._projection_matrix.perspective(40, w / h, 0.1, 100.0);
 	}
 
 	Camera.prototype.update = function(delta) {

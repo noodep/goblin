@@ -1,16 +1,21 @@
 /**
- * Matrix manipulation library for computer graphics assuming column major flatenning.
+ * @fileOverview Matrix manipulation library for computer graphics assuming
+ * column major flatenning.
+ * @author Noodep
+ * @version 0.3
  */
-(function(window, document, undefined) {
+(function(context, undefined) {
 	'use strict';
 
 	var TO_RAD = Math.PI / 180.0;
 
-	m4.identity = function() {
-		return new m4().identity();
-	}
-
-	function m4() {
+	/**
+	 * @constructor
+	 * @memberOf module:math
+	 * @alias m4
+	 * @return {module:math.m4} The newly created matrix.
+	 */
+	var m4 = function() {
 		this.m = new Float32Array(16);
 		this.m[0] = 0.0;
 		this.m[1] = 0.0;
@@ -31,8 +36,16 @@
 	};
 
 	/**
-	 * Clone the current matrix
-	 * @return {mat4} newly cloned matrix
+	 * Identity
+	 * @return {module:math.m4} A newly created matrix set to identity.
+	 */
+	m4.identity = function() {
+		return new m4().identity();
+	}
+
+	/**
+	 * Clones the current matrix.
+	 * @return {module:math.m4} The newly cloned matrix.
 	 */
 	m4.prototype.clone = function() {
 		var clone = new m4();
@@ -57,8 +70,8 @@
 
 
 	/**
-	 * Set the matrix to the identity matrix (ones on the diagonal)
-	 * @return {[type]} [description]
+	 * Sets the matrix to the identity matrix (ones on the diagonal)
+	 * @return {module:math.m4} The matrix now set to identity.
 	 */
 	m4.prototype.identity = function() {
 		this.m[0] = 1.0;
@@ -81,15 +94,15 @@
 	};
 
 	/**
-	 * Set the matrix to the identity matrix (ones on the diagonal)
-	 * @return {[type]} [description]
+	 * Multiplies the matrix by the given matrix.
+	 * @param {module:math.m4} mat Matrix to multiply by.
+	 * @return {module:math.m4} Matrix multiplied by the matrix passed in argument. 
 	 */
 	m4.prototype.mul = function(mat) {
-		var a00 = this.m[0], a01 = this.m[1], a02 = this.m[2], a03 = this.m[3],
-			a10 = this.m[4], a11 = this.m[5], a12 = this.m[6], a13 = this.m[7],
-			a20 = this.m[8], a21 = this.m[9], a22 = this.m[10], a23 = this.m[11],
+		var a00 = this.m[0],  a01 = this.m[1],  a02 = this.m[2],  a03 = this.m[3],
+			a10 = this.m[4],  a11 = this.m[5],  a12 = this.m[6],  a13 = this.m[7],
+			a20 = this.m[8],  a21 = this.m[9],  a22 = this.m[10], a23 = this.m[11],
 			a30 = this.m[12], a31 = this.m[13], a32 = this.m[14], a33 = this.m[15];
-
 
 		var b0  = mat.m[0], b1 = mat.m[1], b2 = mat.m[2], b3 = mat.m[3];  
 		this.m[0] = b0*a00 + b1*a10 + b2*a20 + b3*a30;
@@ -104,8 +117,8 @@
 		this.m[7] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
 
 		b0 = mat.m[8]; b1 = mat.m[9]; b2 = mat.m[10]; b3 = mat.m[11];
-		this.m[8] = b0*a00 + b1*a10 + b2*a20 + b3*a30;
-		this.m[9] = b0*a01 + b1*a11 + b2*a21 + b3*a31;
+		this.m[8]  = b0*a00 + b1*a10 + b2*a20 + b3*a30;
+		this.m[9]  = b0*a01 + b1*a11 + b2*a21 + b3*a31;
 		this.m[10] = b0*a02 + b1*a12 + b2*a22 + b3*a32;
 		this.m[11] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
 
@@ -119,11 +132,11 @@
 	};
 
 	/**
-	 * Generates a perspective projection matrix
-	 * @param  {Number} fovy	vertical field of view in degrees
-	 * @param  {Number} ar		aspect ratio defined by width / height
-	 * @param  {Number} near	z distance to the near cliping plane
-	 * @param  {Number} far		z distance to the far cliping plane
+	 * Generates a perspective projection matrix.
+	 * @param {Number} fovy Vertical field of view in degrees
+	 * @param {Number} ar Aspect ratio defined by width / height
+	 * @param {Number} near Z distance to the near cliping plane
+	 * @param {Number} far Z distance to the far cliping plane
 	 */
 	m4.prototype.perspective = function(fovy, ar, near, far) {
 		var depth = (far - near);
@@ -148,7 +161,13 @@
 		return this;
 	};
 
-	
+	/**
+	 * Apply a translation to the matrix.
+	 * @param {Number} x Translation delta on x.
+	 * @param {Number} y Translation delta on y.
+	 * @param {Number} z Translation delta on z.
+	 * @return {module:math.m4} This matrix translated
+	 */
 	m4.prototype.translate = function(x,y,z) {
 		this.m[12] = this.m[0] * x + this.m[4] * y + this.m[8]  * z + this.m[12];
 		this.m[13] = this.m[1] * x + this.m[5] * y + this.m[9]  * z + this.m[13];
@@ -157,9 +176,11 @@
 		return this;
 	}
 
-	// multiplies current matrix with a 3D rotation matrix around axis X
-	// assuming a right handed space
-	// theta = rotation angle in radians
+	/**
+	 * Applies a rotation around the x axis to the matrix.
+	 * @param {Number} theta Rotation angle in radians
+	 * @return {module:math.m4} The rotated matrix.
+	 */
 	m4.prototype.rotateX = function(theta) {
 		var c = Math.cos(theta);
 		var s = Math.sin(theta);
@@ -186,9 +207,11 @@
 		return this;
 	}
 
-	// multiplies current matrix with a 3D rotation matrix around axis Y
-	// assuming a right handed space
-	// theta = rotation angle in radians
+	/**
+	 * Applies a rotation around the y axis to the matrix.
+	 * @param {Number} theta Rotation angle in radians
+	 * @return {module:math.m4} The rotated matrix.
+	 */
 	m4.prototype.rotateY = function(theta) {
 		var c = Math.cos(theta);
 		var s = Math.sin(theta);
@@ -215,9 +238,11 @@
 		return this;
 	}
 
-	// multiplies current matrix with a 3D rotation matrix around axis Z
-	// assuming a right handed space
-	// theta = rotation angle in radians
+	/**
+	 * Applies a rotation around the z axis to the matrix.
+	 * @param {Number} theta Rotation angle in radians
+	 * @return {module:math.m4} The rotated matrix.
+	 */
 	m4.prototype.rotateZ = function(theta) {
 		var c = Math.cos(theta);
 		var s = Math.sin(theta);
@@ -244,10 +269,15 @@
 		return this;
 	}
 
+	/**
+	 * Scales the matrix by the given vector.
+	 * @param {module:math.v3} vec3 Vector by which to scale the matrix.
+	 * @return {module:math.m4} The scaled matrix.
+	 */
 	m4.prototype.scale = function(vec3) {
-    	var x = vec3[0];
-    	var y = vec3[1];
-    	var z = vec3[2];
+		var x = vec3[0];
+		var y = vec3[1];
+		var z = vec3[2];
 		this.m[0] *= x;
 		this.m[1] *= x;
 		this.m[2] *= x;
@@ -260,9 +290,33 @@
 		this.m[9] *= z;
 		this.m[10] *=  z;
 		this.m[11] *=  z;
-    	return this;
+		return this;
+	}
+	/**
+	 * Scales the matrix by the given scalar.
+	 * @param {Number} scalar Value by which to scale the matrix.
+	 * @return {module:math.m4} The scaled matrix.
+	 */
+	m4.prototype.scale = function(scalar) {
+		this.m[0] *= scalar;
+		this.m[1] *= scalar;
+		this.m[2] *= scalar;
+		this.m[3] *= scalar;
+		this.m[4] *= scalar;
+		this.m[5] *= scalar;
+		this.m[6] *= scalar;
+		this.m[7] *= scalar;
+		this.m[8] *= scalar;
+		this.m[9] *= scalar;
+		this.m[10] *=  scalar;
+		this.m[11] *=  scalar;
+		return this;
 	}
 	
+	/**
+	 * Creates a human readable string of the matrix.
+	 * @return {String} Human readable string of the matrix.
+	 */
 	m4.prototype.toString = function() {
 		return '[' +
 		this.m[0] + ',' + this.m[4] + ',' + this.m[8]  + ',' + this.m[12]  + '\n ' +
@@ -275,6 +329,5 @@
 		get : function() { return this.toString();},
 	});
 
-	Goblin.addModule('m4', m4);
-
-})(this,this.document);
+	Goblin.extend('m4', m4);
+})(this);
