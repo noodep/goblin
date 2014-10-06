@@ -27,7 +27,7 @@
 	})();
 
 	// Export Goblin to current context
-	context.G = context.Goblin = Goblin;
+	context._ = context.G = context.Goblin = Goblin;
 
 	/**
 	 * Extends goblin capabilities.

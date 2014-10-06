@@ -108,6 +108,6 @@
 		}
 	}
 
-	window.Goblin.addModule('FPSCamera', FPSCamera);
+	Goblin.extend('FPSCamera', FPSCamera);
 
 })(this, this.document);

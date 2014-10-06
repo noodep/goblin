@@ -3,16 +3,16 @@
 
 	var Goblin = window.Goblin;
 
-	Goblin.prototype.getStyle = function(el,css_prop) {
+	Goblin.extend('getStyle', function(el,css_prop) {
 		var ret = null; 
 		if (el.currentStyle)
 			ret = el.currentStyle[css_prop];
 		else if (window.getComputedStyle)
 			ret = document.defaultView.getComputedStyle(el,null).getPropertyValue(css_prop);
 		return ret;
-	}
+	});
 
-	Goblin.prototype.HSL2RGBA = function(h, s, l, a) {
+	Goblin.extend('HSL2RGBA', function(h, s, l, a) {
 		var r, g, b;
 		if(s == 0) {
 			r = g = b = l; // achromatic
@@ -25,7 +25,7 @@
 		}
 
 		return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255), Math.round(a * 255)];
-	}
+	});
 
 	function hue2rgb(p, q, t) {
 		if(t < 0) t += 1;

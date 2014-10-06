@@ -31,7 +31,7 @@
 			this._subscribers.push(subscriber);
 	}
 
-	window.Goblin.addModule('Logger', Logger);
+	Goblin.extend('Logger', Logger);
 
 	function ConsoleLogger() {
 		this.setLevel(Logger.levels.INFO);
@@ -46,16 +46,16 @@
 			console.log(log.msg);
 	}
 
-	window.Goblin.addModule('ConsoleLogger', ConsoleLogger);
+	Goblin.extend('ConsoleLogger', ConsoleLogger);
 
 	var default_logger = new Logger();
 	var console_logger = new ConsoleLogger();
 	default_logger.addSubscriber(console_logger);
 
-	window.Goblin.defaultLogger = default_logger;
-	window.Goblin.prototype.dl = function(msg) { default_logger.log(msg, Logger.levels.DEBUG) };
-	window.Goblin.prototype.l = function(msg) { default_logger.log(msg, Logger.levels.INFO) };
-	window.Goblin.prototype.el = function(msg) { default_logger.log(msg, Logger.levels.ERROR) };
-	window.Goblin.prototype.logLevel = console_logger.setLevel.bind(console_logger);
+	Goblin.extend('defaultLogger', default_logger);
+	window.Goblin.extend('dl', function(msg) { default_logger.log(msg, Logger.levels.DEBUG); });
+	window.Goblin.extend('l', function(msg) { default_logger.log(msg, Logger.levels.INFO); });
+	window.Goblin.extend('el', function(msg) { default_logger.log(msg, Logger.levels.ERROR); });
+	window.Goblin.extend('logLevel', console_logger.setLevel.bind(console_logger));
 
 })(this, this.document);

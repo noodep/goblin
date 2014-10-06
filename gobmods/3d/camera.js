@@ -152,5 +152,5 @@
 		this.elevate(delta);
 	}
 
-	Goblin.addModule("Camera", Camera);
+	Goblin.extend('Camera', Camera);
 })(this, this.document);

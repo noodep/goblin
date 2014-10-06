@@ -22,5 +22,5 @@
 		request.send();
 	}
 
-	window.Goblin.addModule("ajax", AJAXUtils);
+	Goblin.extend('ajax', AJAXUtils);
 })(this, this.document);

@@ -42,6 +42,6 @@
 	Renderer.prototype.draw = function() {}
 	Renderer.prototype.update = function() {}
 
-	Goblin.addModule('Renderer', Renderer);
+	Goblin.extend('Renderer', Renderer);
 
 })(this, this.document);

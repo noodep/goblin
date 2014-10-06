@@ -543,5 +543,5 @@
 		this.c.clear(this.c.COLOR_BUFFER_BIT | this.c.DEPTH_BUFFER_BIT);
 	}
 
-	Goblin.addModule('WGLC', WEBGLContext);
+	Goblin.extend('WGLC', WEBGLContext);
 })(this, this.document);
