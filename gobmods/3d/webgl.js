@@ -1,5 +1,4 @@
-/**
- * @fileOverview A simple webgl utility class for Goblin
+/** @fileOverview A simple webgl utility class for Goblin
  * @author Noodep
  * @version 0.2
  */
@@ -199,20 +198,26 @@
 		var self = this;
 
 		// Requests the vertex shader
-		_.ajax.request(vs_file, function(response) {
-			program.vs =  self.createShader(response, self.c.VERTEX_SHADER);			
-			if(program.fs) {
-				program.state = 'compiling';
-				self.compileProgram(name);
+		_.Ajax.request({
+			url: vs_file,
+			onsuccess: function(response) {
+				program.vs =  self.createShader(response, self.c.VERTEX_SHADER);			
+				if(program.fs) {
+					program.state = 'compiling';
+					self.compileProgram(name);
+				}
 			}
 		});
 
 		// Requests the fragment shader
-		_.ajax.request(fs_file, function(response) {
-			program.fs =  self.createShader(response, self.c.FRAGMENT_SHADER);
-			if(program.vs) {
-				program.state = 'compiling';
-				self.compileProgram(name);
+		_.Ajax.request({
+			url: fs_file,
+			onsuccess: function(response) {
+				program.fs =  self.createShader(response, self.c.FRAGMENT_SHADER);
+				if(program.vs) {
+					program.state = 'compiling';
+					self.compileProgram(name);
+				}
 			}
 		});
 	};

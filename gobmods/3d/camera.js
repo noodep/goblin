@@ -116,7 +116,7 @@
 		this._view_matrix.identity();
 		this._view_matrix.rotateX(this._pitch);
 		this._view_matrix.rotateY(this._yaw);
-		this._view_matrix.translate(this._position.x,this._position.y,this._position.z);
+		this._view_matrix.translate(this._position.v);
 		return this._view_matrix;
 	}
 

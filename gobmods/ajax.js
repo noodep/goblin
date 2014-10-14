@@ -18,7 +18,7 @@
 
 	AJAXUtils.request = function(options) {
 		var url = options.url;
-		var method = options.method;
+		var method = options.method || 'GET';
 		var data = options.data;
 		var onsuccess = options.onsuccess;
 		var onprogress = options.onprogress;

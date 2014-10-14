@@ -168,7 +168,10 @@
 	 * @param {Number} z Translation delta on z.
 	 * @return {module:math.m4} This matrix translated
 	 */
-	m4.prototype.translate = function(x,y,z) {
+	m4.prototype.translate = function(vec3) {
+		var x = vec3[0];
+		var y = vec3[1];
+		var z = vec3[2];
 		this.m[12] = this.m[0] * x + this.m[4] * y + this.m[8]  * z + this.m[12];
 		this.m[13] = this.m[1] * x + this.m[5] * y + this.m[9]  * z + this.m[13];
 		this.m[14] = this.m[2] * x + this.m[6] * y + this.m[10] * z + this.m[14];
@@ -292,27 +295,7 @@
 		this.m[11] *=  z;
 		return this;
 	}
-	/**
-	 * Scales the matrix by the given scalar.
-	 * @param {Number} scalar Value by which to scale the matrix.
-	 * @return {module:math.m4} The scaled matrix.
-	 */
-	m4.prototype.scale = function(scalar) {
-		this.m[0] *= scalar;
-		this.m[1] *= scalar;
-		this.m[2] *= scalar;
-		this.m[3] *= scalar;
-		this.m[4] *= scalar;
-		this.m[5] *= scalar;
-		this.m[6] *= scalar;
-		this.m[7] *= scalar;
-		this.m[8] *= scalar;
-		this.m[9] *= scalar;
-		this.m[10] *=  scalar;
-		this.m[11] *=  scalar;
-		return this;
-	}
-	
+
 	/**
 	 * Creates a human readable string of the matrix.
 	 * @return {String} Human readable string of the matrix.
