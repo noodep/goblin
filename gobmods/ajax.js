@@ -11,16 +11,30 @@
 	AJAXUtils.prototype = {
 	}
 
-	AJAXUtils.request = function(file, callback) {
-		var request = new window.XMLHttpRequest();
-		request.open("GET", file, true);
-		request.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-		request.onreadystatechange = function () {
-			if(request.readyState==4 && request.status==200)
-				callback(request.responseText);
-		}
-		request.send();
+	AJAXUtils.post = function(options) {
+		options.method = 'POST';
+		return AJAXUtils.request(options);
 	}
 
-	Goblin.extend('ajax', AJAXUtils);
+	AJAXUtils.request = function(options) {
+		var url = options.url;
+		var method = options.method;
+		var data = options.data;
+		var onsuccess = options.onsuccess;
+		var onprogress = options.onprogress;
+
+		var req = new XMLHttpRequest();
+		req.open(method, url, true);
+		req.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+
+		req.onload = function() {
+			if(this.status == 200)
+				onsuccess(this.response);
+		};
+
+		req.onprogress = onprogress;
+		req.send(data);
+	}
+
+	Goblin.extend('Ajax', AJAXUtils);
 })(this, this.document);
