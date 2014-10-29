@@ -8,6 +8,7 @@
 		this._camera = camera;
 		var el = element || window;
 		this._acceleration = DEFAULT_ACCELERATION;
+		this._origin = this._camera._position.clone();
 
 		el.onkeydown = this.keydownhandler.bind(this);
 		el.onkeyup = this.keyuphandler.bind(this);
@@ -56,9 +57,7 @@
 		} else if (e.keyCode == 83 || e.keyCode == 40) {
 			this._camera.setVerticalAcceleration(this._acceleration);
 		} else if (e.keyCode == 82) {
-			this._camera._position.x = 0.0;
-			this._camera._position.y = 0.2;
-			this._camera._position.z = -6.2;
+			this._camera._position.copy(this._origin);
 			this._camera._yaw = 0;
 			this._camera._pitch = 0;
 			this._camera._view_changed = true;
@@ -106,6 +105,10 @@
 			this._camera.lookVertical(data[1] - this._last_mouse_pos[1]);
 			this._last_mouse_pos = data;
 		}
+	}
+
+	FPSCamera.prototype.setResetLocation = function(location) {
+		this._origin = location.clone();
 	}
 
 	Goblin.extend('FPSCamera', FPSCamera);
