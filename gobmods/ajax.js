@@ -22,6 +22,7 @@
 		var data = options.data;
 		var onsuccess = options.onsuccess;
 		var onprogress = options.onprogress;
+		var onreadystatechange = options.onreadystatechange;
 
 		var req = new XMLHttpRequest();
 		req.open(method, url, true);
@@ -33,6 +34,7 @@
 		};
 
 		req.onprogress = onprogress;
+		req.onreadystatechange = onreadystatechange;
 		req.send(data);
 	}
 

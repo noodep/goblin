@@ -7,6 +7,7 @@
 		this._orientation = options.orientation;
 		this._scale = options.scale;
 		this._prog = options.program;
+		this._properties = options.properties;
 		this._createRenderingProgram(rendering_context, ready_callback);
 	}
 
