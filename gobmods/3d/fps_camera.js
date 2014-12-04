@@ -57,10 +57,7 @@
 		} else if (e.keyCode == 83 || e.keyCode == 40) {
 			this._camera.setVerticalAcceleration(this._acceleration);
 		} else if (e.keyCode == 82) {
-			this._camera._position.copy(this._origin);
-			this._camera._yaw = 0;
-			this._camera._pitch = 0;
-			this._camera._view_changed = true;
+			this.goToResetLocation();
 		} else if (e.keyCode == 66) {
 			this.rotate = !this.rotate;
 		} else if (e.keyCode == 84) {
@@ -90,9 +87,6 @@
 	}
 
 	FPSCamera.prototype.mouseClick = function(e) {
-		// _.l(e);
-		// e.preventDefault();
-
 		if(e.button == 0 && e.type == 'mousedown') {
 			this._camera.look(true);
 			this._last_mouse_pos = _.relativeMousePosition(e);
@@ -110,6 +104,18 @@
 	FPSCamera.prototype.setResetLocation = function(location) {
 		this._origin = location.clone();
 	}
+
+	FPSCamera.prototype.goToResetLocation = function() {
+		this._camera._position.copy(this._origin);
+		this._camera._yaw = 0;
+		this._camera._pitch = 0;
+		this._camera._view_changed = true;
+	}
+
+	FPSCamera.prototype.goToLocation = function(location) {
+		this._camera.setAbsolutePosition(location);
+	}
+
 
 	Goblin.extend('FPSCamera', FPSCamera);
 

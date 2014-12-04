@@ -2,10 +2,10 @@
 	'use strict';
 
 	function Renderer(options, rendering_context, ready_callback) {
-		this._name = options.name;
-		this._orig = options.origin;
-		this._orientation = options.orientation;
-		this._scale = options.scale;
+		this._name = options.name || _.GUID();
+		this._orig = options.origin || [0.0,0.0,0.0];
+		this._orientation = options.orientation || [0.0,0.0,0.0];
+		this._scale = options.scale || [1.0,1.0,1.0];
 		this._prog = options.program;
 		this._properties = options.properties;
 		this._createRenderingProgram(rendering_context, ready_callback);

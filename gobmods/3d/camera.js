@@ -124,6 +124,13 @@
 		return this._position;
 	}
 
+	Camera.prototype.setAbsolutePosition = function(location) {
+		this._position.copy(location);
+		this._yaw = 0;
+		this._pitch = 0;
+		this._view_changed = true;
+	}
+
 	Camera.prototype.getOrientation = function() {
 		return [this._yaw, this._pitch];
 	}
