@@ -29,6 +29,7 @@
 
 	Renderer.prototype.render = function(rendering_context) {
 		var p = rendering_context.useProgram(this._prog);
+		if(p.state == 'notready') return;
 
 		if(this._vbo == undefined)
 			this.initVBO(rendering_context, p);
@@ -42,7 +43,7 @@
 	Renderer.prototype.preRender = function() {}
 	Renderer.prototype.draw = function() {}
 	Renderer.prototype.update = function() {}
-
+	
 	Goblin.extend('Renderer', Renderer);
 
 })(this, this.document);
