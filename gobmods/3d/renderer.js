@@ -3,18 +3,21 @@
 
 	function Renderer(options, rendering_context, ready_callback) {
 		this._name = options.name || _.GUID();
-		this._orig = options.origin || [0.0,0.0,0.0];
+		this._children = [];
+		this._origin = options.origin || [0.0,0.0,0.0];
 		this._orientation = options.orientation || [0.0,0.0,0.0];
 		this._scale = options.scale || [1.0,1.0,1.0];
-		this._prog = options.program;
+		this._program = options.program;
 		this._properties = options.properties;
-		this._createRenderingProgram(rendering_context, ready_callback);
+
+		if(this._program)
+			this._createRenderingProgram(rendering_context, ready_callback);
 	}
 
 	Renderer.prototype._createRenderingProgram = function(rendering_context, callback) {
 		try {
 			var program_config = {
-				name : this._prog,
+				name : this._program,
 			};
 			if(callback !== undefined)
 				program_config.callback = callback.bind(this);
@@ -27,42 +30,60 @@
 		}
 	}
 
+	Renderer.prototype.addChild = function(child) {
+		this._children.push(child);
+	}
+
+	Renderer.prototype.updateModelMatrix = function() {
+		this._model = this._pmodel || _.m4.identity();
+
+		this._model.translate(this._origin);
+		this._model.scale(this._scale);
+		this._model.rotateX(this._orientation[0]);
+		this._model.rotateY(this._orientation[1]);
+		this._model.rotateZ(this._orientation[2]);
+
+		for (var i = this._children.length - 1; i >= 0; i--) {
+			this._children[i]._pmodel = this._model.clone();
+		};
+
+		// reset parent model for next iteration
+		this._pmodel = undefined;
+	}
+
 	Renderer.prototype.render = function(rendering_context) {
-		var p = rendering_context.useProgram(this._prog);
-		if(p.state == 'notready') return;
+		this.updateModelMatrix();
+		if(this._program) {
 
-		if(this._vbo == undefined)
-			this.initVBO(rendering_context, p);
+			var p = rendering_context.useProgram(this._program);
+			if(p.state == 'notready') return;
 
-		rendering_context.makeVBOActive(this._vbo_id);
+			if(this._vbo == undefined)
+				this.initVBO(rendering_context, p);
 
-		this.preRender(p, rendering_context);
-		this.draw(rendering_context);
+			rendering_context.makeVBOActive(this._vbo_id);
+
+			this.preRender(p, rendering_context);
+			this.draw(rendering_context);
+		}
+
+		for (var i = this._children.length - 1; i >= 0; i--) {
+			this._children[i].render(rendering_context);
+		};
+	}
+
+	Renderer.prototype.doUpdate = function() {
+		this.update();
+
+		for (var i = this._children.length - 1; i >= 0; i--) {
+			this._children[i].doUpdate();
+		};
 	}
 
 	Renderer.prototype.preRender = function() {}
 	Renderer.prototype.draw = function() {}
 	Renderer.prototype.update = function() {}
 
-
-	Renderer.transformRenderer = function(parent, child) {
-		if(!parent.origin || !parent.orientation || !parent.scale)
-			throw new Error('Parent is missing origin, orientation or scale');
-
-		child.origin = child.origin || [0.0,0.0,0.0];
-		child.orientation = child.orientation || [0.0,0.0,0.0];
-		child.scale = child.scale || [1.0,1.0,1.0];
-
-		for(var coord_index = parent.origin.length-1 ; coord_index >= 0 ; coord_index--)
-			child.origin[coord_index] += parent.origin[coord_index];
-
-		for(var angle_index = parent.orientation.length-1 ; angle_index >= 0 ; angle_index--)
-			child.orientation[angle_index] += parent.orientation[angle_index];
-
-		for(var scale_index = parent.scale.length-1 ; scale_index >= 0 ; scale_index--)
-			child.scale[scale_index] *= parent.scale[scale_index];
-	}
-	
 	Goblin.extend('Renderer', Renderer);
 
 })(this, this.document);
