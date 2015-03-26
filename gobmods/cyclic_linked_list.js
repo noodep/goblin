@@ -5,12 +5,10 @@
 	
 	function CyclicLinkedList(options) {
 		this._start_node = undefined;
-		this.length = 0;
 	}
 
 	CyclicLinkedList.prototype.add = function(value) {
 		var new_node = new CyclicLinkedList.Node(value);
-		this.length++;
 		if(this._start_node === undefined) {
 			this._start_node = new_node;
 			this._start_node._next = new_node;
@@ -27,8 +25,6 @@
 	}
 
 	CyclicLinkedList.prototype.removeNode = function(node) {
-		this.length--;
-
 		var p = node._previous;
 		var n = node._next;
 
@@ -96,7 +92,6 @@
 	CyclicLinkedList.Iterator.prototype.isStart = function() {
 		return this._current_node === this._list.getStartNode();
 	}
-
 
 
 	Goblin.addModule("CyclicLinkedList", CyclicLinkedList);
