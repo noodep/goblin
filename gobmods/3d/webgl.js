@@ -100,6 +100,17 @@
 	 * Enables depth testing for the current context.
 	 * @param {Boolean} enable Enable/disable depth testing.
 	 */
+	WGLC.prototype.enableCulling = function(enable) {
+		if(enable)
+			this.c.enable(this.c.CULL_FACE);
+		else
+			this.c.disable(this.c.CULL_FACE);
+	};
+
+	/**
+	 * Enables depth testing for the current context.
+	 * @param {Boolean} enable Enable/disable depth testing.
+	 */
 	WGLC.prototype.enableDepthTest = function(enable) {
 		if(enable)
 			this.c.enable(this.c.DEPTH_TEST);
