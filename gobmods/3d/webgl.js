@@ -90,7 +90,12 @@
 	 * @throws {Error} If unable to create a webgl context.
 	 */
 	WGLC.prototype.initContext = function() {
-		this._context = this.c = this._canvas.getContext('webgl') ||
+		var options = {
+			alpha: false,
+            premultipliedAlpha: false
+		};
+		this._context = this.c = this._canvas.getContext('webgl', options) ||
+		// this._context = this.c = this._canvas.getContext('webgl') ||
 		this._canvas.getContext('experimental-webgl');
 		if(!this._context)
 			throw new Error('Unable to create webgl context');
@@ -418,7 +423,7 @@
 		this._camera.update(delta_t);
 		for (var i = scene.objects.length - 1; i >= 0; i--) {
 			var object = scene.objects[i];
-			object.update(delta_t);
+			object.doUpdate(delta_t);
 		}
 	};
 
@@ -427,7 +432,6 @@
 	 * @param {string} scene_id Identifier of the scene to render.
 	 */
 	WGLC.prototype.renderScene = function(scene_id) {
-		this.makeFBOActive(undefined);
 		var scene = this.getScene(scene_id);
 		for (var i = scene.objects.length - 1; i >= 0; i--) {
 			var object = scene.objects[i];

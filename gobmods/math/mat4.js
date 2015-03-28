@@ -119,21 +119,6 @@
 	};
 
 	/**
-	 * Compute inverse matrix if possible
-	 * @return {module:math.m4} The inverse matrix.
-	 * @throw an exception if the inverse does not exists.
-	 */
-
-	m4.prototype.inverse = function() {
-		var e00 = this.m[0],  e01 = this.m[1],  e02 = this.m[2],  e03 = this.m[3],
-			e10 = this.m[4],  e11 = this.m[5],  e12 = this.m[6],  e13 = this.m[7],
-			e20 = this.m[8],  e21 = this.m[9],  e22 = this.m[10], e23 = this.m[11],
-			e30 = this.m[12], e31 = this.m[13], e32 = this.m[14], e33 = this.m[15];
-
-		return this;
-	}
-
-	/**
 	 * Multiplies the matrix by the given matrix.
 	 * @param {module:math.m4} mat Matrix to multiply by.
 	 * @return {module:math.m4} Matrix multiplied by the matrix passed in argument. 

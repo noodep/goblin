@@ -7,17 +7,17 @@
 		this._origin = options.origin || [0.0,0.0,0.0];
 		this._orientation = options.orientation || [0.0,0.0,0.0];
 		this._scale = options.scale || [1.0,1.0,1.0];
-		this._program = options.program;
+		this._program_id = options.program;
 		this._properties = options.properties;
 
-		if(this._program)
+		if(this._program_id)
 			this._createRenderingProgram(rendering_context, ready_callback);
 	}
 
 	Renderer.prototype._createRenderingProgram = function(rendering_context, callback) {
 		try {
 			var program_config = {
-				name : this._program,
+				name : this._program_id,
 			};
 			if(callback !== undefined)
 				program_config.callback = callback.bind(this);
@@ -53,9 +53,9 @@
 
 	Renderer.prototype.render = function(rendering_context) {
 		this.updateModelMatrix();
-		if(this._program) {
+		if(this._program_id) {
 
-			var p = rendering_context.useProgram(this._program);
+			var p = rendering_context.useProgram(this._program_id);
 			if(p.state == 'notready') return;
 
 			if(this._vbo == undefined)
@@ -72,11 +72,11 @@
 		};
 	}
 
-	Renderer.prototype.doUpdate = function() {
-		this.update();
+	Renderer.prototype.doUpdate = function(delta_t) {
+		this.update(delta_t);
 
 		for (var i = this._children.length - 1; i >= 0; i--) {
-			this._children[i].doUpdate();
+			this._children[i].doUpdate(delta_t);
 		};
 	}
 
