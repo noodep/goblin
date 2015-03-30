@@ -98,14 +98,16 @@
 	}
 
 	v3.prototype.multiply = v3.prototype.mul = function(v) {
-		if(v instanceof v3) return this.vmul(v);
-		else return this.scale(v);
-	};
-
-	v3.prototype.vmul = function(v) {
 		this.v[0] *= v.v[0];
 		this.v[1] *= v.v[1];
 		this.v[2] *= v.v[2];
+		return this;
+	};
+
+	v3.prototype.divide = v3.prototype.div = function(v) {
+		this.v[0] /= v.v[0];
+		this.v[1] /= v.v[1];
+		this.v[2] /= v.v[2];
 		return this;
 	};
 
@@ -114,11 +116,6 @@
 		this.v[1] *= n;
 		this.v[2] *= n;
 		return this;
-	};
-	
-	v3.prototype.divide = v3.prototype.div = function(v) {
-		if(v instanceof v3) return this.vmul(v.inverseCopy());
-		else return this.mul(1/v);
 	};
 	
 	v3.prototype.cross = function(v) {
@@ -155,6 +152,22 @@
 		this.v[1] = x * s + y * c;
 		return this;
 	};
+
+	v3.prototype.transform3 = function(m3) {
+		var x = this.v[0], y = this.v[1], z = this.v[2];
+		this.v[0] = m3.m[0] * x + m3.m[3] * y + m3.m[6] * z;
+		this.v[1] = m3.m[1] * x + m3.m[4] * y + m3.m[7] * z;
+		this.v[2] = m3.m[2] * x + m3.m[5] * y + m3.m[8] * z;
+		return this;
+	}
+
+	v3.prototype.transform4 = function(m4) {
+		var x = this.v[0], y = this.v[1], z = this.v[2];
+		this.v[0] = m4.m[0] * x + m4.m[4] * y + m4.m[8] * z + m4.m[12] * 1.0;
+		this.v[1] = m4.m[1] * x + m4.m[5] * y + m4.m[9] * z + m4.m[13] * 1.0;
+		this.v[2] = m4.m[2] * x + m4.m[6] * y + m4.m[10] * z + m4.m[14] * 1.0;
+		return this;
+	}
 	
 	v3.prototype.length = v3.prototype.len = function() {
 		return Math.sqrt(this.v[0] * this.v[0] + this.v[1] * this.v[1] + this.v[2] * this.v[2]);
@@ -169,7 +182,7 @@
 	
 	v3.prototype.normalize = function() {
 		var length = this.length();
-		return this.mul(1/length);
+		return this.scale(1.0 / length);
 	};
 	
 	v3.prototype.toString = function() {
