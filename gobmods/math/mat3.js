@@ -132,12 +132,10 @@
 			c21 = -(e00*e12 - e10*e02),
 			c22 =  (e00*e11 - e10*e01);
 
-
-
 		var det = e00*c00 + e01*c01 + e02*c02;
 
 		if(det == 0)
-			throw new Error("invert of top left m3 does not exists");
+			throw new Error("invert of m3 does not exists");
 
 		var invdet = 1.0 / det;
 

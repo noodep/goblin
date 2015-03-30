@@ -1,7 +1,8 @@
-(function(window, document, undefined) {
+(function(context, undefined) {
 	'use strict';
 
-	var Goblin = window.Goblin;
+	var Goblin = context.Goblin;
+	var document = context.document;
 
 	Goblin.extend('G', function(selector) {
 		if(selector.charAt(0) === "#") {
@@ -16,16 +17,16 @@
 
 	Goblin.extend('onLoaded', function(callback) {
 		if(document.readyState === 'complete') callback();
-		else window.addEventListener('load', callback);
+		else context.addEventListener('load', callback);
 	});
 
 	Goblin.extend('onDOMReady', function(callback) {
 		if(document.readyState === 'interactive') callback();
-		else window.addEventListener('DOMContentLoaded', callback);
+		else context.addEventListener('DOMContentLoaded', callback);
 	});
 	
 	Goblin.extend('now', (function() {
-		var p = window.performance || {};
+		var p = context.performance || {};
 		var now = p.now || p.mozNow || p.msNow || p.oNow || p.webkitNow;
 		return now ? now.bind(p) : function() { return new Date().getTime(); };
 	})());
@@ -39,21 +40,21 @@
 
 
 	Goblin.extend('requestAnimFrame', (function() {
-		var raf = window.requestAnimationFrame ||
-			window.webkitRequestAnimationFrame ||
-			window.mozRequetAnimationFrame;
+		var raf = context.requestAnimationFrame ||
+			context.webkitRequestAnimationFrame ||
+			context.mozRequetAnimationFrame;
 
-		return raf ? raf.bind(window) : function(callback) { window.setTimeout(callback, 1000/60); };
+		return raf ? raf.bind(context) : function(callback) { context.setTimeout(callback, 1000/60); };
 	})());
 
 	Goblin.extend('cancelAnimFrame', (function() {
-		var caf = window.cancelAnimationFrame || window.cancelRequestAnimationFrame ||
-			window.webkitCancelAnimationFrame || window.webkitCancelRequestAnimationFrame ||
-			window.mozCancelAnimationFrame || window.mozCancelAnimationFrame;
+		var caf = context.cancelAnimationFrame || context.cancelRequestAnimationFrame ||
+			context.webkitCancelAnimationFrame || context.webkitCancelRequestAnimationFrame ||
+			context.mozCancelAnimationFrame || context.mozCancelAnimationFrame;
 
-			return caf.bind(window);
+			return caf.bind(context);
 	})());
 
-	window.Goblin = Goblin;
+	context.Goblin = Goblin;
 
-})(this, this.document);
+})(this);

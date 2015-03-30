@@ -12,10 +12,10 @@
 
 		el.onkeydown = this.keydownhandler.bind(this);
 		el.onkeyup = this.keyuphandler.bind(this);
-		el.addEventListener('mousewheel', this.mouseHandler.bind(this));
-		el.addEventListener('mousedown', this.mouseClick.bind(this));
-		el.addEventListener('mouseup', this.mouseClick.bind(this));
-		el.addEventListener('mousemove', this.mouseClick.bind(this));
+		el.addEventListener('mousewheel', this.mouseHandler.bind(this), false);
+		el.addEventListener('mousedown', this.mouseClick.bind(this), false);
+		el.addEventListener('mouseup', this.mouseClick.bind(this), false);
+		el.addEventListener('mousemove', this.mouseClick.bind(this), false);
 	}
 
 	/**
