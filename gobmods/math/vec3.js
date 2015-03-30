@@ -43,10 +43,10 @@
 	};
 
 
-	v3.prototype.scaleAdd = function(s, v1, v2) {
-		this.v[0] = s * v1.v[0] + v2.v[0];
-		this.v[1] = s * v1.v[1] + v2.v[1];
-		this.v[2] = s * v1.v[2] + v2.v[2];
+	v3.prototype.scaleAdd = function(s, v) {
+		this.v[0] = s * this.v[0] + v.v[0];
+		this.v[1] = s * this.v[1] + v.v[1];
+		this.v[2] = s * this.v[2] + v.v[2];
 	};
 
 	v3.prototype.negate = function() {
@@ -99,7 +99,7 @@
 
 	v3.prototype.multiply = v3.prototype.mul = function(v) {
 		if(v instanceof v3) return this.vmul(v);
-		else return this.nmul(v);
+		else return this.scale(v);
 	};
 
 	v3.prototype.vmul = function(v) {
@@ -109,7 +109,7 @@
 		return this;
 	};
 
-	v3.prototype.nmul = function(n) {
+	v3.prototype.scale = function(n) {
 		this.v[0] *= n;
 		this.v[1] *= n;
 		this.v[2] *= n;
@@ -174,6 +174,10 @@
 	
 	v3.prototype.toString = function() {
 		return '[' + this.v[0] + ',' + this.v[1] + ',' + this.v[2] + ']';
+	};
+
+	v3.prototype.toArray = function() {
+		return [this.v[0], this.v[1], this.v[2]];
 	};
 
 	Object.defineProperty(v3.prototype, 'str', {
