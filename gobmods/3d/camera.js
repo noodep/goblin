@@ -145,7 +145,7 @@
 		if(!delta) return;
 		// Update velocity based on acceleration 
 		// Create dragging force based on current velocity;
-		var v = this._velocity.clone().multiply(this._friction);
+		var v = this._velocity.clone().scale(this._friction);
 		this._velocity.add(this._acceleration);
 		this._velocity.substract(v); // remove dragging
 
