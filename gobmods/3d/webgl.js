@@ -83,6 +83,7 @@
 
 		this._projection_mat = new _.m4();
 		this._model_mat = _.m4.identity();
+		this.updateViewport();
 	}
 
 	/**
