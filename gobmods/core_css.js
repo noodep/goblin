@@ -12,15 +12,19 @@
 		return ret;
 	});
 
+	Goblin.extend('getComputedStyle', function(el,css_prop) {
+		return document.defaultView.getComputedStyle(el,null).getPropertyValue(css_prop);
+	});
+
 	Goblin.extend('width', function(el) {
-		let pl = parseInt(Goblin.getStyle(el, 'padding-left'));
-		let pr = parseInt(Goblin.getStyle(el, 'padding-right'));
+		let pl = parseInt(Goblin.getComputedStyle(el, 'padding-left'));
+		let pr = parseInt(Goblin.getComputedStyle(el, 'padding-right'));
 		return el.offsetWidth - pl - pr;
 	});
 
 	Goblin.extend('height', function(el) {
-		let pt = parseInt(Goblin.getStyle(el, 'padding-top'));
-		let pb = parseInt(Goblin.getStyle(el, 'padding-bottom'));
+		let pt = parseInt(Goblin.getComputedStyle(el, 'padding-top'));
+		let pb = parseInt(Goblin.getComputedStyle(el, 'padding-bottom'));
 		return el.offsetHeight - pt - pb;
 	});
 
