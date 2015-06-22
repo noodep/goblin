@@ -21,7 +21,8 @@
 
 	// Initialize serve location with current location
 	var serve_location = (function() {
-		var src = document.currentScript.src;		
+		var current_script = document.currentScript;
+		var src = current_script ? current_script.src : '/goblin/';
 		var index = src.lastIndexOf('/');
 		return src.substring(0,index);
 	})();

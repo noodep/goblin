@@ -12,6 +12,18 @@
 		return ret;
 	});
 
+	Goblin.extend('width', function(el) {
+		let pl = parseInt(Goblin.getStyle(el, 'padding-left'));
+		let pr = parseInt(Goblin.getStyle(el, 'padding-right'));
+		return el.offsetWidth - pl - pr;
+	});
+
+	Goblin.extend('height', function(el) {
+		let pt = parseInt(Goblin.getStyle(el, 'padding-top'));
+		let pb = parseInt(Goblin.getStyle(el, 'padding-bottom'));
+		return el.offsetHeight - pt - pb;
+	});
+
 	Goblin.extend('HSL2RGBA', function(h, s, l, a) {
 		var r, g, b;
 		if(s == 0) {
