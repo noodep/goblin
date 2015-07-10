@@ -16,8 +16,6 @@
 	 * @exports Goblin
 	 */
 	var Goblin = {};
-	var loadStack = [];
-	var readyCallback = undefined;
 
 	// Initialize serve location with current location
 	var serve_location = (function() {
@@ -46,57 +44,38 @@
 	 * @param {Function} readyCallback Callback to be called when modules are
 	 *     loaded.
 	 */
-	Goblin.gobLoad = function(modules, callback) {
+	Goblin.gobLoad = function(modules) {
 		if(!Array.isArray(modules))
 			throw new Error('Please specify an array of modules');
 
-		readyCallback = callback;
-		modules.forEach(createScript);
-
-		loadStack.forEach(function(script){
-			document.head.appendChild(script);
-		});
+		return Promise.all(modules.map(createScript));
 	};
 
 	function createScript(script_object) {
-		var script_name, script_folder, script_callback;
-		// Plain script : use default mod folder;
-		if(typeof script_object === 'string') {
-			script_name = script_object;
-			script_folder = serve_location + '/' + MOD_FOLDER;
-		}
-		// Script object : use defined properties;
-		else {
-			script_name = script_object.name;
-			script_folder = script_object.namespace;
-		}
 
-		var src = script_folder + '/' + script_name + '.js';
+		return new Promise(function(resolve, reject) {
+			var script_name, script_folder, script_callback;
+			
+			if(typeof script_object === 'string') {
+				// Plain script : use default mod folder;
+				script_name = script_object;
+				script_folder = serve_location + '/' + MOD_FOLDER;
+			} else {
+				// Script object : use defined properties;
+				script_name = script_object.name;
+				script_folder = script_object.namespace;
+			}
 
-		if(DEBUG)
-			console.log('Loading script with src : ' + src);
+			var src = script_folder + '/' + script_name + '.js';
 
-		var script = document.createElement('script');
-		loadStack.push(script);
-		script.onload = onLoadCallback.bind(script);
+			if(DEBUG)
+				console.log('Loading script with src : ' + src);
 
-		// Add custom callback if any
-		if(script_object.callback)
-			script.custom_callback = script_object.callback;
-		script.src = src;
-	}
-
-	function onLoadCallback(e) {
-		var index = loadStack.indexOf(this);
-
-		// Remove script from loadStack
-		loadStack.splice(index, 1);
-
-		if(this.custom_callback)
-			this.custom_callback();
-
-		if(loadStack.length == 0)
-			if(readyCallback) readyCallback();
+			var script = document.createElement('script');
+			script.onload = resolve;
+			script.src = src;
+			document.head.appendChild(script);
+		});
 	}
 
 })(this);

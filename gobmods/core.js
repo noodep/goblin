@@ -15,15 +15,15 @@
 		return undefined;
 	});
 
-	Goblin.extend('onLoaded', function(callback) {
-		if(document.readyState === 'complete') callback();
-		else context.addEventListener('load', callback);
-	});
+	Goblin.extend('onLoaded', new Promise(function(resolve, reject) {
+		if(document.readyState === 'complete') resolve();
+		else context.addEventListener('load', resolve);
+	}));
 
-	Goblin.extend('onDOMReady', function(callback) {
-		if(document.readyState === 'interactive') callback();
-		else context.addEventListener('DOMContentLoaded', callback);
-	});
+	Goblin.extend('onDOMReady', new Promise(function(resolve, reject) {
+		if(document.readyState === 'interactive') resolve();
+		else context.addEventListener('DOMContentLoaded', resolve);
+	}));
 	
 	Goblin.extend('now', (function() {
 		var p = context.performance || {};
