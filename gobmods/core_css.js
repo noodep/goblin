@@ -17,14 +17,14 @@
 	});
 
 	Goblin.extend('width', function(el) {
-		let pl = parseInt(Goblin.getComputedStyle(el, 'padding-left'));
-		let pr = parseInt(Goblin.getComputedStyle(el, 'padding-right'));
+		var pl = parseInt(Goblin.getComputedStyle(el, 'padding-left'));
+		var pr = parseInt(Goblin.getComputedStyle(el, 'padding-right'));
 		return el.offsetWidth - pl - pr;
 	});
 
 	Goblin.extend('height', function(el) {
-		let pt = parseInt(Goblin.getComputedStyle(el, 'padding-top'));
-		let pb = parseInt(Goblin.getComputedStyle(el, 'padding-bottom'));
+		var pt = parseInt(Goblin.getComputedStyle(el, 'padding-top'));
+		var pb = parseInt(Goblin.getComputedStyle(el, 'padding-bottom'));
 		return el.offsetHeight - pt - pb;
 	});
 

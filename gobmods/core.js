@@ -9,10 +9,9 @@
 			return document.getElementById(selector.substr(1));
 		} else if(selector.charAt(0) === ".") {
 			return document.getElementsByClassName(selector.substr(1));
-		} else {
-			return document.getElementsByTagName(selector);
 		}
-		return undefined;
+		
+		return document.getElementsByTagName(selector);
 	});
 
 	Goblin.extend('onLoaded', new Promise(function(resolve, reject) {
