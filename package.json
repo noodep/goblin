@@ -1,0 +1,25 @@
+{
+  "name": "goblin",
+  "version": "1.0.0",
+  "description": "Javascript utility library",
+  "main": "goblin.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Noodep/Goblin.git"
+  },
+  "author": "Noodep",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Noodep/Goblin/issues"
+  },
+  "homepage": "https://github.com/Noodep/Goblin#readme",
+  "devDependencies": {
+    "esdoc": "^0.4.3"
+  }
+}
