@@ -3,7 +3,7 @@
 
 	function Renderer(options, rendering_context, ready_callback) {
 		this._name = options.name || _.GUID();
-		this._children = [];
+		this._children = new Set();
 		this._origin = options.origin || [0.0,0.0,0.0];
 		this._orientation = options.orientation || [0.0,0.0,0.0];
 		this._scale = options.scale || [1.0,1.0,1.0];
@@ -31,7 +31,11 @@
 	}
 
 	Renderer.prototype.addChild = function(child) {
-		this._children.push(child);
+		this._children.add(child);
+	}
+
+	Renderer.prototype.removeChild = function(child) {
+		this._children.delete(child);
 	}
 
 	Renderer.prototype.updateModelMatrix = function() {
@@ -43,9 +47,9 @@
 		this._model.rotateY(this._orientation[1]);
 		this._model.rotateZ(this._orientation[2]);
 
-		for (var i = this._children.length - 1; i >= 0; i--) {
-			this._children[i]._pmodel = this._model.clone();
-		};
+		this._children.forEach((child) => {
+			child._pmodel = this._model.clone();
+		});
 
 		// reset parent model for next iteration
 		this._pmodel = undefined;
@@ -67,17 +71,17 @@
 			this.draw(rendering_context);
 		}
 
-		for (var i = this._children.length - 1; i >= 0; i--) {
-			this._children[i].render(rendering_context);
-		};
+		this._children.forEach((child) => {
+			child.render(rendering_context);
+		});
 	}
 
 	Renderer.prototype.doUpdate = function(delta_t) {
 		this.update(delta_t);
 
-		for (var i = this._children.length - 1; i >= 0; i--) {
-			this._children[i].doUpdate(delta_t);
-		};
+		this._children.forEach((child) => {
+			child.doUpdate(delta_t);
+		});
 	}
 
 	Renderer.prototype.preRender = function() {}

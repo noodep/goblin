@@ -480,17 +480,10 @@
 		this.c.bufferData(this.c.ARRAY_BUFFER, data, this.c.DYNAMIC_DRAW);
 	}
 
-	WGLC.prototype.makeEBOActive = function(id) {
-		if(this._active_buffer != id) {
-			this.c.bindBuffer(this.c.ELEMENT_ARRAY_BUFFER, this._vbos[id]);
-			this._active_buffer = id;
-		}
-	}
-
 	WGLC.prototype.setEBOData = function(id, data) {
 		this.makeEBOActive(id);
 		this._vbos[id].size = data.length;
-		this.c.bufferData(this.c.ELEMENT_ARRAY_BUFFER, new Uint32Array(data), this.c.STATIC_DRAW);
+		this.c.bufferData(this.c.ELEMENT_ARRAY_BUFFER, data, this.c.STATIC_DRAW);
 	}
 
 	WGLC.prototype.createFrameBuffer = function(buffer_id) {
@@ -544,7 +537,6 @@
 	}
 	
 	WGLC.prototype.renderPoint = function(offset, size) {
-
 		this.c.drawArrays(this.c.POINTS, offset, size);
 	}
 
