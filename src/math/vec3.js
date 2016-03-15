@@ -98,5 +98,47 @@ export default class Vec3 {
 		this._v[2] = x * v3._v[1] - y * v3._v[0];
 		return this;
 	}
+
+	/**
+	 * Rotates this vector in R3 around the X axis
+	 * @param {number} theta - angle by which to rotate the vector.
+	 * @return {Vec3} - Rotated vector.
+	 */
+	rotateX(theta) {
+		let y = this._v[1], z = this._v[2],
+			c = Math.cos(theta), s = Math.sin(theta);
+
+		this._v[1] = y * c - z * s;
+		this._v[2] = z * c + y * s;
+		return this;
+	}
+
+	/**
+	 * Rotates this vector in R3 around the X axis
+	 * @param {number} theta - angle by which to rotate the vector.
+	 * @return {Vec3} - Rotated vector.
+	 */
+	rotateY(theta) {
+		let x = this._v[0], z = this._v[2],
+			c = Math.cos(theta), s = Math.sin(theta);
+
+		this._v[2] = z * c - x * s;
+		this._v[0] = x * c + z * s;
+		return this;
+	}
+
+	/**
+	 * Rotates this vector in R3 around the Z axis
+	 * @param {number} theta - angle by which to rotate the vector.
+	 * @return {Vec3} - Rotated vector.
+	 */
+	rotateZ(theta) {
+		let x = this._v[0], y = this._v[1],
+			c = Math.cos(theta), s = Math.sin(theta);
+
+		this._v[0] = x * c - y * s;
+		this._v[1] = y * c + x * s;
+		return this;
+	}
 }
 
