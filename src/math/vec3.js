@@ -21,6 +21,17 @@ export default class Vec3 {
 	}
 
 	/**
+	 * Sets the vector to identiy.
+	 * @return {Vec3} - This vector.
+	 */
+	identity() {
+		this._v[0] = 1.0;
+		this._v[1] = 1.0;
+		this._v[2] = 1.0;
+		return this;
+	}
+
+	/**
 	 * Copies values of vector v3 into this vector.
 	 * @param {Vec3} v3 - Vector from which to copy values. 
 	 * @return {Vec3} - This vector.
