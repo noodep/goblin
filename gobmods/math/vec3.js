@@ -185,8 +185,8 @@
 		return this.scale(1.0 / length);
 	};
 	
-	v3.prototype.toString = function() {
-		return '[' + this.v[0] + ',' + this.v[1] + ',' + this.v[2] + ']';
+	v3.prototype.toString = function(p = 16) {
+		return '[' + this.v[0].toFixed(p) + ',' + this.v[1].toFixed(p) + ',' + this.v[2].toFixed(p) + ']';
 	};
 
 	v3.prototype.toArray = function() {

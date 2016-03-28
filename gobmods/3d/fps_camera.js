@@ -112,10 +112,13 @@
 		this._camera._view_changed = true;
 	}
 
-	FPSCamera.prototype.goToLocation = function(location) {
-		this._camera.setAbsolutePosition(location);
+	FPSCamera.prototype.goToLocation = function(location, yaw, pitch) {
+		this._camera.setAbsolutePosition(location, yaw, pitch);
 	}
 
+	FPSCamera.prototype.dumpPosition = function(precision) {
+		this._camera.dumpPosition(precision);
+	};
 
 	Goblin.extend('FPSCamera', FPSCamera);
 

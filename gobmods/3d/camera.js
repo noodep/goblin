@@ -124,10 +124,10 @@
 		return this._position;
 	}
 
-	Camera.prototype.setAbsolutePosition = function(location) {
+	Camera.prototype.setAbsolutePosition = function(location, yaw = 0, pitch = 0) {
 		this._position.copy(location);
-		this._yaw = 0;
-		this._pitch = 0;
+		this._yaw = yaw;
+		this._pitch = pitch;
 		this._view_changed = true;
 	}
 
@@ -157,6 +157,14 @@
 		this.move(delta);
 		this.strafe(delta);
 		this.elevate(delta);
+	}
+
+	Camera.prototype.dumpPosition = function(precision) {
+		console.log(this.toString(precision));
+	};
+
+	Camera.prototype.toString = function(precision = 16) {
+		return `{position:${this._position.toString(precision)}, orientation:[${this._pitch.toFixed(precision)}, ${this._yaw.toFixed(precision)}, 0.00]}`;
 	}
 
 	Goblin.extend('Camera', Camera);
