@@ -93,11 +93,10 @@
 	WGLC.prototype.initContext = function() {
 		var options = {
 			alpha: false,
-            premultipliedAlpha: false
+			premultipliedAlpha: false
 		};
-		this._context = this.c = this._canvas.getContext('webgl', options) ||
-		// this._context = this.c = this._canvas.getContext('webgl') ||
-		this._canvas.getContext('experimental-webgl');
+		this._context = this.c = this._canvas.getContext('webgl', options) || this._canvas.getContext('experimental-webgl');
+
 		if(!this._context)
 			throw new Error('Unable to create webgl context');
 	};
@@ -372,7 +371,7 @@
 	 * @param {Number} width  Width of the canvas in pixels.
 	 * @param {Number} height Height of the canvas in pixels.
 	 */
- 	WGLC.prototype.setDimension = function(width, height) {
+	WGLC.prototype.setDimension = function(width, height) {
 		this._canvas.width = width;
 		this._canvas.height = height;
 		this.updateViewport();
@@ -499,11 +498,11 @@
 		this.c.framebufferRenderbuffer(this.c.FRAMEBUFFER, this.c.COLOR_ATTACHMENT0, this.c.RENDERBUFFER, rb);
 
 		if (this.c.checkFramebufferStatus(this.c.FRAMEBUFFER) != this.c.FRAMEBUFFER_COMPLETE) {
-   			_.el("this combination of attachments does not work");
-   			return;
-   		}
+			_.el("this combination of attachments does not work");
+			return;
+		}
 
-   		return fb;
+		return fb;
 	}
 
 	WGLC.prototype.makeFBOActive = function(id) {
