@@ -20,6 +20,6 @@
   },
   "homepage": "https://github.com/Noodep/Goblin#readme",
   "devDependencies": {
-    "rollup": "^0.25.7"
+    "rollup": "latest"
   }
 }
