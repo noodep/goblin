@@ -19,7 +19,7 @@
     "url": "https://github.com/Noodep/Goblin/issues"
   },
   "homepage": "https://github.com/Noodep/Goblin#readme",
-  "devDependencies": {
-    "rollup": "latest"
+  "dependencies": {
+    "rollup": "^0.26.3"
   }
 }
