@@ -524,7 +524,7 @@
 		this.c.uniform4f(uniform, value[0], value[1], value[2], value[3]);
 	}
 
-	WGLC.prototype.linkAtribute = function(attribute, qualifier_size , stride, offset) {
+	WGLC.prototype.linkAttribute = function(attribute, qualifier_size , stride, offset) {
 		var s = stride || 0;
 		var o = offset || 0;
 		this.c.enableVertexAttribArray(attribute);	
