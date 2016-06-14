@@ -153,6 +153,14 @@
 	};
 
 	/**
+	 * Set the camera used by this context.
+	 * @param camera {modeule:graphics3d.Camera} The new camera object.
+	 */
+	WGLC.prototype.setCamera = function(camera) {
+		this._camera = camera;
+	}
+
+	/**
 	 * Creates a shader program with given name and associates it with current
 	 * context object. If no path is specified the function will look for them
 	 * under the folder : DEFAULT_SHADER_PATH/name/name.(vert|frag).
@@ -433,7 +441,8 @@
 	 */
 	WGLC.prototype.renderScene = function(scene_id) {
 		var scene = this.getScene(scene_id);
-		for (var i = scene.objects.length - 1; i >= 0; i--) {
+		for (var i = 0; i < scene.objects.length; i++) {
+		//for (var i = scene.objects.length - 1; i >= 0; i--) {
 			var object = scene.objects[i];
 			object.render(this);
 		}
@@ -486,17 +495,23 @@
 	}
 
 	WGLC.prototype.createFrameBuffer = function(buffer_id) {
-		var rb = this.c.createRenderbuffer();
-		this._rbos[_.GUID()] = rb;
-		this.c.bindRenderbuffer(this.c.RENDERBUFFER, rb);
-		this.c.renderbufferStorage(this.c.RENDERBUFFER, this.c.RGBA4, this._canvas.width, this._canvas.height);
-
 		//Creates framebuffer
 		var fb = this.c.createFramebuffer();
 		this._fbos[buffer_id] = fb;
 		this.makeFBOActive(buffer_id);
-		this.c.framebufferRenderbuffer(this.c.FRAMEBUFFER, this.c.COLOR_ATTACHMENT0, this.c.RENDERBUFFER, rb);
 
+		var rb_color = this.c.createRenderbuffer();
+		var rb_depth = this.c.createRenderbuffer();
+		this._rbos[_.GUID()] = rb_color;
+		this._rbos[_.GUID()] = rb_depth;
+		this.c.bindRenderbuffer(this.c.RENDERBUFFER, rb_color);
+		this.c.renderbufferStorage(this.c.RENDERBUFFER, this.c.RGBA4, this._canvas.width, this._canvas.height);
+		this.c.framebufferRenderbuffer(this.c.FRAMEBUFFER, this.c.COLOR_ATTACHMENT0, this.c.RENDERBUFFER, rb_color);
+
+		this.c.bindRenderbuffer(this.c.RENDERBUFFER, rb_depth);
+		this.c.renderbufferStorage(this.c.RENDERBUFFER, this.c.DEPTH_COMPONENT16, this._canvas.width, this._canvas.height);
+		this.c.framebufferRenderbuffer(this.c.FRAMEBUFFER, this.c.DEPTH_ATTACHMENT, this.c.RENDERBUFFER, rb_depth);
+		
 		if (this.c.checkFramebufferStatus(this.c.FRAMEBUFFER) != this.c.FRAMEBUFFER_COMPLETE) {
 			_.el("this combination of attachments does not work");
 			return;
@@ -524,7 +539,7 @@
 		this.c.uniform4f(uniform, value[0], value[1], value[2], value[3]);
 	}
 
-	WGLC.prototype.linkAtribute = function(attribute, qualifier_size , stride, offset) {
+	WGLC.prototype.linkAttribute = function(attribute, qualifier_size , stride, offset) {
 		var s = stride || 0;
 		var o = offset || 0;
 		this.c.enableVertexAttribArray(attribute);	
