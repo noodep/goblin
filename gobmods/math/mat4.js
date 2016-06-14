@@ -298,6 +298,35 @@
 	}
 
 	/**
+	 * Applies a rotation around the axis to the matrix.
+	 * @param {Vec3} axis - The axit to rotate around
+	 * @param {Number} theta - The angle (in radians) to rotate
+	 * @return {module:math.m4} - The rotated matrix
+	 */
+	m4.prototype.rotate = function(axis, theta) {
+		var c = Math.cos(theta);
+		var s = Math.sin(theta);
+
+		var rot = identity();
+		axis.normalize();
+		
+		rot.m[0] = c + (1-c) * axis.x * axis.x;
+		rot.m[1] =     (1-c) * axis.x * axis.y + s * axis.z;
+		rot.m[2] =     (1-c) * axis.x * axis.z - s * axis.y;
+
+		rot.m[4] =     (1-c) * axis.y * axis.x - s * axis.z;
+		rot.m[5] = c + (1-c) * axis.y * axis.y;
+		rot.m[6] =     (1-c) * axis.y * axis.z + s * axis.x;
+
+		rot.m[8] =     (1-c) * axis.z * axis.x + s * axis.y;
+		rot.m[9] =     (1-c) * axis.z * axis.y - s * axis.x;
+		rot.m[10]= c + (1-c) * axis.z * axis.z;
+
+		this.mul(rot);
+		return this;
+	}
+
+	/**
 	 * Scales the matrix by the given vector.
 	 * @param {module:math.v3} vec3 Vector by which to scale the matrix.
 	 * @return {module:math.m4} The scaled matrix.
