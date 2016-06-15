@@ -117,6 +117,10 @@
 		this.v[2] *= n;
 		return this;
 	};
+
+	v3.prototype.dot = function(v) {
+		return this.v[0] * v.v[0] + this.v[1] * v.v[1] + this.v[2] * v.v[2];
+	}
 	
 	v3.prototype.cross = function(v) {
 		var x = this.v[0], y = this.v[1], z = this.v[2];
