@@ -22,6 +22,10 @@
 		this.v[2] = z || 0.0;
 	}
 
+	v3.fromV4 = function(v4) {
+		return new v3(v4.x, v4.y, v4.z);
+	}
+
 	/**
 	 * Copies values of vector v into this vector.
 	 * @param  {module:math.v3} v Vector from which to copy values. 
