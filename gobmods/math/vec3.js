@@ -173,7 +173,7 @@
 		return this;
 	}
 	
-	v3.prototype.length = v3.prototype.len = function() {
+	v3.prototype.magnitude = v3.prototype.mag = function() {
 		return Math.sqrt(this.v[0] * this.v[0] + this.v[1] * this.v[1] + this.v[2] * this.v[2]);
 	};
 
