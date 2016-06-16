@@ -71,8 +71,6 @@
 	 * @param  {KeyEvent} e key event passed by the browser.
 	 */
 	FPSCamera.prototype.keyuphandler = function(e) {
-		// if(e.keyCode == 87 || e.keyCode == 83) {
-			// this._camera.setForwardAcceleration(0);
 		if (e.keyCode == 65 ||  e.keyCode == 68 || e.keyCode == 39 ||  e.keyCode == 37) {
 			this._camera.setLateralAcceleration(0);
 		} else if (e.keyCode == 87 ||  e.keyCode == 83 || e.keyCode == 40 ||  e.keyCode == 38) {
@@ -81,12 +79,19 @@
 	}
 
 	FPSCamera.prototype.mouseHandler = function(e) {
+		if(e.defaultPrevented) return;
+
 		e.preventDefault();
+		
 		var sign = (e.wheelDelta >= 0)? 1 : -1; 
 		this._camera.staticMove(e.wheelDelta, 0.001);
 	}
 
 	FPSCamera.prototype.mouseClick = function(e) {
+		if(e.defaultPrevented) return;
+
+		e.preventDefault();
+
 		if(e.button == 0 && e.type == 'mousedown') {
 			this._camera.look(true);
 			this._last_mouse_pos = _.relativeMousePosition(e);
