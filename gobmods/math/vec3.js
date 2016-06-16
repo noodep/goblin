@@ -22,6 +22,10 @@
 		this.v[2] = z || 0.0;
 	}
 
+	v3.fromV4 = function(v4) {
+		return new v3(v4.x, v4.y, v4.z);
+	}
+
 	/**
 	 * Copies values of vector v into this vector.
 	 * @param  {module:math.v3} v Vector from which to copy values. 
@@ -117,6 +121,10 @@
 		this.v[2] *= n;
 		return this;
 	};
+
+	v3.prototype.dot = function(v) {
+		return this.v[0] * v.v[0] + this.v[1] * v.v[1] + this.v[2] * v.v[2];
+	}
 	
 	v3.prototype.cross = function(v) {
 		var x = this.v[0], y = this.v[1], z = this.v[2];
@@ -169,7 +177,7 @@
 		return this;
 	}
 	
-	v3.prototype.length = v3.prototype.len = function() {
+	v3.prototype.magnitude = v3.prototype.mag = function() {
 		return Math.sqrt(this.v[0] * this.v[0] + this.v[1] * this.v[1] + this.v[2] * this.v[2]);
 	};
 
