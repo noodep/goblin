@@ -2,6 +2,7 @@
 
 import {DEFAULT_LOGGER, LEVELS, l, dl, el} from '../src/log.js';
 
+console.log(`----- Testing src/log.js -----`);
 
 DEFAULT_LOGGER.level = LEVELS.NONE;
 

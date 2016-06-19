@@ -13,12 +13,42 @@ export default class Vec3 {
 	 * @param {number} [y=0] - y value.
 	 * @param {number} [z=0] - z value.
 	 */
-	constructor(x,y,z) {
-		this._v = new Float32Array(3);
-		this._v[0] = x || 0.0;
-		this._v[1] = y || 0.0;
-		this._v[2] = z || 0.0;
+	constructor(x = 0.0, y = 0.0, z = 0.0) {
+		this._v = new Float64Array(3);
+		this._v[0] = x;
+		this._v[1] = y;
+		this._v[2] = z;
 	}
+
+	/**
+	 * Getter for this vector x component
+	 */
+	get x() { return this._v[0]; }
+
+	/**
+	 * Getter for this vector y component
+	 */
+	get y() { return this._v[1]; }
+
+	/**
+	 * Getter for this vector z component
+	 */
+	get z() { return this._v[2]; }
+
+	/**
+	 * Setter for this vector x component
+	 */
+	set x(x) { this._v[0] = x; }
+
+	/**
+	 * Setter for this vector y component
+	 */
+	set y(y) { this._v[1] = y; }
+
+	/**
+	 * Setter for this vector z component
+	 */
+	set z(z) { this._v[2] = z; }
 
 	/**
 	 * Sets the vector to identiy.
@@ -37,9 +67,9 @@ export default class Vec3 {
 	 * @return {Vec3} - This vector.
 	 */
 	copy(v3) {
-		this._v[0] = v._v[0];
-		this._v[1] = v._v[1];
-		this._v[2] = v._v[2];
+		this._v[0] = v3._v[0];
+		this._v[1] = v3._v[1];
+		this._v[2] = v3._v[2];
 		return this;
 	}
 
@@ -48,7 +78,7 @@ export default class Vec3 {
 	 * @return {Vec3} - The newly cloned vector.
 	 */
 	clone() {
-		return new v3(this._v[0],this._v[1],this._v[2]);
+		return new Vec3(this._v[0],this._v[1],this._v[2]);
 	}
 
 	/**
@@ -98,6 +128,15 @@ export default class Vec3 {
 	}
 
 	/**
+	 * Computes the dot product of this vector by another vector.
+	 * @param {Vec3} v3 - Vector by which to compute the dot product.
+	 * @return {Number} - Result of the dot product.
+	 */
+	dot(v3) {
+		return this._v[0] * v3._v[0] + this._v[1] * v3._v[1] + this._v[2] * v3._v[2];
+	}
+
+	/**
 	 * Computes the cross product of this vector by another vector.
 	 * @param {Vec3} v3 - Vector by which to compute the cross product.
 	 * @return {Vec3} - Result of the cross product.
@@ -109,6 +148,8 @@ export default class Vec3 {
 		this._v[2] = x * v3._v[1] - y * v3._v[0];
 		return this;
 	}
+
+
 
 	/**
 	 * Rotates this vector in R3 around the X axis
@@ -125,7 +166,7 @@ export default class Vec3 {
 	}
 
 	/**
-	 * Rotates this vector in R3 around the X axis
+	 * Rotates this vector in R3 around the Y axis
 	 * @param {number} theta - angle by which to rotate the vector.
 	 * @return {Vec3} - Rotated vector.
 	 */
