@@ -1,6 +1,6 @@
 'use strict';
 
-import {DEFAULT_LOGGER, LEVELS, l, dl, el} from '../src/log.js';
+import {DEFAULT_LOGGER, LEVELS, l, dl, el} from '../../src/log';
 
 console.log(`----- Testing src/log.js -----`);
 
@@ -28,4 +28,3 @@ DEFAULT_LOGGER.level = LEVELS.DEBUG;
 dl('You should see that.');
 l('You should see that.');
 el('You should see that.');
-
