@@ -180,8 +180,12 @@
 	};
 	
 	v4.prototype.normalize = function() {
-		var length = this.length();
-		return this.scale(1.0 / length);
+		var mag = this.mag();
+		if (mag === 0.0) {
+			return undefined;
+		} else {
+			return this.scale(1.0 / mag);
+		}
 	};
 	
 	v4.prototype.toString = function(p = 16) {
@@ -193,7 +197,7 @@
 	};
 
 	Object.defineProperty(v4.prototype, 'str', {
-		get : function() { return this.toString();},
+		get : function() { return this.toString(); },
 	});
 
 	Object.defineProperty(v4.prototype, 'x', {

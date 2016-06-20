@@ -189,8 +189,12 @@
 	};
 	
 	v3.prototype.normalize = function() {
-		var length = this.length();
-		return this.scale(1.0 / length);
+		var mag = this.mag();
+		if (mag === 0.0) {
+			return undefined;
+		} else {
+			return this.scale(1.0 / mag);
+		}
 	};
 	
 	v3.prototype.toString = function(p = 16) {
