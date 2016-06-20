@@ -10,6 +10,8 @@
 		this._acceleration = DEFAULT_ACCELERATION;
 		this._origin = this._camera._position.clone();
 
+		this._movement_enabled = true;
+
 		el.onkeydown = this.keydownhandler.bind(this);
 		el.onkeyup = this.keyuphandler.bind(this);
 		el.addEventListener('mousewheel', this.mouseHandler.bind(this), false);
@@ -44,6 +46,10 @@
 	 *					down	-> 40
 	 */
 	FPSCamera.prototype.keydownhandler = function(e) {
+		if (!this._movement_enabled) {
+			return;
+		}
+
 		// if(e.keyCode == 87 || e.keyCode == 38) {
 			// this._camera.setForwardAcceleration(this._acceleration);
 		// } else if ( e. keyCode == 83 || e.keyCode == 38) {
@@ -71,6 +77,10 @@
 	 * @param  {KeyEvent} e key event passed by the browser.
 	 */
 	FPSCamera.prototype.keyuphandler = function(e) {
+		if (!this._movement_enabled) {
+			return;
+		}
+
 		// if(e.keyCode == 87 || e.keyCode == 83) {
 			// this._camera.setForwardAcceleration(0);
 		if (e.keyCode == 65 ||  e.keyCode == 68 || e.keyCode == 39 ||  e.keyCode == 37) {
@@ -81,12 +91,20 @@
 	}
 
 	FPSCamera.prototype.mouseHandler = function(e) {
+		if (!this._movement_enabled) {
+			return;
+		}
+
 		e.preventDefault();
 		var sign = (e.wheelDelta >= 0)? 1 : -1; 
 		this._camera.staticMove(e.wheelDelta, 0.001);
 	}
 
 	FPSCamera.prototype.mouseClick = function(e) {
+		if (!this._movement_enabled) {
+			return;
+		}
+
 		if(e.button == 0 && e.type == 'mousedown') {
 			this._camera.look(true);
 			this._last_mouse_pos = _.relativeMousePosition(e);
@@ -119,6 +137,10 @@
 	FPSCamera.prototype.dumpPosition = function(precision) {
 		this._camera.dumpPosition(precision);
 	};
+
+	FPSCamera.prototype.enableMovement = function(enabled) {
+		this._movement_enabled = enabled;
+	}
 
 	Goblin.extend('FPSCamera', FPSCamera);
 
