@@ -307,7 +307,7 @@
 		var c = Math.cos(theta);
 		var s = Math.sin(theta);
 
-		var rot = identity();
+		var rot = m4.identity();
 		axis.normalize();
 		
 		rot.m[0] = c + (1-c) * axis.x * axis.x;
