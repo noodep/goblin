@@ -1,13 +1,6 @@
 'use strict';
 
-const DEFAULT_SHADER_PATH = '/shaders/';
-const SHADER_EXTENSIONS = new Map();
-	SHADER_EXTENSIONS.set(WebGLRenderingContext.VERTEX_SHADER, '.vert');
-	SHADER_EXTENSIONS.set(WebGLRenderingContext.FRAGMENT_SHADER, '.frag');
-
-const QUALIFYING_FUNCTION = new Map();
-	QUALIFYING_FUNCTION.set(WebGLRenderingContext.ACTIVE_UNIFORMS, 'Uniform');
-	QUALIFYING_FUNCTION.set(WebGLRenderingContext.ACTIVE_ATTRIBUTES, 'Attrib');
+import {dl, l, el} from '../log.js';
 
 /**
  * Class representing an OpenGL ES program
@@ -24,10 +17,10 @@ export default class Program {
 	 * @param {string} name of this program.
 	 * @constructor
 	 */
-	constructor({context, name, path = DEFAULT_SHADER_PATH}) {
+	constructor({context, name, path = Program.DEFAULT_SHADER_PATH} = {}) {
 		this._context = context;
 		if(!name)
-			throw new Error('Name required for creating a program.');
+			throw new Error('Name required in order to create a program.');
 
 		this._name = name;
 		this._shaders = new Map();
@@ -57,11 +50,13 @@ export default class Program {
 	}
 
 	createShader(type) {
-		const file = this._path + this._name + SHADER_EXTENSIONS.get(type);
+		const file = this._path + this._name + Program.SHADER_EXTENSIONS.get(type);
 		const c = this._context;
+		dl(`Loading : ${file}`);
 		return fetch(file)
 			.then(response => response.text())
 			.then((body) => {
+				dl(`Creating ${type==WebGLRenderingContext.VERTEX_SHADER?'vertex':'fragment'} shader for program "${this._name}".`);
 				const shader = c.createShader(type);
 				c.shaderSource(shader, body);
 				c.compileShader(shader);
@@ -73,17 +68,18 @@ export default class Program {
 	}
 
 	compileProgram(shaders) {
+		dl(`Compiling program ${this._name}.`);
 		const c = this._context;
 		this._program = c.createProgram();
 		shaders.forEach(shader => c.attachShader(this._program, shader));
 
 		c.linkProgram(this._program);
 		if(!c.getProgramParameter(this._program, WebGLRenderingContext.LINK_STATUS))
-			throw new Error(`Unable to initialize the shader program : ${this._name}`);
+			throw new Error(`Unable to ling program "${this._name}"`);
 
 		c.validateProgram(this._program);
 		if(!c.getProgramParameter(this._program, WebGLRenderingContext.VALIDATE_STATUS))
-			throw new Error(`Unable to validate the shader program : ${this._name}`);
+			throw new Error(`Unable to validate program "${this._name}"`);
 	}
 
 	qualifyAll() {
@@ -96,9 +92,10 @@ export default class Program {
 	}
 
 	qualify(parameter) {
+		dl(`Initializing shader ${parameter==WebGLRenderingContext.ACTIVE_ATTRIBUTES?'attributes':'uniforms'}.`);
 		const c = this._context;
 		const num = c.getProgramParameter(this._program, parameter);
-		const p_func = QUALIFYING_FUNCTION.get(parameter);
+		const p_func = Program.QUALIFYING_FUNCTION.get(parameter);
 		const a_func = `getActive${p_func}`;
 		const l_func = `get${p_func}Location`;
 
@@ -106,8 +103,18 @@ export default class Program {
 			const info = c[a_func](this._program, idx);
 			const location = c[l_func](this._program, info.name);
 			this._parameters.get(parameter).set(info.name, location);
-			console.log(`Found ${p_func} : ${info.name} with index ${location}`);
+			dl(`Found ${p_func} : ${info.name} with index ${location}`);
 		}
 	}
 }
+
+Program.DEFAULT_SHADER_PATH = '/shaders/';
+
+Program.SHADER_EXTENSIONS = new Map();
+	Program.SHADER_EXTENSIONS.set(WebGLRenderingContext.VERTEX_SHADER, '.vert');
+	Program.SHADER_EXTENSIONS.set(WebGLRenderingContext.FRAGMENT_SHADER, '.frag');
+
+Program.QUALIFYING_FUNCTION = new Map();
+	Program.QUALIFYING_FUNCTION.set(WebGLRenderingContext.ACTIVE_UNIFORMS, 'Uniform');
+	Program.QUALIFYING_FUNCTION.set(WebGLRenderingContext.ACTIVE_ATTRIBUTES, 'Attrib');
 

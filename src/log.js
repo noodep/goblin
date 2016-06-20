@@ -1,15 +1,8 @@
 'use strict';
 
-export const LEVELS = {
-	DEBUG : 0,
-	INFO : 1,
-	ERROR : 2,
-	NONE : 3
-}
-
 export class Logger {
 	constructor() {
-		this._level = LEVELS.INFO;
+		this._level = Logger.LEVELS.INFO;
 		this._logs = new Array();
 		this._subscribers = new Set();
 	}
@@ -39,6 +32,13 @@ export class Logger {
 	}
 }
 
+Logger.LEVELS = {
+	DEBUG : 0,
+	INFO : 1,
+	ERROR : 2,
+	NONE : 3
+};
+
 export class Console {
 	notify(log) {
 		console.log(log.msg);
@@ -48,7 +48,7 @@ export class Console {
 export const DEFAULT_LOGGER = new Logger();
 DEFAULT_LOGGER.addSubscriber(new Console());
 
-export const dl = (msg) => DEFAULT_LOGGER.log(msg, LEVELS.DEBUG);
-export const l = (msg) => DEFAULT_LOGGER.log(msg, LEVELS.INFO);
-export const el = (msg) => DEFAULT_LOGGER.log(msg, LEVELS.ERROR);
+export const dl = (msg) => DEFAULT_LOGGER.log(msg, Logger.LEVELS.DEBUG);
+export const l = (msg) => DEFAULT_LOGGER.log(msg, Logger.LEVELS.INFO);
+export const el = (msg) => DEFAULT_LOGGER.log(msg, Logger.LEVELS.ERROR);
 

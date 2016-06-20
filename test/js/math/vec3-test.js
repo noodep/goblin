@@ -2,78 +2,170 @@
 
 import Vec3 from '../../../src/math/vec3.js';
 
-console.log(`----- Testing src/math/vec3.js -----`);
+export default class Vec3Test {
 
-const v0 = new Vec3();
-console.log(`Constructor default : ${v0.x == 0.0 && v0.y == 0.0 && v0.z == 0.0}`);
+	static runAll() {
+		console.log(`%c----- Testing src/math/vec3.js -----`,'color:blue;');
+		console.time('Perf');
 
-const v1 = new Vec3(0.0, 0.0, 0.0);
-console.log(`Constructor zeroes : ${v1.x == 0.0 && v1.y == 0.0 && v1.z == 0.0}`);
+		Vec3Test.testDefaultConstruction();
+		Vec3Test.testIdentityConstruction();
+		Vec3Test.testArrayConstruction();
+		Vec3Test.testZeroAssignement();
+		Vec3Test.testRandomAssignement();
+		Vec3Test.testSetters();
+		Vec3Test.testIdentity();
+		Vec3Test.testCopy();
+		Vec3Test.testCloning();
+		Vec3Test.testNullLength();
+		Vec3Test.testUnitLength();
+		Vec3Test.testNormalize();
+		Vec3Test.testNegate();
+		Vec3Test.testInverse();
+		Vec3Test.testNullInverse();
+		Vec3Test.testNullScaling();
+		Vec3Test.testZeroScaling();
+		Vec3Test.testIdentityScaling();
+		Vec3Test.testMultiply();
 
-const v2 = new Vec3(1.2, 3.4, 5.6);
-console.log(`Constructor : ${v2.x == 1.2 && v2.y == 3.4 && v2.z == 5.6}`);
+		console.timeEnd('Perf');
+		console.log(`%c------------------------------------`,'color:blue;');
+		console.log('\n');
+	}
 
-const v3 = new Vec3();
-v3.x = 1.3;
-v3.y = 2.4;
-v3.z = 3.5;
-console.log(`Setters : ${v3.x == 1.3 && v3.y == 2.4 && v3.z == 3.5}`);
+	static testDefaultConstruction() {
+		const v = new Vec3();
+		console.assert(v.x == 0.0 && v.y == 0.0 && v.z == 0.0, 'Default construction does not return a null vector.');
+	}
 
-const v4 = new Vec3();
-v4.identity();
-console.log(`Identity : ${v4.x == 1.0 && v4.y == 1.0 && v4.z == 1.0}`);
+	static testIdentityConstruction() {
+		const v = Vec3.identity();
+		console.assert(v.x == 1.0 && v.y == 1.0 && v.z == 1.0, 'Identity construction does not return an vector set to identity.');
+	}
 
-const v5 = new Vec3(3.5, 7.11, 13.17);
-const v5$clone = v5.clone();
-console.log(`Cloning : ${v5$clone.x == 3.5 && v5$clone.y == 7.11 && v5$clone.z == 13.17}`);
+	static testArrayConstruction() {
+		const x = Math.random();
+		const y = Math.random();
+		const z = Math.random();
+		const v = Vec3.fromArray([x, y, z]);
+		console.assert(v.x == x && v.y == y && v.z == z, 'Assigned array construction failed.');
+	}
 
-const v6 = new Vec3(17.13, 11.7, 5.3);
-const v6$copy = new Vec3();
-v6$copy.copy(v6);
+	static testZeroAssignement() {
+		const v = new Vec3(0.0, 0.0, 0.0);
+		console.assert(v.x == 0.0 && v.y == 0.0 && v.z == 0.0, 'Assigned construction (zeroes) failed.');
+	}
 
-console.log(`Copy : ${v6$copy.x == 17.13 && v6$copy.y == 11.7 && v6$copy.z == 5.3}`);
+	static testRandomAssignement() {
+		const x = Math.random();
+		const y = Math.random();
+		const z = Math.random();
+		const v = new Vec3(x,y,z);
+		console.assert(v.x == x && v.y == y && v.z == z, 'Assigned construction failed.');
+	}
 
-const v7 = new Vec3(11.12, 13.14, 15.16);
-v7.negate();
-console.log(`Negate : ${v7.x == -11.12 && v7.y == -13.14 && v7.z == -15.16}`);
+	static testSetters() {
+		const x = Math.random();
+		const y = Math.random();
+		const z = Math.random();
+		const v = new Vec3();
+		v.x = x;
+		v.y = y;
+		v.z = z;
+		console.assert(v.x == x && v.y == y && v.z == z, 'Setters do not assign properly.');
+	}
 
-const v8 = new Vec3(2, 4, 8);
-v8.inverse();
-console.log(`Inverse : ${v8.x == 0.5 && v8.y == 0.25 && v8.z == 0.125}`);
+	static testIdentity() {
+		const v = new Vec3();
+		v.identity();
+		console.assert(v.x == 1.0 && v.y == 1.0 && v.z == 1.0, 'Identity does not set to identity.');
+	}
 
-const v9 = new Vec3(2, 4, 8);
-const v9$x = Math.random();
-const v9$y = Math.random();
-const v9$z = Math.random();
-v9.x = v9$x;
-v9.y = v9$y;
-v9.z = v9$z;
-v9.inverse();
-console.log(`Inverse (random) : ${v9.x == 1.0 / v9$x && v9.y == 1.0 / v9$y && v9.z == 1.0 / v9$z}`);
+	static testCopy() {
+		const v = Vec3.random();
+		const v$copy = Vec3.random();
+		v$copy.copy(v);
+		console.assert(v$copy.equals(v), 'Copy failed.');
+	}
 
-const v10 = new Vec3()
-v10.inverse();
-console.log(`Inverse (zero) : ${v10.x == Infinity && v10.y == Infinity && v10.z == Infinity}`);
+	static testCloning() {
+		const v = Vec3.random();
+		const v$clone = v.clone();
+		console.assert(v.equals(v$clone), 'Cloning failed.');
+	}
 
-const v11 = new Vec3();
-v11.scale(Math.random());
-console.log(`Scale (zero random) : ${v11.x == 0.0 && v11.y == 0.0 && v11.z == 0.0}`);
+	static testNullLength() {
+		const v = new Vec3();
+		console.assert(v.length() == 0.0, 'Length of a null vector is different from zero.');
+	}
 
-const v12 = new Vec3(Math.random(), Math.random(), Math.random());
-v12.scale(0.0);
-console.log(`Scale (random zero) : ${v12.x == 0.0 && v12.y == 0.0 && v12.z == 0.0}`);
+	static testUnitLength() {
+		const vx = new Vec3(1.0, 0.0, 0.0);
+		const vy = new Vec3(0.0, 1.0, 0.0);
+		const vz = new Vec3(0.0, 0.0, 1.0);
+		console.assert(vx.length() == 1.0, 'Length of a unit vector x is different from one.');
+		console.assert(vy.length() == 1.0, 'Length of a unit vector y is different from one.');
+		console.assert(vz.length() == 1.0, 'Length of a unit vector z is different from one.');
+	}
 
-const v13 = new Vec3();
-v13.identity();
-v13.scale(23.27);
-console.log(`Scale (identity) : ${v13.x == 23.27 && v13.y == 23.27 && v13.z == 23.27}`);
+	static testNormalize() {
+		const v = Vec3.random();
+		v.normalize();
+		console.assert(Math.abs(v.length() - 1.0) <= Number.EPSILON, 'Length of the normalized vector is different from one.');
+	}
 
-const v14 = new Vec3(1.23, 4.56, 7.89);
-v14.scale(1.0);
-console.log(`Scale (by one) : ${v14.x == 1.23 && v14.y == 4.56 && v14.z == 7.89}`);
+	static testNegate() {
+		const v = Vec3.random();
+		const nx = -v.x;
+		const ny = -v.y;
+		const nz = -v.z;
+		v.negate();
+		console.assert(v.x == nx && v.y == ny && v.z == nz, 'Negation failed.');
+	}
 
-const v15 = new Vec3(9.7, 5.4, 2.1);
-const v15$1 = new Vec3(6.4, 3.1, 9.8);
-v15.multiply(v15$1);
-console.log(`Multiply : ${v15.x.toFixed(2) == 62.08 && v15.y.toFixed(2) == 16.74 && v15.z.toFixed(2) == 20.58}`);
+	static testInverse() {
+		const v = Vec3.random();
+		const ix = 1.0 / v.x;
+		const iy = 1.0 / v.y;
+		const iz = 1.0 / v.z;
+		v.inverse();
+		console.assert(v.x == ix && v.y == iy && v.z == iz, 'Inversion failed.');
+	}
+
+	static testNullInverse() {
+		const v = new Vec3();
+		v.inverse();
+		console.assert(v.x == Infinity && v.y == Infinity && v.z == Infinity, 'Inverting a null vector does not return an Infinity vector.');
+	}
+
+	static testNullScaling() {
+		const v = new Vec3();
+		v.scale(Math.random());
+		console.assert(v.x == 0.0 && v.y == 0.0 && v.z == 0.0, 'Scaling a null vector by random scalar does not return a null vector.');
+	}
+
+	static testZeroScaling() {
+		const v = Vec3.random();
+		v.scale(0.0);
+		console.assert(v.x == 0.0 && v.y == 0.0 && v.z == 0.0, 'Scaling a random vector by zero does not return a null vector.');
+	}
+
+	static testIdentityScaling() {
+		const v = new Vec3();
+		const s = Math.random();
+		v.identity();
+		v.scale(s);
+		console.assert(v.x == s && v.y == s && v.z == s, 'Scaling identity failed.');
+	}
+
+	static testMultiply() {
+		const v$1 = Vec3.random();
+		const v$2 = Vec3.random();
+		const mx = v$1.x * v$2.x;
+		const my = v$1.y * v$2.y;
+		const mz = v$1.z * v$2.z;
+		v$1.multiply(v$2);
+		console.assert(v$1.x == mx && v$1.y == my && v$1.z == mz, 'Multiplication failed.');
+	}
+}
 
