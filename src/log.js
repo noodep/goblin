@@ -13,7 +13,7 @@ export class Logger {
 	}
 
 	log(log_msg, level) {
-		if(level === undefined) level = Logger.levels.INFO;
+		if(level === undefined) level = Logger.LEVELS.INFO;
 
 		const log = {
 			msg : log_msg,

@@ -1,21 +1,27 @@
+/**
+ * @fileOverview Class representing an OpenGL ES program
+ * @author Noodep
+ * @version 0.14
+ */
 'use strict';
 
 import {dl, l, el} from '../log.js';
 
-/**
- * Class representing an OpenGL ES program
- * @version 0.11
- */
 export default class Program {
 
 	/**
+	 * @constructor
+	 * @memberOf module:gl
+	 * @alias Program
+	 *
 	 * Creates a shader program with the specified name.
 	 * If no path is specified, the function will look for shaders
 	 * in the folder {@code DEFAULT_SHADER_PATH/name/name.{vert|frag}}
 	 * 
-	 * @param {WebGLContext} context with which this program will be associated.
-	 * @param {string} name of this program.
-	 * @constructor
+	 * @param {WebGLRenderingContext} context - The context with which this program will be associated.
+	 * @param {string} name - Name of this program.
+	 * @param {string} [path=DEFAULT_SHADER_PATH] - Location of the shaders directory.
+	 * @return {module:gl.Program} - The newly created Program.
 	 */
 	constructor({context, name, path = Program.DEFAULT_SHADER_PATH} = {}) {
 		this._context = context;

@@ -1,7 +1,7 @@
 /**
  * @fileOverview Object3d class that represent a object that can be manipulated in a 3d environment.
  * @author Noodep
- * @version 0.30
+ * @version 0.31
  */
 
 'use strict';
@@ -16,11 +16,14 @@ export default class Object3D {
 	 * @memberOf module:3d
 	 * @alias Object3d
 	 *
+	 * @param {String} [id=uuidv4()] - this object id.
+	 * @param {Array} [origin] - a 3 dimensional array containing this object origin.
+	 * @param {Array} [orientation] - a 3 dimensional array containing this object orientation. Euler angles in radians around XYZ.
+	 * @param {Array} [scale] - a 3 dimensional array containing this object scaling.
 	 * @return {module:3d.Object3d} - The newly created Object3d.
 	 */
-	constructor({ id = UUIDv4(), program_id, origin, orientation, scale } = {}) {
+	constructor({ id = UUIDv4(), origin, orientation, scale } = {}) {
 		this._id = id;
-		this._program_id = program_id;
 		this._children = new Map();
 		this._initModel(origin, orientation, scale);
 	}
