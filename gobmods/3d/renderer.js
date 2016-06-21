@@ -38,6 +38,10 @@
 		this._children.delete(child);
 	}
 
+	Renderer.prototype.hasChild = function(child) {
+		return this._children.has(child);
+	}
+
 	Renderer.prototype.updateModelMatrix = function() {
 		this._model = this._pmodel || _.m4.identity();
 
