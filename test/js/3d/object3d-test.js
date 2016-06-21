@@ -1,14 +1,14 @@
 'use strict';
 
-import Renderer from '../../../src/3d/renderer.js';
+import Object3D from '../../../src/3d/object3d.js';
 
-export default class RendererTest {
+export default class Object3DTest {
 
 	static runAll() {
-		console.log(`%c----- Testing src/math/renderer.js -----`,'color:blue;');
+		console.log(`%c----- Testing src/math/object3d.js -----`,'color:blue;');
 		console.time('Perf');
 
-		RendererTest.testDefaultConstruction();
+		Object3DTest.testDefaultConstruction();
 
 		console.timeEnd('Perf');
 		console.log(`%c----------------------------------------`,'color:blue;');
@@ -16,7 +16,7 @@ export default class RendererTest {
 	}
 
 	static testDefaultConstruction() {
-		const r = new Renderer();
+		const r = new Object3D();
 		console.assert(r.id != '', 'Default construction does not work.');
 	}
 }

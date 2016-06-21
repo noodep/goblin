@@ -1,6 +1,6 @@
 'use strict';
 
-import {Logger, DEFAULT_LOGGER, l, dl, el} from '../../src/log';
+import {Logger, DEFAULT_LOGGER, dl, wl, l, el} from '../../src/log';
 
 export default class LogTest {
 
@@ -9,29 +9,34 @@ export default class LogTest {
 		console.time('Perf');
 
 		DEFAULT_LOGGER.level = Logger.LEVELS.NONE;
-
-		dl('You should not see that.');
-		l('You should not see that.');
-		el('You should not see that.');
+		dl('You should not see this debug.');
+		l('You should not see this info.');
+		wl('You should not see this warning.');
+		el('You should not see this error.');
 
 		DEFAULT_LOGGER.level = Logger.LEVELS.ERROR;
+		dl('You should not see this debug.');
+		l('You should not see this info.');
+		wl('You should not see this warning.');
+		el('You should see this error.');
 
-		dl('You should not see that.');
-		l('You should not see that.');
-		el('You should see that.');
-
+		DEFAULT_LOGGER.level = Logger.LEVELS.WARN;
+		dl('You should not see this debug.');
+		l('You should not see this info.');
+		wl('You should see this warning.');
+		el('You should see this error.');
 
 		DEFAULT_LOGGER.level = Logger.LEVELS.INFO;
-
-		dl('You should not see that.');
-		l('You should see that.');
-		el('You should see that.');
+		dl('You should not see this debug.');
+		l('You should see this info.');
+		wl('You should see this warning.');
+		el('You should see this error.');
 
 		DEFAULT_LOGGER.level = Logger.LEVELS.DEBUG;
-
-		dl('You should see that.');
-		l('You should see that.');
-		el('You should see that.');
+		dl('You should see this debug.');
+		l('You should see this info.');
+		wl('You should see this warning.');
+		el('You should see this error.');
 
 		console.timeEnd('Perf');
 		console.log(`%c------------------------------`,'color:blue;');

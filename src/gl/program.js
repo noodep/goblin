@@ -4,7 +4,7 @@ import {dl, l, el} from '../log.js';
 
 /**
  * Class representing an OpenGL ES program
- * @version 0.10
+ * @version 0.11
  */
 export default class Program {
 
@@ -36,6 +36,7 @@ export default class Program {
 
 	/**
 	 * Return a promise that succeed when the program is loaded and ready to be used.
+	 *
 	 * @return {Promise} a promise that succeed when this program is ready.
 	 */
 	ready() {
@@ -49,6 +50,14 @@ export default class Program {
 			.then(this.qualifyAll.bind(this));
 	}
 
+	/**
+	 * Creates a shader of the specified type.
+	 * This function tries to retreive a shader file at the URL _path/_name/_name.type-ext
+	 * If successful, it then proceed to compile the shader.
+	 *
+	 * @param {Number} type - Must be WebGLRenderingContext.VERTEX_SHADER or WebGLRenderingContext.FRAGMENT_SHADER.
+	 * @return {Promise} - A promise that resolves when the shader is loaded and compiled.
+	 */ 
 	createShader(type) {
 		const file = this._path + this._name + Program.SHADER_EXTENSIONS.get(type);
 		const c = this._context;

@@ -1,7 +1,7 @@
 /**
  * @fileOverview Matrix manipulation library for computer graphics assuming column major flatenning.
  * @author Noodep
- * @version 0.44
+ * @version 0.45
  */
 
 'use strict';
@@ -410,7 +410,7 @@ export default class Mat4 {
 	rotate(axis, theta) {
 		const c = Math.cos(theta);
 		const s = Math.sin(theta);
-		const r = identity();
+		const r = Mat4.identity();
 		const a = axis.clone().normalize();
 
 		r._m[0] = c + (1-c) * a.x * a.x;

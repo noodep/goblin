@@ -1,3 +1,8 @@
+/**
+ * @fileOverview General purpose Logger and associated utilities.
+ * @author Noodep
+ * @version 0.12
+ */
 'use strict';
 
 export class Logger {
@@ -34,14 +39,20 @@ export class Logger {
 
 Logger.LEVELS = {
 	DEBUG : 0,
-	INFO : 1,
-	ERROR : 2,
-	NONE : 3
+	INFO  : 1,
+	WARN  : 2,
+	ERROR : 3,
+	NONE  : 4
 };
 
 export class Console {
 	notify(log) {
-		console.log(log.msg);
+		if(log.level == Logger.LEVELS.WARN)
+			console.warn(log.msg);
+		else if(log.level == Logger.LEVELS.ERROR)
+			console.error(log.msg);
+		else
+			console.log(log.msg);
 	}
 }
 
@@ -50,5 +61,6 @@ DEFAULT_LOGGER.addSubscriber(new Console());
 
 export const dl = (msg) => DEFAULT_LOGGER.log(msg, Logger.LEVELS.DEBUG);
 export const l = (msg) => DEFAULT_LOGGER.log(msg, Logger.LEVELS.INFO);
+export const wl = (msg) => DEFAULT_LOGGER.log(msg, Logger.LEVELS.WARN);
 export const el = (msg) => DEFAULT_LOGGER.log(msg, Logger.LEVELS.ERROR);
 
