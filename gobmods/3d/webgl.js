@@ -485,13 +485,13 @@
 	WGLC.prototype.setDynamicVBOData = function(id, data) {
 		this.makeVBOActive(id);
 		this._vbos[id].size = data.length;
-		this.c.bufferData(this.c.ARRAY_BUFFER, data, this.c.DYNAMIC_DRAW);
+		this.c.bufferData(this.c.ARRAY_BUFFER, new Float32Array(data), this.c.DYNAMIC_DRAW);
 	}
 
 	WGLC.prototype.setEBOData = function(id, data) {
 		this.makeEBOActive(id);
 		this._vbos[id].size = data.length;
-		this.c.bufferData(this.c.ELEMENT_ARRAY_BUFFER, data, this.c.STATIC_DRAW);
+		this.c.bufferData(this.c.ELEMENT_ARRAY_BUFFER, new Uint16Array(data), this.c.STATIC_DRAW);
 	}
 
 	WGLC.prototype.createFrameBuffer = function(buffer_id) {
