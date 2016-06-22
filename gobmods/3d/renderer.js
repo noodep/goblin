@@ -46,10 +46,10 @@
 		this._model = this._pmodel || _.m4.identity();
 
 		this._model.translate(this._origin);
-		this._model.scale(this._scale);
 		this._model.rotateX(this._orientation[0]);
 		this._model.rotateY(this._orientation[1]);
 		this._model.rotateZ(this._orientation[2]);
+		this._model.scale(this._scale);
 
 		this._children.forEach((child) => {
 			child._pmodel = this._model.clone();
