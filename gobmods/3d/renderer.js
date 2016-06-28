@@ -4,9 +4,10 @@
 	function Renderer(options, rendering_context, ready_callback) {
 		this._name = options.name || _.GUID();
 		this._children = new Set();
-		this._origin = options.origin || [0.0,0.0,0.0];
-		this._orientation = options.orientation || [0.0,0.0,0.0];
-		this._scale = options.scale || [1.0,1.0,1.0];
+		this._origin = _.v3.fromArray(options.origin || [0.0,0.0,0.0]);
+		this._orientation = _.quat.fromEulerAngles(
+			_.v3.fromArray(options.orientation || [0.0,0.0,0.0]));
+		this._scale = _.v3.fromArray(options.scale || [1.0,1.0,1.0]);
 		this._program_id = options.program;
 		this._properties = options.properties;
 
@@ -44,23 +45,16 @@
 
 	Renderer.prototype.updateModelMatrix = function() {
 		this._model = this._pmodel || _.m4.identity();
-
 		this._model.translate(this._origin);
-		this._model.rotateX(this._orientation[0]);
-		this._model.rotateY(this._orientation[1]);
-		this._model.rotateZ(this._orientation[2]);
+		this._model.rotateQuat(this._orientation);
 		this._model.scale(this._scale);
 
 		this._children.forEach((child) => {
 			child._pmodel = this._model.clone();
 		});
-
-		// reset parent model for next iteration
-		this._pmodel = undefined;
 	}
 
 	Renderer.prototype.render = function(rendering_context) {
-		this.updateModelMatrix();
 		if(this._program_id) {
 
 			var p = rendering_context.useProgram(this._program_id);
@@ -81,11 +75,24 @@
 	}
 
 	Renderer.prototype.doUpdate = function(delta_t) {
+		this.updateModelMatrix();
 		this.update(delta_t);
 
 		this._children.forEach((child) => {
 			child.doUpdate(delta_t);
 		});
+	}
+
+	Renderer.prototype.getOrigin = function() {
+		return this._origin;
+	}
+
+	Renderer.prototype.getScale = function() {
+		return this._scale;
+	}
+
+	Renderer.prototype.getOrientation = function() {
+		return this._orientation;
 	}
 
 	Renderer.prototype.preRender = function() {}

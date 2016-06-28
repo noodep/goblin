@@ -23,6 +23,10 @@
 		this.v[3] = w || 0.0;
 	}
 
+	v4.fromArray = function(data) {
+		return new v4(data[0], data[1], data[2], data[3])
+	}
+
 	/**
 	 * Copies values of vector v into this vector.
 	 * @param  {module:math.v4} v Vector from which to copy values. 

@@ -44,6 +44,38 @@
 	}
 
 	/**
+	 * Creates a matrix describing the same rotation as a quaternion.
+	 * @param {module:math.quat} q The quaternion to create from
+	 * @return {module:math.m4} The rotation matrix
+	 */
+	m4.fromQuat = function(q) {
+		var m = m4.identity();
+		var xx = q.x * q.x;
+		var yy = q.y * q.y;
+		var zz = q.z * q.z;
+		var xy = q.x * q.y;
+		var xz = q.x * q.z;
+		var yz = q.y * q.z;
+		var wx = q.w * q.x;
+		var wy = q.w * q.y;
+		var wz = q.w * q.z;
+
+		m.m[0] = 1 - 2 * (yy + zz);
+		m.m[1] = 2 * (xy + wz);
+		m.m[2] = 2 * (xz - wy);
+
+		m.m[4] = 2 * (xy - wz);
+		m.m[5] = 1 - 2 * (xx + zz);
+		m.m[6] = 2 * (yz + wx);
+
+		m.m[8] = 2 * (xz + wy);
+		m.m[9] = 2 * (yz - wx);
+		m.m[10] = 1 - 2 * (xx + yy);
+
+		return m;
+	}
+
+	/**
 	 * Clones the current matrix.
 	 * @return {module:math.m4} The newly cloned matrix.
 	 */
@@ -394,9 +426,9 @@
 
 	/**
 	 * Applies a rotation around the axis to the matrix.
-	 * @param {Vec3} axis - The axit to rotate around
-	 * @param {Number} theta - The angle (in radians) to rotate
-	 * @return {module:math.m4} - The rotated matrix
+	 * @param {Vec3} axis The axis to rotate around
+	 * @param {Number} theta The angle (in radians) to rotate
+	 * @return {module:math.m4} The rotated matrix
 	 */
 	m4.prototype.rotate = function(axis, theta) {
 		var c = Math.cos(theta);
@@ -419,6 +451,15 @@
 
 		this.mul(rot);
 		return this;
+	}
+
+	/**
+	 * Rotates this matrix by a quaternion.
+	 * @param {module:math.quat} q The quaternion to rotate by
+	 * @return {module:math.m4} The rotated matrix
+	 */
+	m4.prototype.rotateQuat = function(q) {
+		return this.mul(m4.fromQuat(q));
 	}
 
 	/**

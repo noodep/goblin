@@ -22,6 +22,10 @@
 		this.v[2] = z || 0.0;
 	}
 
+	v3.fromArray = function(data) {
+		return new v3(data[0], data[1], data[2]);
+	}
+
 	v3.fromV4 = function(v4) {
 		return new v3(v4.x, v4.y, v4.z);
 	}
@@ -160,6 +164,17 @@
 		this.v[1] = x * s + y * c;
 		return this;
 	};
+
+	v3.prototype.rotateQuat = function(q) {
+		var q_vec = new _.v3(q.x, q.y, q.z);
+		var uv = q_vec.clone().cross(this);
+		var uuv = q_vec.clone().cross(uv);
+
+		uv.scale(q.w);
+		uv.vadd(uuv);
+		uv.scale(2.0);
+		return this.vadd(uv);
+	}
 
 	v3.prototype.transform3 = function(m3) {
 		var x = this.v[0], y = this.v[1], z = this.v[2];
