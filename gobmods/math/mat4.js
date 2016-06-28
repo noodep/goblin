@@ -227,28 +227,28 @@
 			a30 = this.m[12], a31 = this.m[13], a32 = this.m[14], a33 = this.m[15];
 
 		var b0 = mat.m[0], b1 = mat.m[4], b2 = mat.m[8], b3 = mat.m[12];
-		this.m[0] = b0*a00 + b1*a01 + b2*a02 + b3*a03;
-		this.m[1] = b1*a10 + b1*a11 + b2*a12 + b3*a13;
-		this.m[2] = b2*a20 + b1*a21 + b2*a22 + b3*a23;
-		this.m[3] = b3*a30 + b1*a31 + b2*a32 + b3*a33;
+		this.m[0]  = b0*a00 + b1*a01 + b2*a02 + b3*a03;
+		this.m[4]  = b0*a10 + b1*a11 + b2*a12 + b3*a13;
+		this.m[8]  = b0*a20 + b1*a21 + b2*a22 + b3*a23;
+		this.m[12] = b0*a30 + b1*a31 + b2*a32 + b3*a33;
 
 		var b0 = mat.m[1], b1 = mat.m[5], b2 = mat.m[9], b3 = mat.m[13];
-		this.m[4] = b0*a00 + b1*a01 + b2*a02 + b3*a03;
-		this.m[5] = b1*a10 + b1*a11 + b2*a12 + b3*a13;
-		this.m[6] = b2*a20 + b1*a21 + b2*a22 + b3*a23;
-		this.m[7] = b3*a30 + b1*a31 + b2*a32 + b3*a33;
+		this.m[1]  = b0*a00 + b1*a01 + b2*a02 + b3*a03;
+		this.m[5]  = b0*a10 + b1*a11 + b2*a12 + b3*a13;
+		this.m[9]  = b0*a20 + b1*a21 + b2*a22 + b3*a23;
+		this.m[13] = b0*a30 + b1*a31 + b2*a32 + b3*a33;
 
 		var b0 = mat.m[2], b1 = mat.m[6], b2 = mat.m[10], b3 = mat.m[14];
-		this.m[8] = b0*a00 + b1*a01 + b2*a02 + b3*a03;
-		this.m[9] = b1*a10 + b1*a11 + b2*a12 + b3*a13;
-		this.m[10] = b2*a20 + b1*a21 + b2*a22 + b3*a23;
-		this.m[11] = b3*a30 + b1*a31 + b2*a32 + b3*a33;
+		this.m[2]  = b0*a00 + b1*a01 + b2*a02 + b3*a03;
+		this.m[6]  = b0*a10 + b1*a11 + b2*a12 + b3*a13;
+		this.m[10] = b0*a20 + b1*a21 + b2*a22 + b3*a23;
+		this.m[14] = b0*a30 + b1*a31 + b2*a32 + b3*a33;
 
 		var b0 = mat.m[3], b1 = mat.m[7], b2 = mat.m[11], b3 = mat.m[15];
-		this.m[12] = b0*a00 + b1*a01 + b2*a02 + b3*a03;
-		this.m[13] = b1*a10 + b1*a11 + b2*a12 + b3*a13;
-		this.m[14] = b2*a20 + b1*a21 + b2*a22 + b3*a23;
-		this.m[15] = b3*a30 + b1*a31 + b2*a32 + b3*a33;
+		this.m[3]  = b0*a00 + b1*a01 + b2*a02 + b3*a03;
+		this.m[7]  = b0*a10 + b1*a11 + b2*a12 + b3*a13;
+		this.m[11] = b0*a20 + b1*a21 + b2*a22 + b3*a23;
+		this.m[15] = b0*a30 + b1*a31 + b2*a32 + b3*a33;
 
 		return this;
 	}
