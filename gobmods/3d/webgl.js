@@ -491,7 +491,7 @@
 	WGLC.prototype.setEBOData = function(id, data) {
 		this.makeEBOActive(id);
 		this._vbos[id].size = data.length;
-		this.c.bufferData(this.c.ELEMENT_ARRAY_BUFFER, new Uint16Array(data), this.c.STATIC_DRAW);
+		this.c.bufferData(this.c.ELEMENT_ARRAY_BUFFER, new Uint8Array(data), this.c.STATIC_DRAW);
 	}
 
 	WGLC.prototype.createFrameBuffer = function(buffer_id) {
