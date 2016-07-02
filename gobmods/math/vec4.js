@@ -162,6 +162,30 @@
 		return this;
 	};
 
+	v4.prototype.rotateQuat = function(q) {
+		var xx = q.x * q.x;
+		var yy = q.y * q.y;
+		var zz = q.z * q.z;
+		var xy = q.x * q.y;
+		var xz = q.x * q.z;
+		var yz = q.y * q.z;
+		var wx = q.w * q.x;
+		var wy = q.w * q.y;
+		var wz = q.w * q.z;
+
+		var x = this.v[0];
+		var y = this.v[1];
+		var z = this.v[2];
+		var w = this.v[3];
+
+		this.v[0] = x * (1 - 2 * (yy + zz)) + y * 2 * (xy - wz) +       z * 2 * (xz + wy);
+		this.v[1] = x * 2 * (xy + wz) +       y * (1 - 2 * (xx + zz)) + z * 2 * (yz - wx);
+		this.v[2] = x * 2 * (xz - wy) +       y * 2 * (yz + wx) +       z * (1 - 2 * (xx + yy));
+		this.v[3] = 1;
+
+		return this;
+	};
+
 	v4.prototype.transform4 = function(m4) {
 		var x = this.v[0], y = this.v[1], z = this.v[2], w = this.v[3];
 		this.v[0] = m4.m[0] * x + m4.m[4] * y + m4.m[8] * z + m4.m[12] * w;
