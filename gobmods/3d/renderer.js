@@ -32,12 +32,10 @@
 	}
 
 	Renderer.prototype.addChild = function(child) {
-		child._parent = this;
 		this._children.add(child);
 	}
 
 	Renderer.prototype.removeChild = function(child) {
-		child._parent = undefined;
 		this._children.delete(child);
 	}
 
@@ -54,6 +52,8 @@
 		this._children.forEach((child) => {
 			child._pmodel = this._model.clone();
 		});
+
+		this._pmodel = undefined;
 	}
 
 	Renderer.prototype.render = function(rendering_context) {
