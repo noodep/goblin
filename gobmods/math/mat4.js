@@ -210,11 +210,11 @@
 	};
 
 	/**
-	 * Multiplies the matrix by the given matrix on the left (this = mat * this).
+	 * Multiplies the matrix by the given matrix on the right (this = this * mat).
 	 * @param {module:math.m4} mat Matrix to multiply by.
 	 * @return {module:math.m4} Matrix multiplied by the matrix passed in argument. 
 	 */
-	m4.prototype.mul = function(mat) {
+	m4.prototype.mul_right = m4.prototype.mul = function(mat) {
 		var a00 = this.m[0],  a01 = this.m[1],  a02 = this.m[2],  a03 = this.m[3],
 			a10 = this.m[4],  a11 = this.m[5],  a12 = this.m[6],  a13 = this.m[7],
 			a20 = this.m[8],  a21 = this.m[9],  a22 = this.m[10], a23 = this.m[11],
@@ -248,11 +248,11 @@
 	};
 
 	/**
-	 * Multiplies the matrix by the given matrix on the right (this = this * mat).
+	 * Multiplies the matrix by the given matrix on the left (this = mat * this).
 	 * @param {module:math.m4} mat Matrix to multiply by
 	 * @return {module:math.m4} This matrix multiplied by the given matrix
 	 */
-	m4.prototype.mul_right = function(mat) {
+	m4.prototype.mul_left = function(mat) {
 		var a00 = this.m[0],  a01 = this.m[1],  a02 = this.m[2],  a03 = this.m[3],
 			a10 = this.m[4],  a11 = this.m[5],  a12 = this.m[6],  a13 = this.m[7],
 			a20 = this.m[8],  a21 = this.m[9],  a22 = this.m[10], a23 = this.m[11],

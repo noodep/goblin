@@ -88,7 +88,7 @@
 		this.v[3] += n;
 		return this;
 	};
-	
+
 	v4.prototype.substract = v4.prototype.sub = function(v) {
 		if(v instanceof v4) return this.vadd(v.negateCopy());
 		else return this.nadd(-v);
@@ -143,7 +143,7 @@
 		this.v[2] = y * s + z * c;
 		return this;
 	};
-	
+
 	v4.prototype.rotateY = function(theta) {
 		var x = this.v[0], z = this.v[2];
 		var c = Math.cos(theta), s = Math.sin(theta);
@@ -152,7 +152,7 @@
 		this.v[2] = -x * s + z * c;
 		return this;
 	};
-	
+
 	v4.prototype.rotateZ = function(theta) {
 		var x = this.v[0], y = this.v[1];
 		var c = Math.cos(theta), s = Math.sin(theta);
@@ -170,7 +170,7 @@
 		this.v[3] = m4.m[3] * x + m4.m[7] * y + m4.m[11] * z + m4.m[15] * w;
 		return this;
 	}
-	
+
 	v4.prototype.magnitude = v4.prototype.mag = function() {
 		return Math.sqrt(this.v[0] * this.v[0] + this.v[1] * this.v[1] + this.v[2] * this.v[2] + this.v[3] * this.v[3]);
 	};
@@ -182,7 +182,7 @@
 		var dw = v.v[3] - this.v[3];
 		return Math.sqrt(dx*dx + dy*dy + dz*dz + dw*dw);
 	};
-	
+
 	v4.prototype.normalize = function() {
 		var mag = this.mag();
 		if (mag === 0.0) {
@@ -191,7 +191,7 @@
 			return this.scale(1.0 / mag);
 		}
 	};
-	
+
 	v4.prototype.toString = function(p = 16) {
 		return '[' + this.v[0].toFixed(p) + ',' + this.v[1].toFixed(p) + ',' + this.v[2].toFixed(p) + ',' + this.v[3].toFixed(p) + ']';
 	};

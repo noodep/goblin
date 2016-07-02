@@ -133,6 +133,9 @@
 
 	/**
 	 * Conjugates this quaternion.
+	 * This operation is somewhat analogous to a complex conjugate:
+	 * the product a a quaternion and its conjugate yields a quaternion
+	 * with a null vector portion.
 	 * @return {module:math.quat} The conjugated quaternion
 	 */
 	quat.prototype.conjugate = function() {
