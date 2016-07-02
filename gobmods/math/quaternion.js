@@ -57,10 +57,10 @@
 	 * @return {module:math.quat} A new quaternion describing the same rotation as the matrix
 	 */
 	quat.fromMat = function(m) {
-		var x2 = (1 + m4.m[0]  - m4.m[5] - m4.m[10]) / 4.0;
-		var y2 = (1 + m4.m[5]  - m4.m[0] - m4.m[10]) / 4.0;
-		var z2 = (1 + m4.m[10] - m4.m[0] - m4.m[5])  / 4.0;
-		var w2 = (1 + m4.m[0]  - m4.m[5] - m4.m[10]) / 4.0;
+		var x2 = (1 + m.m[0]  - m.m[5] - m.m[10]) / 4.0;
+		var y2 = (1 + m.m[5]  - m.m[0] - m.m[10]) / 4.0;
+		var z2 = (1 + m.m[10] - m.m[0] - m.m[5])  / 4.0;
+		var w2 = (1 + m.m[0]  + m.m[5] + m.m[10]) / 4.0;
 		
 		var index = 3;
 		var largest = w2;
@@ -75,38 +75,52 @@
 			index = 2;
 		}
 
-		var largest = math.sqrt(largest);
+		var largest = Math.sqrt(largest);
 		var scale = 1 / (4.0 * largest);
 
 		var q = new quat();
 		switch (index) {
 		case 0:
 			q.v[0] = largest;
-			q.v[1] = (m4.m[1] + m4.m[4]) * scale;
-			q.v[2] = (m4.m[8] + m4.m[2]) * scale;
-			q.v[3] = (m4.m[6] - m4.m[9]) * scale;
+			q.v[1] = (m.m[1] + m.m[4]) * scale;
+			q.v[2] = (m.m[8] + m.m[2]) * scale;
+			q.v[3] = (m.m[6] - m.m[9]) * scale;
 			break;
 		case 1:
-			q.v[0] = (m4.m[1] + m4.m[4]) * scale;
+			q.v[0] = (m.m[1] + m.m[4]) * scale;
 			q.v[1] = largest;
-			q.v[2] = (m4.m[6] + m4.m[9]) * scale;
-			q.v[3] = (m4.m[8] - m4.m[2]) * scale;
+			q.v[2] = (m.m[6] + m.m[9]) * scale;
+			q.v[3] = (m.m[8] - m.m[2]) * scale;
 			break;
 		case 2:
-			q.v[0] = (m4.m[8] + m4.m[2]) * scale;
-			q.v[1] = (m4.m[6] + m4.m[9]) * scale;
+			q.v[0] = (m.m[8] + m.m[2]) * scale;
+			q.v[1] = (m.m[6] + m.m[9]) * scale;
 			q.v[2] = largest;
-			q.v[3] = (m4.m[1] - m4.m[4]) * scale;
+			q.v[3] = (m.m[1] - m.m[4]) * scale;
 			break;
 		case 3:
-			q.v[0] = (m4.m[6] - m4.m[9]) * scale;
-			q.v[1] = (m4.m[8] - m4.m[2]) * scale;
-			q.v[2] = (m4.m[1] - m4.m[4]) * scale;
+			q.v[0] = (m.m[6] - m.m[9]) * scale;
+			q.v[1] = (m.m[8] - m.m[2]) * scale;
+			q.v[2] = (m.m[1] - m.m[4]) * scale;
 			q.v[3] = largest;
 			break;
 		}
 
 		return q;
+	}
+
+	/**
+	 * Copies another quaternion into this one.
+	 * @param {module:math.quat} q - The quaternion to copy.
+	 * @return {module:math.quat} This quaternion.
+	 */
+	quat.prototype.copy = function(q) {
+		this.v[0] = q.v[0];
+		this.v[1] = q.v[1];
+		this.v[2] = q.v[2];
+		this.v[3] = q.v[3];
+
+		return this;
 	}
 
 	/**
