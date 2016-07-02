@@ -32,10 +32,12 @@
 	}
 
 	Renderer.prototype.addChild = function(child) {
+		child._parent = this;
 		this._children.add(child);
 	}
 
 	Renderer.prototype.removeChild = function(child) {
+		child._parent = undefined;
 		this._children.delete(child);
 	}
 
@@ -93,6 +95,10 @@
 
 	Renderer.prototype.getOrientation = function() {
 		return this._orientation;
+	}
+
+	Renderer.prototype.toWorldRoot = function(vec3) {
+		return vec3.clone().transform4(this._model);
 	}
 
 	Renderer.prototype.preRender = function() {}
