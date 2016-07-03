@@ -132,6 +132,41 @@
 	}
 
 	/**
+	 * The pitch (Euler angle for the x-axis) described by the quaternion.
+	 */
+	quat.prototype.getPitch = function() {
+		const x = this.v[0], y = this.v[1], z = this.v[2], w = this.v[3];
+		return Math.atan2(2 * (y*z + x*w), w*w - x*x - y*y + z*z);
+	}
+
+	/**
+	 * The yaw (Euler angle for the y-axis) described by the quaterion.
+	 */
+	quat.prototype.getYaw = function() {
+		const x = this.v[0], y = this.v[1], z = this.v[2], w = this.v[3];
+		return Math.asin(Math.max(1, Math.min(-1, -2 * (x*z - w*y)))); // Clamp argument between -1 and 1
+	}
+
+	/**
+	 * The roll (Euler angle for the z-axis) described by the quaterion.
+	 */
+	quat.prototype.getRoll = function() {
+		const x = this.v[0], y = this.v[1], z = this.v[2], w = this.v[3];
+		return Math.atan2(2 * (x*y + z*w), w*w + x*x - y*y - z*z);
+	}
+
+	/**
+	 * Calculates the Euler angles described by the quaterion.
+	 * The angles are applied in the order such that:
+	 *	q == quat.fromEulerAngles(q.toEulerAgles()).
+	 * @return {module:math.v3} A vector holding the Euler angles.
+	 */
+	quat.prototype.toEulerAngles = function() {
+		return new _.v3(this.getPitch(), this.getYaw(), this.getRoll());
+	}
+
+
+	/**
 	 * Conjugates this quaternion.
 	 * This operation is somewhat analogous to a complex conjugate:
 	 * the product a a quaternion and its conjugate yields a quaternion
