@@ -32,11 +32,15 @@
 	}
 
 	Renderer.prototype.addChild = function(child) {
-		this._children.add(child);
+		if (this._children.add(child)) {
+			child._parent = this;
+		}
 	}
 
 	Renderer.prototype.removeChild = function(child) {
-		this._children.delete(child);
+		if (this._children.delete(child)) {
+			child._parent = undefined;
+		}
 	}
 
 	Renderer.prototype.hasChild = function(child) {
