@@ -144,7 +144,7 @@
 	 */
 	quat.prototype.getYaw = function() {
 		const x = this.v[0], y = this.v[1], z = this.v[2], w = this.v[3];
-		return Math.asin(Math.max(1, Math.min(-1, -2 * (x*z - w*y)))); // Clamp argument between -1 and 1
+		return Math.asin(Math.max(-1, Math.min(1, -2 * (x*z - w*y)))); // Clamp argument between -1 and 1
 	}
 
 	/**
