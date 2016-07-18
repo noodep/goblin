@@ -165,7 +165,6 @@
 		return new _.v3(this.getPitch(), this.getYaw(), this.getRoll());
 	}
 
-
 	/**
 	 * Conjugates this quaternion.
 	 * This operation is somewhat analogous to a complex conjugate:

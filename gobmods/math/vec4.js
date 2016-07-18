@@ -47,7 +47,11 @@
 	v4.prototype.clone = function() {
 		return new v4(this.v[0],this.v[1],this.v[2],this.v[3]);
 	};
-	
+
+	v4.prototype.toArray = function() {
+		return new Array(...this.v);
+	}
+
 	v4.prototype.scaleAdd = function(s, v) {
 		this.v[0] = s * this.v[0] + v.v[0];
 		this.v[1] = s * this.v[1] + v.v[1];

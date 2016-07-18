@@ -50,6 +50,13 @@
 		return new v3(this.v[0],this.v[1],this.v[2]);
 	};
 
+	/**
+	 * Creates an Array containing the values of this vector.
+	 * @return {Array} - The Array.
+	 */
+	v3.prototype.toArray = function() {
+		return new Array(...this.v);
+	}
 
 	v3.prototype.scaleAdd = function(s, v) {
 		this.v[0] = s * this.v[0] + v.v[0];
