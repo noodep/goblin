@@ -24,6 +24,10 @@
 		this.v[3] = w || 0.0;
 	}
 
+	v4.fromArray = function(data) {
+		return new v4(data[0], data[1], data[2], data[3])
+	}
+
 	/**
 	 * Copies values of vector v into this vector.
 	 * @param  {module:math.v4} v Vector from which to copy values. 
@@ -44,7 +48,11 @@
 	v4.prototype.clone = function() {
 		return new v4(this.v[0],this.v[1],this.v[2],this.v[3]);
 	};
-	
+
+	v4.prototype.toArray = function() {
+		return new Array(...this.v);
+	}
+
 	v4.prototype.scaleAdd = function(s, v) {
 		this.v[0] = s * this.v[0] + v.v[0];
 		this.v[1] = s * this.v[1] + v.v[1];
@@ -85,7 +93,7 @@
 		this.v[3] += n;
 		return this;
 	};
-	
+
 	v4.prototype.substract = v4.prototype.sub = function(v) {
 		if(v instanceof v4) return this.vadd(v.negateCopy());
 		else return this.nadd(-v);
@@ -140,7 +148,7 @@
 		this.v[2] = y * s + z * c;
 		return this;
 	};
-	
+
 	v4.prototype.rotateY = function(theta) {
 		var x = this.v[0], z = this.v[2];
 		var c = Math.cos(theta), s = Math.sin(theta);
@@ -149,13 +157,37 @@
 		this.v[2] = -x * s + z * c;
 		return this;
 	};
-	
+
 	v4.prototype.rotateZ = function(theta) {
 		var x = this.v[0], y = this.v[1];
 		var c = Math.cos(theta), s = Math.sin(theta);
 
 		this.v[0] = x * c - y * s;
 		this.v[1] = x * s + y * c;
+		return this;
+	};
+
+	v4.prototype.rotateQuat = function(q) {
+		var xx = q.x * q.x;
+		var yy = q.y * q.y;
+		var zz = q.z * q.z;
+		var xy = q.x * q.y;
+		var xz = q.x * q.z;
+		var yz = q.y * q.z;
+		var wx = q.w * q.x;
+		var wy = q.w * q.y;
+		var wz = q.w * q.z;
+
+		var x = this.v[0];
+		var y = this.v[1];
+		var z = this.v[2];
+		var w = this.v[3];
+
+		this.v[0] = x * (1 - 2 * (yy + zz)) + y * 2 * (xy - wz) +       z * 2 * (xz + wy);
+		this.v[1] = x * 2 * (xy + wz) +       y * (1 - 2 * (xx + zz)) + z * 2 * (yz - wx);
+		this.v[2] = x * 2 * (xz - wy) +       y * 2 * (yz + wx) +       z * (1 - 2 * (xx + yy));
+		this.v[3] = 1;
+
 		return this;
 	};
 
@@ -167,7 +199,7 @@
 		this.v[3] = m4.m[3] * x + m4.m[7] * y + m4.m[11] * z + m4.m[15] * w;
 		return this;
 	}
-	
+
 	v4.prototype.magnitude = v4.prototype.mag = function() {
 		return Math.sqrt(this.v[0] * this.v[0] + this.v[1] * this.v[1] + this.v[2] * this.v[2] + this.v[3] * this.v[3]);
 	};
@@ -179,12 +211,16 @@
 		var dw = v.v[3] - this.v[3];
 		return Math.sqrt(dx*dx + dy*dy + dz*dz + dw*dw);
 	};
-	
+
 	v4.prototype.normalize = function() {
-		var length = this.length();
-		return this.scale(1.0 / length);
+		var mag = this.mag();
+		if (mag === 0.0) {
+			return undefined;
+		} else {
+			return this.scale(1.0 / mag);
+		}
 	};
-	
+
 	v4.prototype.toString = function(p = 16) {
 		return '[' + this.v[0].toFixed(p) + ',' + this.v[1].toFixed(p) + ',' + this.v[2].toFixed(p) + ',' + this.v[3].toFixed(p) + ']';
 	};
@@ -194,7 +230,7 @@
 	};
 
 	Object.defineProperty(v4.prototype, 'str', {
-		get : function() { return this.toString();},
+		get : function() { return this.toString(); },
 	});
 
 	Object.defineProperty(v4.prototype, 'x', {

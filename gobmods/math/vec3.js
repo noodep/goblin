@@ -22,6 +22,10 @@
 		this.v[2] = z || 0.0;
 	}
 
+	v3.fromArray = function(data) {
+		return new v3(data[0], data[1], data[2]);
+	}
+
 	v3.fromV4 = function(v4) {
 		return new v3(v4.x, v4.y, v4.z);
 	}
@@ -46,6 +50,13 @@
 		return new v3(this.v[0],this.v[1],this.v[2]);
 	};
 
+	/**
+	 * Creates an Array containing the values of this vector.
+	 * @return {Array} - The Array.
+	 */
+	v3.prototype.toArray = function() {
+		return new Array(...this.v);
+	}
 
 	v3.prototype.scaleAdd = function(s, v) {
 		this.v[0] = s * this.v[0] + v.v[0];
@@ -83,7 +94,7 @@
 		this.v[2] += n;
 		return this;
 	};
-	
+
 	v3.prototype.substract = v3.prototype.sub = function(v) {
 		if(v instanceof v3) return this.vadd(v.negateCopy());
 		else return this.nadd(-v);
@@ -125,7 +136,7 @@
 	v3.prototype.dot = function(v) {
 		return this.v[0] * v.v[0] + this.v[1] * v.v[1] + this.v[2] * v.v[2];
 	}
-	
+
 	v3.prototype.cross = function(v) {
 		var x = this.v[0], y = this.v[1], z = this.v[2];
 		this.v[0] = y * v.v[2] - z * v.v[1];
@@ -142,7 +153,7 @@
 		this.v[2] = y * s + z * c;
 		return this;
 	};
-	
+
 	v3.prototype.rotateY = function(theta) {
 		var x = this.v[0], z = this.v[2];
 		var c = Math.cos(theta), s = Math.sin(theta);
@@ -151,7 +162,7 @@
 		this.v[2] = -x * s + z * c;
 		return this;
 	};
-	
+
 	v3.prototype.rotateZ = function(theta) {
 		var x = this.v[0], y = this.v[1];
 		var c = Math.cos(theta), s = Math.sin(theta);
@@ -160,6 +171,17 @@
 		this.v[1] = x * s + y * c;
 		return this;
 	};
+
+	v3.prototype.rotateQuat = function(q) {
+		var q_vec = new _.v3(q.x, q.y, q.z);
+		var uv = q_vec.clone().cross(this);
+		var uuv = q_vec.clone().cross(uv);
+
+		uv.scale(q.w);
+		uv.vadd(uuv);
+		uv.scale(2.0);
+		return this.vadd(uv);
+	}
 
 	v3.prototype.transform3 = function(m3) {
 		var x = this.v[0], y = this.v[1], z = this.v[2];
@@ -176,7 +198,7 @@
 		this.v[2] = m4.m[2] * x + m4.m[6] * y + m4.m[10] * z + m4.m[14] * 1.0;
 		return this;
 	}
-	
+
 	v3.prototype.magnitude = v3.prototype.mag = function() {
 		return Math.sqrt(this.v[0] * this.v[0] + this.v[1] * this.v[1] + this.v[2] * this.v[2]);
 	};
@@ -187,12 +209,16 @@
 		var dz = v.v[2] - this.v[2];
 		return Math.sqrt(dx*dx + dy*dy + dz*dz);
 	};
-	
+
 	v3.prototype.normalize = function() {
-		var length = this.length();
-		return this.scale(1.0 / length);
+		var mag = this.mag();
+		if (mag === 0.0) {
+			return undefined;
+		} else {
+			return this.scale(1.0 / mag);
+		}
 	};
-	
+
 	v3.prototype.toString = function(p = 16) {
 		return '[' + this.v[0].toFixed(p) + ',' + this.v[1].toFixed(p) + ',' + this.v[2].toFixed(p) + ']';
 	};

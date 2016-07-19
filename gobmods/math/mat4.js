@@ -44,6 +44,38 @@
 	}
 
 	/**
+	 * Creates a matrix describing the same rotation as a quaternion.
+	 * @param {module:math.quat} q The quaternion to create from
+	 * @return {module:math.m4} The rotation matrix
+	 */
+	m4.fromQuat = function(q) {
+		var m = m4.identity();
+		var xx = q.x * q.x;
+		var yy = q.y * q.y;
+		var zz = q.z * q.z;
+		var xy = q.x * q.y;
+		var xz = q.x * q.z;
+		var yz = q.y * q.z;
+		var wx = q.w * q.x;
+		var wy = q.w * q.y;
+		var wz = q.w * q.z;
+
+		m.m[0] = 1 - 2 * (yy + zz);
+		m.m[1] = 2 * (xy + wz);
+		m.m[2] = 2 * (xz - wy);
+
+		m.m[4] = 2 * (xy - wz);
+		m.m[5] = 1 - 2 * (xx + zz);
+		m.m[6] = 2 * (yz + wx);
+
+		m.m[8] = 2 * (xz + wy);
+		m.m[9] = 2 * (yz - wx);
+		m.m[10] = 1 - 2 * (xx + yy);
+
+		return m;
+	}
+
+	/**
 	 * Clones the current matrix.
 	 * @return {module:math.m4} The newly cloned matrix.
 	 */
@@ -119,11 +151,70 @@
 	};
 
 	/**
-	 * Multiplies the matrix by the given matrix.
+	 * Compute inverted matrix if possible
+	 * @return {module:math.m4} The invert matrix.
+	 * @throw an exception if the invert does not exists.
+	 */
+	m4.prototype.invert = function() {
+		var e00 = this.m[0],  e01 = this.m[1],  e02 = this.m[2],  e03 = this.m[3],
+			e10 = this.m[4],  e11 = this.m[5],  e12 = this.m[6],  e13 = this.m[7],
+			e20 = this.m[8],  e21 = this.m[9],  e22 = this.m[10], e23 = this.m[11],
+			e30 = this.m[12], e31 = this.m[13], e32 = this.m[14], e33 = this.m[15];
+
+		// 2x2 cofactor elements
+		var c_23_01 = e20 * e31 - e30 * e21;
+		var c_23_02 = e20 * e32 - e30 * e22;
+		var c_23_03 = e20 * e33 - e30 * e23;
+		var c_23_12 = e21 * e32 - e31 * e22;
+		var c_23_13 = e21 * e33 - e31 * e23;
+		var c_23_23 = e22 * e33 - e32 * e23;
+
+		var c_01_01 = e00 * e11 - e10 * e01;
+		var c_01_02 = e00 * e12 - e10 * e02;
+		var c_01_03 = e00 * e13 - e10 * e03;
+		var c_01_12 = e01 * e12 - e11 * e02;
+		var c_01_13 = e01 * e13 - e11 * e03;
+		var c_01_23 = e02 * e13 - e12 * e03;
+
+		this.m[0] = + (e11 * c_23_23 - e12 * c_23_13 + e13 * c_23_12);
+		this.m[1] = - (e01 * c_23_23 - e02 * c_23_13 + e03 * c_23_12);
+		this.m[2] = + (e31 * c_01_23 - e32 * c_01_13 + e33 * c_01_12);
+		this.m[3] = - (e21 * c_01_23 - e22 * c_01_13 + e23 * c_01_12);
+
+		var det = e00 * this.m[0] + e10 * this.m[1] + e20 * this.m[2] + e30 * this.m[3];
+		if (det === 0.0) {
+			throw new Error('Inverse of this matrix does not exist.');
+		}
+
+		this.m[0] /= det;
+		this.m[1] /= det;
+		this.m[2] /= det;
+		this.m[3] /= det;
+
+		this.m[4] = - (e10 * c_23_23 - e12 * c_23_03 + e13 * c_23_02) / det;
+		this.m[5] = + (e00 * c_23_23 - e02 * c_23_03 + e03 * c_23_02) / det;
+		this.m[6] = - (e30 * c_01_23 - e32 * c_01_03 + e33 * c_01_02) / det;
+		this.m[7] = + (e20 * c_01_23 - e22 * c_01_03 + e23 * c_01_02) / det;
+
+		this.m[8] = + (e10 * c_23_13 - e11 * c_23_03 + e13 * c_23_01) / det;
+		this.m[9] = - (e00 * c_23_13 - e01 * c_23_03 + e03 * c_23_01) / det;
+		this.m[10] = + (e30 * c_01_13 - e31 * c_01_03 + e33 * c_01_01) / det;
+		this.m[11] = - (e20 * c_01_13 - e21 * c_01_03 + e23 * c_01_01) / det;
+
+		this.m[12] = - (e10 * c_23_12 - e11 * c_23_02 + e12 * c_23_01) / det;
+		this.m[13] = + (e00 * c_23_12 - e01 * c_23_02 + e02 * c_23_01) / det;
+		this.m[14] = - (e30 * c_01_12 - e31 * c_01_02 + e32 * c_01_01) / det;
+		this.m[15] = + (e20 * c_01_12 - e21 * c_01_02 + e22 * c_01_01) / det;
+
+		return this;
+	};
+
+	/**
+	 * Multiplies the matrix by the given matrix on the right (this = this * mat).
 	 * @param {module:math.m4} mat Matrix to multiply by.
 	 * @return {module:math.m4} Matrix multiplied by the matrix passed in argument. 
 	 */
-	m4.prototype.mul = function(mat) {
+	m4.prototype.mul_right = m4.prototype.mul = function(mat) {
 		var a00 = this.m[0],  a01 = this.m[1],  a02 = this.m[2],  a03 = this.m[3],
 			a10 = this.m[4],  a11 = this.m[5],  a12 = this.m[6],  a13 = this.m[7],
 			a20 = this.m[8],  a21 = this.m[9],  a22 = this.m[10], a23 = this.m[11],
@@ -157,6 +248,44 @@
 	};
 
 	/**
+	 * Multiplies the matrix by the given matrix on the left (this = mat * this).
+	 * @param {module:math.m4} mat Matrix to multiply by
+	 * @return {module:math.m4} This matrix multiplied by the given matrix
+	 */
+	m4.prototype.mul_left = function(mat) {
+		var a00 = this.m[0],  a01 = this.m[1],  a02 = this.m[2],  a03 = this.m[3],
+			a10 = this.m[4],  a11 = this.m[5],  a12 = this.m[6],  a13 = this.m[7],
+			a20 = this.m[8],  a21 = this.m[9],  a22 = this.m[10], a23 = this.m[11],
+			a30 = this.m[12], a31 = this.m[13], a32 = this.m[14], a33 = this.m[15];
+
+		var b0 = mat.m[0], b1 = mat.m[4], b2 = mat.m[8], b3 = mat.m[12];
+		this.m[0]  = b0*a00 + b1*a01 + b2*a02 + b3*a03;
+		this.m[4]  = b0*a10 + b1*a11 + b2*a12 + b3*a13;
+		this.m[8]  = b0*a20 + b1*a21 + b2*a22 + b3*a23;
+		this.m[12] = b0*a30 + b1*a31 + b2*a32 + b3*a33;
+
+		var b0 = mat.m[1], b1 = mat.m[5], b2 = mat.m[9], b3 = mat.m[13];
+		this.m[1]  = b0*a00 + b1*a01 + b2*a02 + b3*a03;
+		this.m[5]  = b0*a10 + b1*a11 + b2*a12 + b3*a13;
+		this.m[9]  = b0*a20 + b1*a21 + b2*a22 + b3*a23;
+		this.m[13] = b0*a30 + b1*a31 + b2*a32 + b3*a33;
+
+		var b0 = mat.m[2], b1 = mat.m[6], b2 = mat.m[10], b3 = mat.m[14];
+		this.m[2]  = b0*a00 + b1*a01 + b2*a02 + b3*a03;
+		this.m[6]  = b0*a10 + b1*a11 + b2*a12 + b3*a13;
+		this.m[10] = b0*a20 + b1*a21 + b2*a22 + b3*a23;
+		this.m[14] = b0*a30 + b1*a31 + b2*a32 + b3*a33;
+
+		var b0 = mat.m[3], b1 = mat.m[7], b2 = mat.m[11], b3 = mat.m[15];
+		this.m[3]  = b0*a00 + b1*a01 + b2*a02 + b3*a03;
+		this.m[7]  = b0*a10 + b1*a11 + b2*a12 + b3*a13;
+		this.m[11] = b0*a20 + b1*a21 + b2*a22 + b3*a23;
+		this.m[15] = b0*a30 + b1*a31 + b2*a32 + b3*a33;
+
+		return this;
+	}
+
+	/**
 	 * Generates a perspective projection matrix.
 	 * @param {Number} fovy Vertical field of view in degrees
 	 * @param {Number} ar Aspect ratio defined by width / height
@@ -188,15 +317,13 @@
 
 	/**
 	 * Apply a translation to the matrix.
-	 * @param {Number} x Translation delta on x.
-	 * @param {Number} y Translation delta on y.
-	 * @param {Number} z Translation delta on z.
+	 * @param {module:math:v3} vec - Vector to translate the matrix
 	 * @return {module:math.m4} This matrix translated
 	 */
 	m4.prototype.translate = function(vec3) {
-		var x = vec3[0];
-		var y = vec3[1];
-		var z = vec3[2];
+		var x = vec3.x,
+			y = vec3.y,
+			z = vec3.z;
 		this.m[12] = this.m[0] * x + this.m[4] * y + this.m[8]  * z + this.m[12];
 		this.m[13] = this.m[1] * x + this.m[5] * y + this.m[9]  * z + this.m[13];
 		this.m[14] = this.m[2] * x + this.m[6] * y + this.m[10] * z + this.m[14];
@@ -299,15 +426,15 @@
 
 	/**
 	 * Applies a rotation around the axis to the matrix.
-	 * @param {Vec3} axis - The axit to rotate around
-	 * @param {Number} theta - The angle (in radians) to rotate
-	 * @return {module:math.m4} - The rotated matrix
+	 * @param {Vec3} axis The axis to rotate around
+	 * @param {Number} theta The angle (in radians) to rotate
+	 * @return {module:math.m4} The rotated matrix
 	 */
 	m4.prototype.rotate = function(axis, theta) {
 		var c = Math.cos(theta);
 		var s = Math.sin(theta);
 
-		var rot = identity();
+		var rot = m4.identity();
 		axis.normalize();
 		
 		rot.m[0] = c + (1-c) * axis.x * axis.x;
@@ -327,14 +454,23 @@
 	}
 
 	/**
+	 * Rotates this matrix by a quaternion.
+	 * @param {module:math.quat} q The quaternion to rotate by
+	 * @return {module:math.m4} The rotated matrix
+	 */
+	m4.prototype.rotateQuat = function(q) {
+		return this.mul(m4.fromQuat(q));
+	}
+
+	/**
 	 * Scales the matrix by the given vector.
 	 * @param {module:math.v3} vec3 Vector by which to scale the matrix.
 	 * @return {module:math.m4} The scaled matrix.
 	 */
 	m4.prototype.scale = function(vec3) {
-		var x = vec3[0];
-		var y = vec3[1];
-		var z = vec3[2];
+		var x = vec3.x,
+			y = vec3.y,
+			z = vec3.z;
 		this.m[0] *= x;
 		this.m[1] *= x;
 		this.m[2] *= x;
