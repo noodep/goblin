@@ -1,7 +1,7 @@
 /**
  * @fileOverview Vector manipulation library.
  * @author Noodep
- * @version 0.31
+ * @version 0.32
  */
 (function(context, undefined) {
 	'use strict';
@@ -13,6 +13,7 @@
 	 * @param {Number} x x value.
 	 * @param {Number} y y value.
 	 * @param {Number} z z value.
+	 * @param {Number} w w value.
 	 * @return {module:math.v4} The newly created vector.
 	 */
 	var v4 = function(x,y,z,w) {

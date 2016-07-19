@@ -96,6 +96,7 @@
 		}
 
 		e.preventDefault();
+
 		var sign = (e.wheelDelta >= 0)? 1 : -1; 
 		this._camera.staticMove(e.wheelDelta, 0.001);
 	}
