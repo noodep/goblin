@@ -1,10 +1,12 @@
 /**
  * @fileOverview 3 components vector manipulation.
  * @author Noodep
- * @version 0.43
+ * @version 0.44
  */
 
 'use strict';
+
+const EPSILON32 = Math.pow(2, -23);
 
 export default class Vec3 {
 
@@ -19,7 +21,7 @@ export default class Vec3 {
 	 * @return {module:math.Vec3} - The newly created vector.
 	 */
 	constructor(x = 0.0, y = 0.0, z = 0.0) {
-		this._v = new Float64Array(3);
+		this._v = new Float32Array(3);
 		this._v[0] = x;
 		this._v[1] = y;
 		this._v[2] = z;
@@ -143,15 +145,15 @@ export default class Vec3 {
 	}
 
 	/**
-	 * Test for equality component wise using machine EPSILON (2^-52)
+	 * Test for equality component wise using machine EPSILON for 32 bits (2^-23)
 	 *
 	 * @param {module:math.Vec3} - The vector with which to make the comparison.
 	 * @return {Boolean} - true if this vector and the specified vector have the same components, false otherwise.
 	 */
 	equals(v3) {
-		return Math.abs(this._v[0] - v3._v[0]) < Number.EPSILON &&
-			Math.abs(this._v[1] - v3._v[1]) < Number.EPSILON &&
-			Math.abs(this._v[2] - v3._v[2]) < Number.EPSILON;
+		return Math.abs(this._v[0] - v3._v[0]) < EPSILON32 &&
+			Math.abs(this._v[1] - v3._v[1]) < EPSILON32 &&
+			Math.abs(this._v[2] - v3._v[2]) < EPSILON32;
 	}
 
 	/**

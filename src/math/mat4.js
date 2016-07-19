@@ -1,7 +1,14 @@
 /**
  * @fileOverview Matrix manipulation library for computer graphics assuming column major flatenning.
+ * We use matrix notation for elements, starting at 1. First is the row second is the column
+ *
+ * [00]:e11  [04]:e12  [08]:e13  [12]:e14
+ * [01]:e21  [05]:e22  [09]:e23  [13]:e24
+ * [02]:e31  [06]:e32  [10]:e33  [14]:e34
+ * [03]:e41  [07]:e42  [11]:e43  [15]:e44
+ *
  * @author Noodep
- * @version 0.45
+ * @version 0.47
  */
 
 'use strict';
@@ -16,7 +23,7 @@ export default class Mat4 {
 	 * @return {module:math.Mat4} - The newly created matrix.
 	 */
 	constructor() {
-		this._m = new Float64Array(16);
+		this._m = new Float32Array(16);
 		this._m[0] = 0.0;
 		this._m[1] = 0.0;
 		this._m[2] = 0.0;
@@ -60,6 +67,13 @@ export default class Mat4 {
 		m._m[15] = 1.0;
 
 		return m;
+	}
+
+	/**
+	 * Retruns this class underlying matrix.
+	 */
+	get matrix() {
+		return this._m;
 	}
 
 	/**
@@ -148,26 +162,26 @@ export default class Mat4 {
 	 * @return {module:math.Mat4} - The transposed matrix.
 	 */
 	transpose() {
-		const e01 = this._m[1];
-		const e02 = this._m[2];
-		const e03 = this._m[3];
-		const e12 = this._m[6];
-		const e13 = this._m[7];
-		const e23 = this._m[11];
+		const e21 = this._m[1];
+		const e31 = this._m[2];
+		const e41 = this._m[3];
+		const e32 = this._m[6];
+		const e42 = this._m[7];
+		const e43 = this._m[11];
 
-		this._m[1] = this._m[4];
-		this._m[2] = this._m[8];
-		this._m[3] = this._m[12];
-		this._m[6] = this._m[9];
-		this._m[7] = this._m[13];
+		this._m[1]  = this._m[4];
+		this._m[2]  = this._m[8];
+		this._m[3]  = this._m[12];
+		this._m[6]  = this._m[9];
+		this._m[7]  = this._m[13];
 		this._m[11] = this._m[14];
 
-		this._m[4] = e01;
-		this._m[8] = e02;
-		this._m[12] = e03;
-		this._m[9] = e12;
-		this._m[13] = e13;
-		this._m[14] = e23;
+		this._m[4]  = e21;
+		this._m[8]  = e31;
+		this._m[12] = e41;
+		this._m[9]  = e32;
+		this._m[13] = e42;
+		this._m[14] = e43;
 
 		return this;
 	}
@@ -179,58 +193,58 @@ export default class Mat4 {
 	 * @return {module:math.Mat4} - This matrix multiplied by the specified matrix.
 	 */
 	multiply(m) {
-		const a00 = this._m[0];
-		const a01 = this._m[1];
-		const a02 = this._m[2];
-		const a03 = this._m[3];
-		const a10 = this._m[4];
-		const a11 = this._m[5];
-		const a12 = this._m[6];
-		const a13 = this._m[7];
-		const a20 = this._m[8];
-		const a21 = this._m[9];
-		const a22 = this._m[10];
-		const a23 = this._m[11];
-		const a30 = this._m[12];
-		const a31 = this._m[13];
-		const a32 = this._m[14];
-		const a33 = this._m[15];
+		const e11 = this._m[0];
+		const e21 = this._m[1];
+		const e31 = this._m[2];
+		const e41 = this._m[3];
+		const e12 = this._m[4];
+		const e22 = this._m[5];
+		const e32 = this._m[6];
+		const e42 = this._m[7];
+		const e13 = this._m[8];
+		const e23 = this._m[9];
+		const e33 = this._m[10];
+		const e43 = this._m[11];
+		const e14 = this._m[12];
+		const e24 = this._m[13];
+		const e34 = this._m[14];
+		const e44 = this._m[15];
 
-		const b0 = m._m[0];
-		const b1 = m._m[1];
-		const b2 = m._m[2];
-		const b3 = m._m[3];
-		this._m[0] = b0*a00 + b1*a10 + b2*a20 + b3*a30;
-		this._m[1] = b0*a01 + b1*a11 + b2*a21 + b3*a31;
-		this._m[2] = b0*a02 + b1*a12 + b2*a22 + b3*a32;
-		this._m[3] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
+		let e1_ = m._m[0];
+		let e2_ = m._m[1];
+		let e3_ = m._m[2];
+		let e4_ = m._m[3];
+		this._m[0] = e1_*e11 + e2_*e12 + e3_*e13 + e4_*e14;
+		this._m[1] = e1_*e21 + e2_*e22 + e3_*e23 + e4_*e24;
+		this._m[2] = e1_*e31 + e2_*e32 + e3_*e33 + e4_*e34;
+		this._m[3] = e1_*e41 + e2_*e42 + e3_*e43 + e4_*e44;
 
-		b0 = m._m[4];
-		b1 = m._m[5];
-		b2 = m._m[6];
-		b3 = m._m[7];
-		this._m[4] = b0*a00 + b1*a10 + b2*a20 + b3*a30;
-		this._m[5] = b0*a01 + b1*a11 + b2*a21 + b3*a31;
-		this._m[6] = b0*a02 + b1*a12 + b2*a22 + b3*a32;
-		this._m[7] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
+		e1_ = m._m[4];
+		e2_ = m._m[5];
+		e3_ = m._m[6];
+		e4_ = m._m[7];
+		this._m[4] = e1_*e11 + e2_*e12 + e3_*e13 + e4_*e14;
+		this._m[5] = e1_*e21 + e2_*e22 + e3_*e23 + e4_*e24;
+		this._m[6] = e1_*e31 + e2_*e32 + e3_*e33 + e4_*e34;
+		this._m[7] = e1_*e41 + e2_*e42 + e3_*e43 + e4_*e44;
 
-		b0 = m._m[8];
-		b1 = m._m[9];
-		b2 = m._m[10];
-		b3 = m._m[11];
-		this._m[8]  = b0*a00 + b1*a10 + b2*a20 + b3*a30;
-		this._m[9]  = b0*a01 + b1*a11 + b2*a21 + b3*a31;
-		this._m[10] = b0*a02 + b1*a12 + b2*a22 + b3*a32;
-		this._m[11] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
+		e1_ = m._m[8];
+		e2_ = m._m[9];
+		e3_ = m._m[10];
+		e4_ = m._m[11];
+		this._m[8]  = e1_*e11 + e2_*e12 + e3_*e13 + e4_*e14;
+		this._m[9]  = e1_*e21 + e2_*e22 + e3_*e23 + e4_*e24;
+		this._m[10] = e1_*e31 + e2_*e32 + e3_*e33 + e4_*e34;
+		this._m[11] = e1_*e41 + e2_*e42 + e3_*e43 + e4_*e44;
 
-		b0 = m._m[12];
-		b1 = m._m[13];
-		b2 = m._m[14];
-		b3 = m._m[15];
-		this._m[12] = b0*a00 + b1*a10 + b2*a20 + b3*a30;
-		this._m[13] = b0*a01 + b1*a11 + b2*a21 + b3*a31;
-		this._m[14] = b0*a02 + b1*a12 + b2*a22 + b3*a32;
-		this._m[15] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
+		e1_ = m._m[12];
+		e2_ = m._m[13];
+		e3_ = m._m[14];
+		e4_ = m._m[15];
+		this._m[12] = e1_*e11 + e2_*e12 + e3_*e13 + e4_*e14;
+		this._m[13] = e1_*e21 + e2_*e22 + e3_*e23 + e4_*e24;
+		this._m[14] = e1_*e31 + e2_*e32 + e3_*e33 + e4_*e34;
+		this._m[15] = e1_*e41 + e2_*e42 + e3_*e43 + e4_*e44;
 
 		return this;
 	}
@@ -290,9 +304,9 @@ export default class Mat4 {
 	/**
 	 * Applies a translation in R3 to this matrix.
 	 *
-	 * @param {Number} x - amount by which to translate this matrix along the x axis.
-	 * @param {Number} y - amount by which to translate this matrix along the y axis.
-	 * @param {Number} z - amount by which to translate this matrix along the z axis.
+	 * @param {Number} x - amount by which to translate this matrix along the X axis.
+	 * @param {Number} y - amount by which to translate this matrix along the Y axis.
+	 * @param {Number} z - amount by which to translate this matrix along the Z axis.
 	 * @return {module:math.m4} - The translated matrix.
 	 */
 	translateXYZ(x, y, z) {
@@ -300,6 +314,51 @@ export default class Mat4 {
 		this._m[13] = this._m[1] * x + this._m[5] * y + this._m[9]  * z + this._m[13];
 		this._m[14] = this._m[2] * x + this._m[6] * y + this._m[10] * z + this._m[14];
 		this._m[15] = this._m[3] * x + this._m[7] * y + this._m[11] * z + this._m[15];
+
+		return this;
+	}
+
+	/**
+	 * Applies a translation in R3 along the X axis to this matrix.
+	 *
+	 * @param {Number} x - amount by which to translate this matrix along the X axis.
+	 * @return {module:math.m4} - The translated matrix.
+	 */
+	translateX(x) {
+		this._m[12] = this._m[0] * x + this._m[12];
+		this._m[13] = this._m[1] * x + this._m[13];
+		this._m[14] = this._m[2] * x + this._m[14];
+		this._m[15] = this._m[3] * x + this._m[15];
+
+		return this;
+	}
+
+	/**
+	 * Applies a translation in R3 along the Y axis to this matrix.
+	 *
+	 * @param {Number} y - amount by which to translate this matrix along the Y axis.
+	 * @return {module:math.m4} - The translated matrix.
+	 */
+	translateY(y) {
+		this._m[12] = this._m[4] * y + this._m[12];
+		this._m[13] = this._m[5] * y + this._m[13];
+		this._m[14] = this._m[6] * y + this._m[14];
+		this._m[15] = this._m[7] * y + this._m[15];
+
+		return this;
+	}
+
+	/**
+	 * Applies a translation in R3 along the Z axis to this matrix.
+	 *
+	 * @param {Number} z - amount by which to translate this matrix along the Z axis.
+	 * @return {module:math.m4} - The translated matrix.
+	 */
+	translateZ(z) {
+		this._m[12] = this._m[8] * z + this._m[12];
+		this._m[13] = this._m[9] * z + this._m[13];
+		this._m[14] = this._m[10] * z + this._m[14];
+		this._m[15] = this._m[11] * z + this._m[15];
 
 		return this;
 	}
@@ -314,24 +373,24 @@ export default class Mat4 {
 		const c = Math.cos(theta);
 		const s = Math.sin(theta);
 
-		const e10 = this._m[4];
-		const e11 = this._m[5];
-		const e12 = this._m[6];
-		const e13 = this._m[7];
-		const e20 = this._m[8];
-		const e21 = this._m[9];
-		const e22 = this._m[10];
-		const e23 = this._m[11];
+		const e12 = this._m[4];
+		const e22 = this._m[5];
+		const e32 = this._m[6];
+		const e42 = this._m[7];
+		const e13 = this._m[8];
+		const e23 = this._m[9];
+		const e33 = this._m[10];
+		const e43 = this._m[11];
 
-		this._m[4] = e10 * c + e20 * s;
-		this._m[5] = e11 * c + e21 * s;
-		this._m[6] = e12 * c + e22 * s;
-		this._m[7] = e13 * c + e23 * s;
+		this._m[4] = e12 * c + e13 * s;
+		this._m[5] = e22 * c + e23 * s;
+		this._m[6] = e32 * c + e33 * s;
+		this._m[7] = e42 * c + e43 * s;
 
-		this._m[8]  = -e10 * s + e20 * c;
-		this._m[9]  = -e11 * s + e21 * c;
-		this._m[10] = -e12 * s + e22 * c;
-		this._m[11] = -e13 * s + e23 * c;
+		this._m[8]  = -e12 * s + e13 * c;
+		this._m[9]  = -e22 * s + e23 * c;
+		this._m[10] = -e32 * s + e33 * c;
+		this._m[11] = -e42 * s + e43 * c;
 
 		return this;
 	}
@@ -346,24 +405,24 @@ export default class Mat4 {
 		const c = Math.cos(theta);
 		const s = Math.sin(theta);
 
-		const e00 = this._m[0];
-		const e01 = this._m[1];
-		const e02 = this._m[2];
-		const e03 = this._m[3];
-		const e20 = this._m[8];
-		const e21 = this._m[9];
-		const e22 = this._m[10];
-		const e23 = this._m[11];
+		const e11 = this._m[0];
+		const e21 = this._m[1];
+		const e31 = this._m[2];
+		const e41 = this._m[3];
+		const e13 = this._m[8];
+		const e23 = this._m[9];
+		const e33 = this._m[10];
+		const e43 = this._m[11];
 
-		this._m[0] = e00 * c - e20 * s;
-		this._m[1] = e01 * c - e21 * s;
-		this._m[2] = e02 * c - e22 * s;
-		this._m[3] = e03 * c - e23 * s;
+		this._m[0] = e11 * c - e13 * s;
+		this._m[1] = e21 * c - e23 * s;
+		this._m[2] = e31 * c - e33 * s;
+		this._m[3] = e41 * c - e43 * s;
 
-		this._m[8]  = e00 * s + e20 * c;
-		this._m[9]  = e01 * s + e21 * c;
-		this._m[10] = e02 * s + e22 * c;
-		this._m[11] = e03 * s + e23 * c;
+		this._m[8]  = e11 * s + e13 * c;
+		this._m[9]  = e21 * s + e23 * c;
+		this._m[10] = e31 * s + e33 * c;
+		this._m[11] = e41 * s + e43 * c;
 
 		return this;
 	}
@@ -378,24 +437,24 @@ export default class Mat4 {
 		const c = Math.cos(theta);
 		const s = Math.sin(theta);
 
-		const e00 = this._m[0];
-		const e01 = this._m[1];
-		const e02 = this._m[2];
-		const e03 = this._m[3];
-		const e10 = this._m[4];
-		const e11 = this._m[5];
-		const e12 = this._m[6];
-		const e13 = this._m[7];
+		const e11 = this._m[0];
+		const e21 = this._m[1];
+		const e31 = this._m[2];
+		const e41 = this._m[3];
+		const e12 = this._m[4];
+		const e22 = this._m[5];
+		const e32 = this._m[6];
+		const e42 = this._m[7];
 
-		this._m[0] = e00 * c + e10 * s;
-		this._m[1] = e01 * c + e11 * s;
-		this._m[2] = e02 * c + e12 * s;
-		this._m[3] = e03 * c + e13 * s;
+		this._m[0] = e11 * c + e12 * s;
+		this._m[1] = e21 * c + e22 * s;
+		this._m[2] = e31 * c + e32 * s;
+		this._m[3] = e41 * c + e42 * s;
 
-		this._m[4] = -e00 * s + e10 * c;
-		this._m[5] = -e01 * s + e11 * c;
-		this._m[6] = -e02 * s + e12 * c;
-		this._m[7] = -e03 * s + e13 * c;
+		this._m[4] = -e11 * s + e12 * c;
+		this._m[5] = -e21 * s + e22 * c;
+		this._m[6] = -e31 * s + e32 * c;
+		this._m[7] = -e41 * s + e42 * c;
 
 		return this;
 	}
@@ -409,21 +468,22 @@ export default class Mat4 {
 	 */
 	rotate(axis, theta) {
 		const c = Math.cos(theta);
+		const _c = 1 - c;
 		const s = Math.sin(theta);
 		const r = Mat4.identity();
 		const a = axis.clone().normalize();
 
-		r._m[0] = c + (1-c) * a.x * a.x;
-		r._m[1] =     (1-c) * a.x * a.y + s * a.z;
-		r._m[2] =     (1-c) * a.x * a.z - s * a.y;
+		r._m[0] = _c * a.x * a.x + c;
+		r._m[1] = _c * a.x * a.y + s * a.z;
+		r._m[2] = _c * a.x * a.z - s * a.y;
 
-		r._m[4] =     (1-c) * a.y * a.x - s * a.z;
-		r._m[5] = c + (1-c) * a.y * a.y;
-		r._m[6] =     (1-c) * a.y * a.z + s * a.x;
+		r._m[4] = _c * a.y * a.x - s * a.z;
+		r._m[5] = _c * a.y * a.y + c;
+		r._m[6] = _c * a.y * a.z + s * a.x;
 
-		r._m[8] =     (1-c) * a.z * a.x + s * a.y;
-		r._m[9] =     (1-c) * a.z * a.y - s * a.x;
-		r._m[10]= c + (1-c) * a.z * a.z;
+		r._m[8] = _c * a.z * a.x + s * a.y;
+		r._m[9] = _c * a.z * a.y - s * a.x;
+		r._m[10]= _c * a.z * a.z + c;
 
 		this.multiply(r);
 
@@ -441,18 +501,86 @@ export default class Mat4 {
 		const y = v.y;
 		const z = v.z;
 
-		this.m[0] *= x;
-		this.m[1] *= x;
-		this.m[2] *= x;
-		this.m[3] *= x;
-		this.m[4] *= y;
-		this.m[5] *= y;
-		this.m[6] *= y;
-		this.m[7] *= y;
-		this.m[8] *= z;
-		this.m[9] *= z;
-		this.m[10] *= z;
-		this.m[11] *= z;
+		this._m[0] *= x;
+		this._m[1] *= x;
+		this._m[2] *= x;
+		this._m[3] *= x;
+		this._m[4] *= y;
+		this._m[5] *= y;
+		this._m[6] *= y;
+		this._m[7] *= y;
+		this._m[8] *= z;
+		this._m[9] *= z;
+		this._m[10] *= z;
+		this._m[11] *= z;
+
+		return this;
+	}
+
+	/**
+	 * Scales the matrix by the specified scalar along the X axis.
+	 *
+	 * @param {Number} x - Scalar by which to scale the matrix along the X axis.
+	 * @return {module:math.Mat4} - The scaled matrix.
+	 */
+	scaleX(x) {
+		this._m[0] *= x;
+		this._m[1] *= x;
+		this._m[2] *= x;
+		this._m[3] *= x;
+
+		return this;
+	}
+
+	/**
+	 * Scales the matrix by the specified scalar along the Y axis.
+	 *
+	 * @param {Number} y - Scalar by which to scale the matrix along the Y axis.
+	 * @return {module:math.Mat4} - The scaled matrix.
+	 */
+	scaleY(y) {
+		this._m[4] *= y;
+		this._m[5] *= y;
+		this._m[6] *= y;
+		this._m[7] *= y;
+
+		return this;
+	}
+
+	/**
+	 * Scales the matrix by the specified scalar along the Z axis.
+	 *
+	 * @param {Number} z - Scalar by which to scale the matrix along the Z axis.
+	 * @return {module:math.Mat4} - The scaled matrix.
+	 */
+	scaleZ(z) {
+		this._m[8] *= z;
+		this._m[9] *= z;
+		this._m[10] *= z;
+		this._m[11] *= z;
+
+		return this;
+	}
+
+	/**
+	 * Scales the matrix by the specified scalar uniformely along all three axis.
+	 *
+	 * @param {Number} s - Scalar by which to scale the matrix along all axis.
+	 * @return {module:math.Mat4} - The scaled matrix.
+	 */
+	scaleUniform(s) {
+		this._m[0] *= s;
+		this._m[1] *= s;
+		this._m[2] *= s;
+		this._m[3] *= s;
+		this._m[4] *= s;
+		this._m[5] *= s;
+		this._m[6] *= s;
+		this._m[7] *= s;
+		this._m[8] *= s;
+		this._m[9] *= s;
+		this._m[10] *= s;
+		this._m[11] *= s;
 
 		return this;
 	}

@@ -1,7 +1,7 @@
 /**
  * @fileOverview Class representing an OpenGL ES program
  * @author Noodep
- * @version 0.14
+ * @version 0.15
  */
 'use strict';
 
@@ -23,7 +23,7 @@ export default class Program {
 	 * @param {string} [path=DEFAULT_SHADER_PATH] - Location of the shaders directory.
 	 * @return {module:gl.Program} - The newly created Program.
 	 */
-	constructor({context, name, path = Program.DEFAULT_SHADER_PATH} = {}) {
+	constructor({context, name, path = Program.DEFAULT_SHADER_PATH, autoload = true} = {}) {
 		this._context = context;
 		if(!name)
 			throw new Error('Name required in order to create a program.');
@@ -38,6 +38,8 @@ export default class Program {
 		if(!path.endsWith('/'))
 			path += '/';
 		this._path = `${path}${name}/`;
+
+		this._ready = (autoload)?this._load():undefined;
 	}
 
 	/**
@@ -46,14 +48,32 @@ export default class Program {
 	 * @return {Promise} a promise that succeed when this program is ready.
 	 */
 	ready() {
-		const shaders = [
-			this.createShader(WebGLRenderingContext.VERTEX_SHADER),
-			this.createShader(WebGLRenderingContext.FRAGMENT_SHADER)
-		];
+		if(!this._ready)
+			this._ready = this._load();
 
-		return Promise.all(shaders)
-			.then(this.compileProgram.bind(this))
-			.then(this.qualifyAll.bind(this));
+		return this._ready;
+	}
+
+	/**
+	 * Get this program underlying WebGLProgram.
+	 *
+	 * @return {WebGLProgram} - This program underlying WebGLProgram.
+	 */
+	get program() {
+		return this._program;
+	}
+	/**
+	 * Gets a WebGLUniformLocation for the specified uniform name.
+	 *
+	 * @param {String} name - Name of the uniform location to be returned.
+	 * @return {WebGLUniformLocation} - The uniform location if it exists undefined otherwise.
+	 */
+	getUniform(name) {
+		return this._parameters.get(WebGLRenderingContext.ACTIVE_UNIFORMS).get(name);
+	}
+
+	getAttribute(name) {
+		return this._parameters.get(WebGLRenderingContext.ACTIVE_ATTRIBUTES).get(name);
 	}
 
 	/**
@@ -98,12 +118,8 @@ export default class Program {
 	}
 
 	qualifyAll() {
-		const params = [
-			this.qualify(WebGLRenderingContext.ACTIVE_UNIFORMS),
-			this.qualify(WebGLRenderingContext.ACTIVE_ATTRIBUTES)
-		];
-
-		return Promise.all(params);
+		this.qualify(WebGLRenderingContext.ACTIVE_UNIFORMS),
+		this.qualify(WebGLRenderingContext.ACTIVE_ATTRIBUTES)
 	}
 
 	qualify(parameter) {
@@ -121,6 +137,18 @@ export default class Program {
 			dl(`Found ${p_func} : ${info.name} with index ${location}`);
 		}
 	}
+
+	_load() {
+		const shaders = [
+			this.createShader(WebGLRenderingContext.VERTEX_SHADER),
+			this.createShader(WebGLRenderingContext.FRAGMENT_SHADER)
+		];
+
+		return Promise.all(shaders)
+			.then(this.compileProgram.bind(this))
+			.then(this.qualifyAll.bind(this));
+	}
+
 }
 
 Program.DEFAULT_SHADER_PATH = '/shaders/';

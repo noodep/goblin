@@ -1,7 +1,7 @@
 /**
  * @fileOverview General purpose Logger and associated utilities.
  * @author Noodep
- * @version 0.12
+ * @version 0.13
  */
 'use strict';
 

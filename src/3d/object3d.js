@@ -1,7 +1,7 @@
 /**
  * @fileOverview Object3d class that represent a object that can be manipulated in a 3d environment.
  * @author Noodep
- * @version 0.31
+ * @version 0.32
  */
 
 'use strict';
@@ -25,7 +25,7 @@ export default class Object3D {
 	constructor({ id = UUIDv4(), origin, orientation, scale } = {}) {
 		this._id = id;
 		this._children = new Map();
-		this._initModel(origin, orientation, scale);
+		this._model = Mat4.identity();
 	}
 
 	/**
@@ -146,25 +146,6 @@ export default class Object3D {
 	 */
 	translateZ(delta_z) {
 		this._model.translateZ(delta_z);
-	}
-
-	/**
-	 * Initializes this matrix model according to the specified parameters.
-	 */
-	_initModel(origin, orientation, scale) {
-		this._model = Mat4.identity();
-
-		if(origin)
-			this._model.translateXYZ(origin[0], origin[1], origin[2]);
-
-		if(scale)
-			this._model.scaleXYZ(scale[0], scale[1], scale[2]);
-
-		if(orientation) {
-			this._model.rotateX(orientation[0]);
-			this._model.rotateY(orientation[1]);
-			this._model.rotateZ(orientation[2]);
-		}
 	}
 }
 

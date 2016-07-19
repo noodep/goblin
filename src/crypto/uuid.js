@@ -1,3 +1,9 @@
+/**
+ * @fileOverview Scene.
+ * @author Noodep
+ * @version 0.02
+ */
+
 export function UUIDv4() {
 	// rfc4122 version 4 compliant UUID
 	return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {

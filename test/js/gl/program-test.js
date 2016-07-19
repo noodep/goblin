@@ -30,3 +30,4 @@ export default class ProgramTest {
 		simple.ready();
 	}
 }
+

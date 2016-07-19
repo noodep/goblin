@@ -1,5 +1,6 @@
 'use strict';
 
+import {epsilon32Equals as ee, randomFloat32 as rf32} from '../test-utils.js';
 import Vec3 from '../../../src/math/vec3.js';
 
 export default class Vec3Test {
@@ -35,44 +36,44 @@ export default class Vec3Test {
 
 	static testDefaultConstruction() {
 		const v = new Vec3();
-		console.assert(v.x == 0.0 && v.y == 0.0 && v.z == 0.0, 'Default construction does not return a null vector.');
+		console.assert(vectorEquals(v, 0.0, 0.0, 0.0), 'Default construction does not return a null vector.');
 	}
 
 	static testIdentityConstruction() {
 		const v = Vec3.identity();
-		console.assert(v.x == 1.0 && v.y == 1.0 && v.z == 1.0, 'Identity construction does not return an vector set to identity.');
+		console.assert(vectorEquals(v, 1.0, 1.0, 1.0), 'Identity construction does not return an vector set to identity.');
 	}
 
 	static testArrayConstruction() {
-		const x = Math.random();
-		const y = Math.random();
-		const z = Math.random();
+		const x = rf32();
+		const y = rf32();
+		const z = rf32();
 		const v = Vec3.fromArray([x, y, z]);
-		console.assert(v.x == x && v.y == y && v.z == z, 'Assigned array construction failed.');
+		console.assert(vectorEpsilonEquals(v, x, y, z), 'Assigned array construction failed.');
 	}
 
 	static testZeroAssignement() {
 		const v = new Vec3(0.0, 0.0, 0.0);
-		console.assert(v.x == 0.0 && v.y == 0.0 && v.z == 0.0, 'Assigned construction (zeroes) failed.');
+		console.assert(vectorEquals(v, 0.0, 0.0, 0.0), 'Assigned construction (zeroes) failed.');
 	}
 
 	static testRandomAssignement() {
-		const x = Math.random();
-		const y = Math.random();
-		const z = Math.random();
+		const x = rf32();
+		const y = rf32();
+		const z = rf32();
 		const v = new Vec3(x,y,z);
-		console.assert(v.x == x && v.y == y && v.z == z, 'Assigned construction failed.');
+		console.assert(vectorEpsilonEquals(v, x, y, z), 'Assigned construction failed.');
 	}
 
 	static testSetters() {
-		const x = Math.random();
-		const y = Math.random();
-		const z = Math.random();
+		const x = rf32();
+		const y = rf32();
+		const z = rf32();
 		const v = new Vec3();
 		v.x = x;
 		v.y = y;
 		v.z = z;
-		console.assert(v.x == x && v.y == y && v.z == z, 'Setters do not assign properly.');
+		console.assert(vectorEpsilonEquals(v, x, y, z), 'Setters do not assign properly.');
 	}
 
 	static testIdentity() {
@@ -111,7 +112,7 @@ export default class Vec3Test {
 	static testNormalize() {
 		const v = Vec3.random();
 		v.normalize();
-		console.assert(Math.abs(v.length() - 1.0) <= Number.EPSILON, 'Length of the normalized vector is different from one.');
+		console.assert(ee(v.length(), 1.0), 'Length of the normalized vector is different from one.');
 	}
 
 	static testNegate() {
@@ -120,42 +121,43 @@ export default class Vec3Test {
 		const ny = -v.y;
 		const nz = -v.z;
 		v.negate();
-		console.assert(v.x == nx && v.y == ny && v.z == nz, 'Negation failed.');
+		console.assert(vectorEpsilonEquals(v, nx, ny, nz), 'Negation failed.');
 	}
 
 	static testInverse() {
 		const v = Vec3.random();
-		const ix = 1.0 / v.x;
-		const iy = 1.0 / v.y;
-		const iz = 1.0 / v.z;
+
+		const ix = Math.fround(1.0 / v.x);
+		const iy = Math.fround(1.0 / v.y);
+		const iz = Math.fround(1.0 / v.z);
 		v.inverse();
-		console.assert(v.x == ix && v.y == iy && v.z == iz, 'Inversion failed.');
+		console.assert(vectorEpsilonEquals(v, ix, iy, iz), 'Inversion failed.');
 	}
 
 	static testNullInverse() {
 		const v = new Vec3();
 		v.inverse();
-		console.assert(v.x == Infinity && v.y == Infinity && v.z == Infinity, 'Inverting a null vector does not return an Infinity vector.');
+		console.assert(vectorEquals(v, Infinity, Infinity, Infinity), 'Inverting a null vector does not return an Infinity vector.');
 	}
 
 	static testNullScaling() {
 		const v = new Vec3();
-		v.scale(Math.random());
-		console.assert(v.x == 0.0 && v.y == 0.0 && v.z == 0.0, 'Scaling a null vector by random scalar does not return a null vector.');
+		v.scale(rf32());
+		console.assert(vectorEquals(v, 0.0, 0.0, 0.0), 'Scaling a null vector by random scalar does not return a null vector.');
 	}
 
 	static testZeroScaling() {
 		const v = Vec3.random();
 		v.scale(0.0);
-		console.assert(v.x == 0.0 && v.y == 0.0 && v.z == 0.0, 'Scaling a random vector by zero does not return a null vector.');
+		console.assert(vectorEquals(v, 0.0, 0.0, 0.0), 'Scaling a random vector by zero does not return a null vector.');
 	}
 
 	static testIdentityScaling() {
 		const v = new Vec3();
-		const s = Math.random();
+		const s = rf32();
 		v.identity();
 		v.scale(s);
-		console.assert(v.x == s && v.y == s && v.z == s, 'Scaling identity failed.');
+		console.assert(vectorEpsilonEquals(v, s, s, s), 'Scaling identity failed.');
 	}
 
 	static testMultiply() {
@@ -165,7 +167,15 @@ export default class Vec3Test {
 		const my = v$1.y * v$2.y;
 		const mz = v$1.z * v$2.z;
 		v$1.multiply(v$2);
-		console.assert(v$1.x == mx && v$1.y == my && v$1.z == mz, 'Multiplication failed.');
+		console.assert(vectorEpsilonEquals(v$1, mx, my, mz), 'Multiplication failed.');
 	}
+}
+
+function vectorEpsilonEquals(v, x, y, z) {
+	return ee(v.x, x) && ee(v.y, y) && ee(v.z, z);
+}
+
+function vectorEquals(v, x, y, z) {
+	return v.x == x && v.y == y && v.z == z;
 }
 
