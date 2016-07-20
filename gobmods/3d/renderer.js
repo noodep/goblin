@@ -47,6 +47,10 @@
 		return this._children.has(child);
 	}
 
+	Renderer.prototype.clearChildren = function() {
+		this._children.clear();
+	}
+
 	Renderer.prototype.updateModelMatrix = function() {
 		this._model = this._pmodel || _.m4.identity();
 		this._model.translate(this._origin);
