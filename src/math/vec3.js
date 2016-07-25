@@ -293,7 +293,7 @@ export default class Vec3 {
 	/**
 	 * Rotates this vector in R3 around the Z axis
 	 *
-	 * @param {number} theta - Angle by which to rotate the vector.
+	 * @param {Number} theta - Angle by which to rotate the vector.
 	 * @return {Vec3} - The rotated vector.
 	 */
 	rotateZ(theta) {
@@ -306,6 +306,16 @@ export default class Vec3 {
 		this._v[1] = y * c + x * s;
 
 		return this;
+	}
+
+	/**
+	 * Returns a human readable string representing this vector.
+	 *
+	 * @param {Number} [p=16] - precision to use when printing coordinate values.
+	 * @return {String} - A human readable String representing this vector.
+	 */
+	toString(precision = 16) {
+		return `[${this._v[0].toFixed(p)}, ${this._v[1].toFixed(p)}, ${this._v[2].toFixed(p)}]`;
 	}
 }
 
