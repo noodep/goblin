@@ -189,11 +189,11 @@ export default class Vec3 {
 	}
 
 	/**
-	 * Inverses this vector.
+	 * Inverts this vector.
 	 *
 	 * @return {module:math.Vec3} - The inversed vector.
 	 */
-	inverse() {
+	invert() {
 		this._v[0] = 1.0 / this._v[0];
 		this._v[1] = 1.0 / this._v[1];
 		this._v[2] = 1.0 / this._v[2];
@@ -240,16 +240,19 @@ export default class Vec3 {
 	}
 
 	/**
-	 * Computes the cross product of the two specified vectors.
+	 * Computes the cross product of this vector and the specified vector.
 	 *
-	 * @param {module:math.Vec3} v3$1 - First vector by which to compute the cross product.
-	 * @param {module:math.Vec3} v3$2 - Second vector by which to compute the cross product.
+	 * @param {module:math.Vec3} v3 - The vector by which to compute the cross product.
 	 * @return {module:math.Vec3} - The result of the cross product.
 	 */
-	cross(v3$1, v3$2) {
-		this._v[0] = v3$1._v[1] * v3$2._v[2] - v3$1._v[2] * v3$2._v[1];
-		this._v[1] = v3$1._v[2] * v3$2._v[0] - v3$1._v[0] * v3$2._v[2];
-		this._v[2] = v3$1._v[0] * v3$2._v[1] - v3$1._v[1] * v3$2._v[0];
+	cross(v3) {
+		const x = this._v[0];
+		const y = this._v[1];
+		const z = this._v[2];
+
+		this._v[0] = y * v3._v[2] - z * v3._v[1];
+		this._v[1] = z * v3._v[0] - x * v3._v[2];
+		this._v[2] = x * v3._v[1] - y * v3._v[0];
 
 		return this;
 	}
