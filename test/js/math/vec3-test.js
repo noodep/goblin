@@ -22,8 +22,8 @@ export default class Vec3Test {
 		Vec3Test.testUnitLength();
 		Vec3Test.testNormalize();
 		Vec3Test.testNegate();
-		Vec3Test.testInverse();
-		Vec3Test.testNullInverse();
+		Vec3Test.testInvert();
+		Vec3Test.testNullInvert();
 		Vec3Test.testNullScaling();
 		Vec3Test.testZeroScaling();
 		Vec3Test.testIdentityScaling();
@@ -124,19 +124,19 @@ export default class Vec3Test {
 		console.assert(vectorEpsilonEquals(v, nx, ny, nz), 'Negation failed.');
 	}
 
-	static testInverse() {
+	static testInvert() {
 		const v = Vec3.random();
 
 		const ix = Math.fround(1.0 / v.x);
 		const iy = Math.fround(1.0 / v.y);
 		const iz = Math.fround(1.0 / v.z);
-		v.inverse();
+		v.invert();
 		console.assert(vectorEpsilonEquals(v, ix, iy, iz), 'Inversion failed.');
 	}
 
-	static testNullInverse() {
+	static testNullInvert() {
 		const v = new Vec3();
-		v.inverse();
+		v.invert();
 		console.assert(vectorEquals(v, Infinity, Infinity, Infinity), 'Inverting a null vector does not return an Infinity vector.');
 	}
 
