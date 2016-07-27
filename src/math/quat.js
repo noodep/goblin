@@ -240,19 +240,24 @@ export default class Quaternion {
 		const y = v.y;
 		const z = v.z;
 
-		const w2 = 2.0 * this._q[0];
+		const x2 = 2.0 * this._q[1];
+		const y2 = 2.0 * this._q[2];
+		const z2 = 2.0 * this._q[3];
 
-		const xx = this._q[1] * this._q[1];
-		const yy = this._q[2] * this._q[2];
-		const zz = this._q[3] * this._q[3];
+		const xx2 = x2 * this._q[1];
+		const xy2 = x2 * this._q[2];
+		const xz2 = x2 * this._q[3];
+		const yy2 = y2 * this._q[2];
+		const yz2 = y2 * this._q[3];
+		const zz2 = z2 * this._q[3];
 
-		const xywz = 2.0 * this._q[1] * this._q[2] - w2 * this._q[3];
-		const xzwy = 2.0 * this._q[1] * this._q[3] - w2 * this._q[2];
-		const yzwx = 2.0 * this._q[2] * this._q[3] - w2 * this._q[1];
+		const wx2 = this._q[0] * x2;
+		const wy2 = this._q[0] * y2;
+		const wz2 = this._q[0] * z2;
 
-		v.x = x * (1.0 - 2.0 * (yy + zz)) + y * xywz + z * xzwy;
-		v.y = y * (1.0 - 2.0 * (xx - zz)) + x * xywz + z * yzwx;
-		v.z = z * (1.0 - 2.0 * (xx - yy)) + x * xzwy + y * yzwx;
+		v.x = x * (1.0 - yy2 - zz2) + y * (xy2 - wz2) + z * (xz2 + wy2);
+		v.y = y * (1.0 - xx2 - zz2) + x * (xy2 + wz2) + z * (yz2 - wx2);
+		v.z = z * (1.0 - xx2 - yy2) + x * (xz2 - wy2) + y * (yz2 + wx2);
 
 		return this;
 	}

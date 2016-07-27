@@ -156,6 +156,44 @@ export default class Mat4 {
 		return this;
 	}
 
+	setRotationFromQuaternion(q) {
+		const x2 = 2.0 * q.x;
+		const y2 = 2.0 * q.y;
+		const z2 = 2.0 * q.z;
+
+		const xx2 = x2 * q.x;
+		const xy2 = x2 * q.y;
+		const xz2 = x2 * q.z;
+		const yy2 = y2 * q.y;
+		const yz2 = y2 * q.z;
+		const zz2 = z2 * q.z;
+
+		const wx2 = q.w * x2;
+		const wy2 = q.w * y2;
+		const wz2 = q.w * z2;
+
+		this._m[0] = 1.0 - yy2 - zz2;
+		this._m[1] = xy2 + wz2;
+		this._m[2] = xz2 - wy2;
+
+		this._m[4] = xy2 - wz2
+		this._m[5] = 1.0 - xx2 - zz2;
+		this._m[6] = yz2 + wx2;
+
+		this._m[8] = xz2 + wy2;
+		this._m[9] = yz2 - wx2;
+		this._m[10] = 1.0 - xx2 - yy2;
+
+		this._m[3]  = 0.0;
+		this._m[7]  = 0.0;
+		this._m[11] = 0.0;
+		this._m[12] = 0.0;
+		this._m[13] = 0.0;
+		this._m[14] = 0.0;
+
+		this._m[15] = 1.0;
+	}
+
 	/**
 	 * Transposes the matrix.
 	 *
