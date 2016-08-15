@@ -77,6 +77,21 @@ export default class Mat4 {
 	}
 
 	/**
+	 * Sets this matrix translation values.
+	 *
+	 * @param {module:math.Vec3} v - Vector containing translation values.
+	 * @return {module:math.m4} - The updated matrix.
+	 */
+	set translation(v) {
+		this._m[12] = v.x;
+		this._m[13] = v.y;
+		this._m[14] = v.z;
+
+		return this;
+	}
+
+
+	/**
 	 * Copies the values of the specified matrix into this matrix.
 	 *
 	 * @param {module:math.Mat4} m - The matrix from which to copy the values.
@@ -156,6 +171,11 @@ export default class Mat4 {
 		return this;
 	}
 
+	/**
+	 * Sets this matrix to a rotation defined by the specified quaternion.
+	 *
+	 * @return {module:math.Mat4} - The rotation matrix.
+	 */
 	setRotationFromQuaternion(q) {
 		const x2 = 2.0 * q.x;
 		const y2 = 2.0 * q.y;

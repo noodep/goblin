@@ -3,7 +3,6 @@
  * @author Noodep
  * @version 0.4
  */
-
 'use strict';
 
 import Vec3 from '../../math/vec3.js';
@@ -11,21 +10,24 @@ import Mat4 from '../../math/mat4.js';
 import Quat from '../../math/quat.js';
 
 export default class Camera {
-	constructor({aspect_ratio, fov_y = Camera.DEFAULT_FOV_Y, near_plane = Camera.DEFAULT_NEAR_PLANE_Z, far_plane = Camera.DEFAULT_FAR_PLANE_Z, position = new Vec3(), orientation = new Quat()}) {
+	constructor({aspect_ratio, fov_y = Camera.DEFAULT_FOV_Y, near_plane = Camera.DEFAULT_NEAR_PLANE_Z, far_plane = Camera.DEFAULT_FAR_PLANE_Z, position = new Vec3(), orientation = Quat.identity()}) {
 		// Perspective
 		this._aspect_ratio = aspect_ratio;
 		this._near_z = near_plane;
-		this._far_z = far_z;
+		this._far_z = far_plane;
 		this._fov_y = fov_y;
 
 		// Pose
 		this._position = position;
 		this._orientation = orientation;
+		this._inverse_position = new Vec3();
+		this._inverse_orientation = new Quat();
 
 		// Matrices
 		this._view = Mat4.identity();
 		this._projection = Mat4.identity();
 
+		this.updateView();
 		this.updateProjection();
 	}
 
@@ -46,15 +48,19 @@ export default class Camera {
 	/**
 	 * Set this camera position.
 	 */
-	set postion(v3) {
+	setPosition(v3, force_update=true) {
 		this._position.copy(v3);
+		if(force_update)
+			this.updateView();
 	}
 
 	/**
 	 * Set this camera orientation.
 	 */
-	set orientation(q) {
+	setOrientation(q, force_update=true) {
 		this._orientation.copy(q);
+		if(force_update)
+			this.updateView();
 	}
 
 	/**
@@ -114,7 +120,20 @@ export default class Camera {
 	 * Updates the projection matrix with this object values.
 	 */
 	updateProjection() {
-		this._projection.perspective(this._aspect_ratio, this._fov_y, this._near_z, this._far_z);
+		this._projection.perspective(this._fov_y, this._aspect_ratio, this._near_z, this._far_z);
+	}
+
+	/**
+	 * Updates the view matrix with this object values.
+	 * View is inversedTR matrix.
+	 */
+	updateView() {
+		// Inverting a rotation and transposing is the same.
+		this._inverse_orientation.copy(this._orientation).invert();
+		this._inverse_position.copy(this._position);
+		this._inverse_orientation.rotate(this._inverse_position).negate();
+		this._view.setRotationFromQuaternion(this._inverse_orientation);
+		this._view.translation = this._inverse_position;
 	}
 
 	/**
@@ -127,4 +146,8 @@ export default class Camera {
 		return `{position:${this._position.toString(precision)}, orientation: ${this._orientation.toString(precision)}}`;
 	}
 }
+
+Camera.DEFAULT_FOV_Y = 45.0;
+Camera.DEFAULT_NEAR_PLANE_Z = 0.1;
+Camera.DEFAULT_FAR_PLANE_Z = 100.0;
 

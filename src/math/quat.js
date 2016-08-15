@@ -155,6 +155,27 @@ export default class Quaternion {
 	}
 
 	/**
+	 * Sets this quaternion values from an axis rotation specified by rotating by theta around the axis axis.
+	 *
+	 * @param {Number} theta - Angle by which to rotate around the specified axis.
+	 * @param {Vec3} axis - The vector representation of the axis arount which to rotate.
+	 *
+	 * @return {module:math.Quaternion} - This quaternion representing the specified rotation.
+	 */
+	fromAxisRotation(theta, axis) {
+		const half_theta = theta / 2.0;
+		const s = Math.sin(half_theta);
+
+		this._q[0] = Math.cos(half_theta);
+		this._q[1] = s * axis.x;
+		this._q[2] = s * axis.y;
+		this._q[3] = s * axis.z;
+
+		return this;
+	}
+
+
+	/**
 	 * Copies values of quaternion q into this quaternion.
 	 *
 	 * @param {module:math.Quaternion} q - Quaternion from which to copy values.
@@ -259,7 +280,7 @@ export default class Quaternion {
 		v.y = y * (1.0 - xx2 - zz2) + x * (xy2 + wz2) + z * (yz2 - wx2);
 		v.z = z * (1.0 - xx2 - yy2) + x * (xz2 - wy2) + y * (yz2 + wx2);
 
-		return this;
+		return v;
 	}
 
 
@@ -270,7 +291,7 @@ export default class Quaternion {
 	 * @return {String} - A human readable String representing this quaternion.
 	 */
 	toString(precision = 16) {
-		return `[${this._q[0].toFixed(p)}, ${this._q[1].toFixed(p)}, ${this._q[2].toFixed(p)}, ${this._q[3].toFixed(p)]`;
+		return `[${this._q[0].toFixed(p)}, ${this._q[1].toFixed(p)}, ${this._q[2].toFixed(p)}, ${this._q[3].toFixed(p)}]`;
 	}
 }
 

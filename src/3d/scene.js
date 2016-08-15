@@ -56,8 +56,8 @@ export default class Scene extends Object3D {
 	/**
 	 * Adds a camera projection matrix
 	 */
-	addCamera(proj) {
-		this._cameras.push(proj);
+	addCamera(camera) {
+		this._cameras.push(camera);
 	}
 
 	/**
@@ -114,10 +114,9 @@ export default class Scene extends Object3D {
 	applyProgramState(renderer, program_name) {
 		renderer.useProgram(program_name);
 		const program = renderer.getActiveProgram();
-		const projection = this._cameras[this._active_camera];
-		const view = Mat4.identity();
+		const camera = this._cameras[this._active_camera];
 
-		program.applyState(renderer, projection, view);
+		program.applyState(renderer, camera.projection, camera.view);
 	}
 }
 
