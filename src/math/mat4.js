@@ -214,6 +214,45 @@ export default class Mat4 {
 		this._m[15] = 1.0;
 	}
 
+
+	/**
+	 * Sets this matrix to a rotation of theta around the specified axis.
+	 *
+	 * @param {Number} theta - The angle (in radians) by which to rotate.
+	 * @param {module:math.Vec3} axis - The axis to rotate around.
+	 * @return {module:math.m4} - The resulting rotation matrix.
+	 */
+	setFromAxisRotation(theta, axis) {
+		const c = Math.cos(theta);
+		const _c = 1 - c;
+		const s = Math.sin(theta);
+		const a = axis.clone().normalize();
+
+		this._m[0] = _c * a.x * a.x + c;
+		this._m[1] = _c * a.x * a.y + s * a.z;
+		this._m[2] = _c * a.x * a.z - s * a.y;
+
+		this._m[4] = _c * a.y * a.x - s * a.z;
+		this._m[5] = _c * a.y * a.y + c;
+		this._m[6] = _c * a.y * a.z + s * a.x;
+
+		this._m[8] = _c * a.z * a.x + s * a.y;
+		this._m[9] = _c * a.z * a.y - s * a.x;
+		this._m[10]= _c * a.z * a.z + c;
+
+		this._m[3]  = 0.0;
+		this._m[7]  = 0.0;
+		this._m[11] = 0.0;
+		this._m[12] = 0.0;
+		this._m[13] = 0.0;
+		this._m[14] = 0.0;
+
+		this._m[15] = 1.0;
+
+		return this;
+	}
+
+
 	/**
 	 * Transposes the matrix.
 	 *
@@ -422,6 +461,66 @@ export default class Mat4 {
 	}
 
 	/**
+	 * Sets this matrix to a rotation around the X axis.
+	 *
+	 * @param {Number} theta - Angle in radians around the X axis.
+	 * @return {module:math.m4} - The rotation matrix.
+	 */
+	setRotationX(theta) {
+		const c = Math.cos(theta);
+		const s = Math.sin(theta);
+		this.identity();
+
+		this._m[5] = c;
+		this._m[6] = s;
+
+		this._m[9]  = -s;
+		this._m[10] = c;
+
+		return this;
+	}
+
+	/**
+	 * Sets this matrix to a rotation around the Y axis.
+	 *
+	 * @param {Number} theta - Angle in radians around the Y axis.
+	 * @return {module:math.m4} - The rotation matrix.
+	 */
+	setRotationY(theta) {
+		const c = Math.cos(theta);
+		const s = Math.sin(theta);
+		this.identity();
+
+		this._m[0] = c;
+		this._m[2] = -s;
+
+		this._m[8]  = s;
+		this._m[10] = c;
+
+		return this;
+	}
+
+	/**
+	 * Sets this matrix to a rotation around the Z axis.
+	 *
+	 * @param {Number} theta - Angle in radians around the Z axis.
+	 * @return {module:math.m4} - The rotation matrix.
+	 */
+	setRotationZ(theta) {
+		const c = Math.cos(theta);
+		const s = Math.sin(theta);
+		this.identity();
+
+		this._m[0] = c;
+		this._m[1] = s;
+
+		this._m[4]  = -s;
+		this._m[5] = c;
+
+		return this;
+	}
+
+	/**
 	 * Applies a rotation in R3 around the X axis to the matrix.
 	 *
 	 * @param {Number} theta - Angle in radians by which to rotate.
@@ -520,31 +619,15 @@ export default class Mat4 {
 	/**
 	 * Applies a rotation around the specified axis to the matrix.
 	 *
-	 * @param {module:math.Vec3} axis - The axis to rotate around.
 	 * @param {Number} theta - The angle (in radians) by which to rotate.
+	 * @param {module:math.Vec3} axis - The axis to rotate around.
 	 * @return {module:math.m4} - The rotated matrix.
 	 */
-	rotate(axis, theta) {
-		const c = Math.cos(theta);
-		const _c = 1 - c;
-		const s = Math.sin(theta);
-		const r = Mat4.identity();
-		const a = axis.clone().normalize();
-
-		r._m[0] = _c * a.x * a.x + c;
-		r._m[1] = _c * a.x * a.y + s * a.z;
-		r._m[2] = _c * a.x * a.z - s * a.y;
-
-		r._m[4] = _c * a.y * a.x - s * a.z;
-		r._m[5] = _c * a.y * a.y + c;
-		r._m[6] = _c * a.y * a.z + s * a.x;
-
-		r._m[8] = _c * a.z * a.x + s * a.y;
-		r._m[9] = _c * a.z * a.y - s * a.x;
-		r._m[10]= _c * a.z * a.z + c;
+	rotate(theta, axis) {
+		const r = new Mat4();
+		r.setFromAxisRotation(theta, axis);
 
 		this.multiply(r);
-
 		return this;
 	}
 
