@@ -41,6 +41,7 @@ export default class Quaternion {
 
 	/**
 	 * Creates a new quaternion from an axis rotation specified by rotating by theta around the axis axis.
+	 * Axis will be normalized if necessary.
 	 *
 	 * @param {Number} theta - Angle by which to rotate around the specified axis.
 	 * @param {Vec3} axis - The vector representation of the axis arount which to rotate.
@@ -48,6 +49,9 @@ export default class Quaternion {
 	 * @return {module:math.Quaternion} - The newly created quaternion representing the specified rotation.
 	 */
 	static fromAxisRotation(theta, axis) {
+		if(!axis.isUnit())
+			axis = axis.clone().normalize();
+
 		const half_theta = theta / 2.0;
 		const w = Math.cos(half_theta);
 		const s = Math.sin(half_theta);
@@ -156,6 +160,7 @@ export default class Quaternion {
 
 	/**
 	 * Sets this quaternion values from an axis rotation specified by rotating by theta around the axis axis.
+	 * Axis will be normalized if necessarry.
 	 *
 	 * @param {Number} theta - Angle by which to rotate around the specified axis.
 	 * @param {Vec3} axis - The vector representation of the axis arount which to rotate.
@@ -163,6 +168,9 @@ export default class Quaternion {
 	 * @return {module:math.Quaternion} - This quaternion representing the specified rotation.
 	 */
 	fromAxisRotation(theta, axis) {
+		if(!axis.isUnit())
+			axis = axis.clone().normalize();
+
 		const half_theta = theta / 2.0;
 		const s = Math.sin(half_theta);
 
