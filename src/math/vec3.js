@@ -166,6 +166,15 @@ export default class Vec3 {
 	}
 
 	/**
+	 * Check if this vector is a unit vector.
+	 *
+	 * @return {Boolean} - true if this vector is a unit vector, false otherwise.
+	 */
+	isUnit() {
+		return Math.abs(this.length() - 1.0) < EPSILON32;
+	}
+
+	/**
 	 * Normalize this vector.
 	 *
 	 * @return {module:math.Vec3} - This vector normalized.
