@@ -1,9 +1,9 @@
 'use strict';
 
-import {epsilon32Equals as ee, randomFloat32 as rf32} from '../test-utils.js';
+import {epsilon32Equals as ee, randomFloat32 as rf32} from 'test/js/test-utils.js';
 
-import Mat4 from '../../../src/math/mat4.js';
-import Vec3 from '../../../src/math/vec3.js';
+import Mat4 from 'src/math/mat4.js';
+import Vec3 from 'src/math/vec3.js';
 
 export default class Mat4Test {
 

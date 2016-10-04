@@ -1,17 +1,18 @@
 'use strict';
 
-import {Logger, DEFAULT_LOGGER as DL} from '../../../src/log.js';
-import WebGLRenderer from '../../../src/gl/webgl-renderer.js';
-import Program from '../../../src/gl/program.js';
-import SimpleProgram from '../../../src/gl/programs/simple.js';
-import Vec3 from '../../../src/math/vec3.js';
-import Mat4 from '../../../src/math/mat4.js';
-import Quat from '../../../src/math/quat.js';
-import Scene from '../../../src/3d/scene.js';
-import Mesh3D from '../../../src/3d/mesh3d.js';
-import Camera from '../../../src/3d/camera/camera.js';
+import {Logger, DEFAULT_LOGGER as DL} from 'src/log.js';
+import WebGLRenderer from 'src/gl/webgl-renderer.js';
+import Program from 'src/gl/program.js';
+import SimpleProgram from 'src/gl/programs/simple.js';
+import Vec3 from 'src/math/vec3.js';
+import Mat4 from 'src/math/mat4.js';
+import Quat from 'src/math/quat.js';
+import Scene from 'src/3d/scene.js';
+import Mesh3D from 'src/3d/mesh3d.js';
+import Camera from 'src/3d/camera/camera.js';
+import OrbitControl from 'src/3d/control/orbit.js';
 
-import createBoxGeometry from '../../../src/3d/geometry/box.js';
+import createBoxGeometry from 'src/3d/geometry/box.js';
 
 export default class WebGLRendererTest {
 
@@ -79,6 +80,8 @@ export default class WebGLRendererTest {
 		const camera = new Camera({aspect_ratio: r.aspectRatio()});
 		camera.setPosition(new Vec3(0.0,0.0,20.0));
 		scene.addCamera(camera);
+
+
 
 
 		const cube_x_1 = new Mesh3D('cube_x_1', createBoxGeometry(), 'simple');
