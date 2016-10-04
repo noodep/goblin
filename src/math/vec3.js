@@ -327,7 +327,7 @@ export default class Vec3 {
 	 * @return {String} - A human readable String representing this vector.
 	 */
 	toString(precision = 16) {
-		return `[${this._v[0].toFixed(p)}, ${this._v[1].toFixed(p)}, ${this._v[2].toFixed(p)}]`;
+		return `[${this._v[0].toFixed(precision)}, ${this._v[1].toFixed(precision)}, ${this._v[2].toFixed(precision)}]`;
 	}
 }
 

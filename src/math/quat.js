@@ -299,7 +299,7 @@ export default class Quaternion {
 	 * @return {String} - A human readable String representing this quaternion.
 	 */
 	toString(precision = 16) {
-		return `[${this._q[0].toFixed(p)}, ${this._q[1].toFixed(p)}, ${this._q[2].toFixed(p)}, ${this._q[3].toFixed(p)}]`;
+		return `[${this._q[0].toFixed(precision)}, ${this._q[1].toFixed(precision)}, ${this._q[2].toFixed(precision)}, ${this._q[3].toFixed(precision)}]`;
 	}
 }
 
