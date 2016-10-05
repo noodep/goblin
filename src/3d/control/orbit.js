@@ -35,6 +35,7 @@ export default class OrbitControl {
 	 * Sets up user event bindings.
 	 */
 	_initUserInputs() {
+		this._element.addEventListener('contextmenu', e => e.preventDefault());
 		this._element.addEventListener('mousedown', this._handleMouseDown.bind(this));
 		this._element.addEventListener('mouseup', this._handleMouseUp.bind(this));
 		this._element.addEventListener('mousewheel', this._handleMouseWheel.bind(this));
