@@ -81,8 +81,7 @@ export default class WebGLRendererTest {
 		camera.setPosition(new Vec3(0.0,0.0,20.0));
 		scene.addCamera(camera);
 
-
-
+		const orbit_control = new OrbitControl(camera);
 
 		const cube_x_1 = new Mesh3D('cube_x_1', createBoxGeometry(), 'simple');
 		const cube_x_2 = new Mesh3D('cube_x_2', createBoxGeometry(), 'simple');
