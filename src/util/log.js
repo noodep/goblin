@@ -27,7 +27,7 @@ export class Logger {
 			});
 		}
 	}
-		
+
 	addSubscriber(subscriber) {
 		this._subscribers.add(subscriber);
 	}

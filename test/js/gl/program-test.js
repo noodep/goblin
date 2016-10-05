@@ -1,6 +1,6 @@
 'use strict';
 
-import {Logger, DEFAULT_LOGGER as DL} from 'src/log.js';
+import {Logger, DEFAULT_LOGGER as DL} from 'src/util/log.js';
 import Program from 'src/gl/program.js';
 
 export default class ProgramTest {

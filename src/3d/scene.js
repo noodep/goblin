@@ -1,11 +1,11 @@
 /**
  * @fileOverview Scene.
  * @author Noodep
- * @version 0.03
+ * @version 0.04
  */
 'use strict';
 
-import {dl} from '../log.js';
+import {dl} from '../util/log.js';
 import Mat4 from '../math/mat4.js';
 import Renderable from './renderable.js';
 import Object3D from './object3d.js';

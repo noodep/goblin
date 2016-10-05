@@ -1,7 +1,7 @@
 /**
  * @fileOverview Object manipulantion through orbit control.
  * @author Noodep
- * @version 0.22
+ * @version 0.23
  */
 'use strict';
 
@@ -10,10 +10,10 @@ import Quat from '../../math/quat.js';
 
 export default class OrbitControl {
 
-	constructor(target, { element = document, radius = 1, sensitivity = OrbitControl.DEFAULT_SENSITIVITY, sensitivity_modifier = DEFAULT_SENSITIVITY_MODIFIER }) {
+	constructor(target, { element = document, radius = 1, sensitivity = OrbitControl.DEFAULT_SENSITIVITY, sensitivity_modifier = OrbitControl.DEFAULT_SENSITIVITY_MODIFIER } = {}) {
 		this._target = target;
 		this._element = document;
-		this._radius = 20;
+		this._radius = radius;
 		this._theta = Math.PI / 2.0;
 		this._phi = 0;
 		this._offset = new Vec3();
@@ -164,5 +164,4 @@ OrbitControl.TWOPI = 2.0 * Math.PI;
 OrbitControl.HALFPI = Math.PI / 2.0;
 OrbitControl.DEFAULT_SENSITIVITY = 0.005;
 OrbitControl.DEFAULT_SENSITIVITY_MODIFIER = 0.1;
-
 

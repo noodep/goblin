@@ -2,11 +2,11 @@
  * @fileOverview Renderable class that represent a Object3D  thst can be rendered on screen.
  * Such object has a shader program associated with it and a geometry of some kind.
  * @author Noodep
- * @version 0.02
+ * @version 0.03
  */
 'use strict';
 
-import {dl, wl} from '../log.js';
+import {dl, wl} from '../util/log.js';
 import {UUIDv4} from '../crypto/uuid.js';
 import Object3D from './object3d.js';
 
