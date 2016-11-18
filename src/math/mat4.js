@@ -77,6 +77,68 @@ export default class Mat4 {
 	}
 
 	/**
+	 * Sets this matrix to a rotation defined by the specified quaternion.
+	 *
+	 * @return {module:math.Mat4} - The rotation matrix.
+	 */
+	set orientation(q) {
+		const x2 = 2.0 * q.x;
+		const y2 = 2.0 * q.y;
+		const z2 = 2.0 * q.z;
+
+		const xx2 = x2 * q.x;
+		const xy2 = x2 * q.y;
+		const xz2 = x2 * q.z;
+		const yy2 = y2 * q.y;
+		const yz2 = y2 * q.z;
+		const zz2 = z2 * q.z;
+
+		const wx2 = q.w * x2;
+		const wy2 = q.w * y2;
+		const wz2 = q.w * z2;
+
+		this._m[0] = 1.0 - yy2 - zz2;
+		this._m[1] = xy2 + wz2;
+		this._m[2] = xz2 - wy2;
+
+		this._m[4] = xy2 - wz2
+		this._m[5] = 1.0 - xx2 - zz2;
+		this._m[6] = yz2 + wx2;
+
+		this._m[8] = xz2 + wy2;
+		this._m[9] = yz2 - wx2;
+		this._m[10] = 1.0 - xx2 - yy2;
+
+	}
+
+	/**
+	 * Scales the matrix by the given vector.
+	 *
+	 * @param {module:math.Vec3} v - Vector by which to scale the matrix.
+	 * @return {module:math.Mat4} - The scaled matrix.
+	 */
+	set scale(v) {
+		const x = v.x;
+		const y = v.y;
+		const z = v.z;
+
+		this._m[0] *= x;
+		this._m[1] *= x;
+		this._m[2] *= x;
+		this._m[3] *= x;
+		this._m[4] *= y;
+		this._m[5] *= y;
+		this._m[6] *= y;
+		this._m[7] *= y;
+		this._m[8] *= z;
+		this._m[9] *= z;
+		this._m[10] *= z;
+		this._m[11] *= z;
+
+		return this;
+	}
+
+	/**
 	 * Sets this matrix translation values.
 	 *
 	 * @param {module:math.Vec3} v - Vector containing translation values.
@@ -177,32 +239,7 @@ export default class Mat4 {
 	 * @return {module:math.Mat4} - The rotation matrix.
 	 */
 	setRotationFromQuaternion(q) {
-		const x2 = 2.0 * q.x;
-		const y2 = 2.0 * q.y;
-		const z2 = 2.0 * q.z;
-
-		const xx2 = x2 * q.x;
-		const xy2 = x2 * q.y;
-		const xz2 = x2 * q.z;
-		const yy2 = y2 * q.y;
-		const yz2 = y2 * q.z;
-		const zz2 = z2 * q.z;
-
-		const wx2 = q.w * x2;
-		const wy2 = q.w * y2;
-		const wz2 = q.w * z2;
-
-		this._m[0] = 1.0 - yy2 - zz2;
-		this._m[1] = xy2 + wz2;
-		this._m[2] = xz2 - wy2;
-
-		this._m[4] = xy2 - wz2
-		this._m[5] = 1.0 - xx2 - zz2;
-		this._m[6] = yz2 + wx2;
-
-		this._m[8] = xz2 + wy2;
-		this._m[9] = yz2 - wx2;
-		this._m[10] = 1.0 - xx2 - yy2;
+		this.orientation = q;
 
 		this._m[3]  = 0.0;
 		this._m[7]  = 0.0;
@@ -628,33 +665,6 @@ export default class Mat4 {
 		r.setFromAxisRotation(theta, axis);
 
 		this.multiply(r);
-		return this;
-	}
-
-	/**
-	 * Scales the matrix by the given vector.
-	 *
-	 * @param {module:math.Vec3} v - Vector by which to scale the matrix.
-	 * @return {module:math.Mat4} - The scaled matrix.
-	 */
-	scale(v) {
-		const x = v.x;
-		const y = v.y;
-		const z = v.z;
-
-		this._m[0] *= x;
-		this._m[1] *= x;
-		this._m[2] *= x;
-		this._m[3] *= x;
-		this._m[4] *= y;
-		this._m[5] *= y;
-		this._m[6] *= y;
-		this._m[7] *= y;
-		this._m[8] *= z;
-		this._m[9] *= z;
-		this._m[10] *= z;
-		this._m[11] *= z;
-
 		return this;
 	}
 

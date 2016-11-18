@@ -26,7 +26,7 @@ export default class Mesh3D extends Renderable {
 	setShaderState(renderer) {
 		const p = renderer.getActiveProgram();
 		const c = renderer._context;
-		c.uniformMatrix4fv(p.getUniform('u_model_mat'), false, this.model.matrix);
+		c.uniformMatrix4fv(p.getUniform('u_model_mat'), false, this.worldModel.matrix);
 		renderer.activateBufferObject(this._buffer_id);
 	}
 

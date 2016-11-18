@@ -21,7 +21,7 @@ export default class Scene extends Object3D {
 	 * @return {module:3d.Scene} - The newly created Scene.
 	 */
 	constructor(scene_id) {
-		super(scene_id);
+		super({id: scene_id});
 		this._lights = new Set();
 		this._cameras = new Array();
 
@@ -90,6 +90,12 @@ export default class Scene extends Object3D {
 	 */
 	update(delta_t) {
 		this._update_listeners.forEach((listener) => listener(delta_t));
+
+		// Update Models
+		super.update(delta_t);
+		for(let child of this.children) {
+			child.update(delta_t);
+		}
 	}
 
 	/**
