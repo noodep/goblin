@@ -1,11 +1,11 @@
 /**
  * Class representing a 3D renderer that uses a WebGLRenderingContext.
- * @version 0.05
+ * @version 0.06
  */
 
 'use strict';
 
-import {dl, wl} from '../log.js';
+import {dl, wl} from '../util/log.js';
 import {UUIDv4} from '../crypto/uuid.js';
 import Program from  './program.js';
 
@@ -17,7 +17,7 @@ export default class WebGLRenderer {
 	 * @alias WebGLRenderer
 	 *
 	 * Creates a WebGLRenderer that uses a WebGLRenderingContext as rendering support.
-	 * 
+	 *
 	 * @param {HTMLCanvasElement} canvas - the canvas element to be used as context.
 	 * @param {Object} webgl_options - options that will be passed as argument when trying to instanciate the WebGLRenderingContext.
 	 * @return {module:gl.WebGLRenderer} - The newly created renderer.
@@ -248,7 +248,7 @@ export default class WebGLRenderer {
 		 * Then asks to be called again on the next available animationFrame.
 		 */
 		const __loop = (current_timestamp) => {
-			const delta_t = previous_timestamp - current_timestamp;
+			const delta_t = current_timestamp - previous_timestamp;
 			previous_timestamp = current_timestamp;
 
 			this._animation_frame = window.requestAnimationFrame(__loop);

@@ -476,21 +476,27 @@
 		}
 	}
 
+	WGLC.prototype.initVBO = function(id, size, type = WebGLRenderingContext.STATIC_DRAW) {
+		this.makeVBOActive(id);
+		this.c.bufferData(this.c.ARRAY_BUFFER, size, type);
+	}
+
+	WGLC.prototype.updateActiveVBO = function(data) {
+		this.c.bufferSubData(this.c.ARRAY_BUFFER, 0, data);
+	}
+
 	WGLC.prototype.setVBOData = function(id, data) {
 		this.makeVBOActive(id);
-		this._vbos[id].size = data.length;
 		this.c.bufferData(this.c.ARRAY_BUFFER, new Float32Array(data), this.c.STATIC_DRAW);
 	}
 
 	WGLC.prototype.setDynamicVBOData = function(id, data) {
 		this.makeVBOActive(id);
-		this._vbos[id].size = data.length;
 		this.c.bufferData(this.c.ARRAY_BUFFER, new Float32Array(data), this.c.DYNAMIC_DRAW);
 	}
 
 	WGLC.prototype.setEBOData = function(id, data) {
 		this.makeEBOActive(id);
-		this._vbos[id].size = data.length;
 		this.c.bufferData(this.c.ELEMENT_ARRAY_BUFFER, new Uint8Array(data), this.c.STATIC_DRAW);
 	}
 

@@ -77,6 +77,83 @@ export default class Mat4 {
 	}
 
 	/**
+	 * Sets this matrix to a rotation defined by the specified quaternion.
+	 *
+	 * @return {module:math.Mat4} - The rotation matrix.
+	 */
+	set orientation(q) {
+		const x2 = 2.0 * q.x;
+		const y2 = 2.0 * q.y;
+		const z2 = 2.0 * q.z;
+
+		const xx2 = x2 * q.x;
+		const xy2 = x2 * q.y;
+		const xz2 = x2 * q.z;
+		const yy2 = y2 * q.y;
+		const yz2 = y2 * q.z;
+		const zz2 = z2 * q.z;
+
+		const wx2 = q.w * x2;
+		const wy2 = q.w * y2;
+		const wz2 = q.w * z2;
+
+		this._m[0] = 1.0 - yy2 - zz2;
+		this._m[1] = xy2 + wz2;
+		this._m[2] = xz2 - wy2;
+
+		this._m[4] = xy2 - wz2
+		this._m[5] = 1.0 - xx2 - zz2;
+		this._m[6] = yz2 + wx2;
+
+		this._m[8] = xz2 + wy2;
+		this._m[9] = yz2 - wx2;
+		this._m[10] = 1.0 - xx2 - yy2;
+
+	}
+
+	/**
+	 * Scales the matrix by the given vector.
+	 *
+	 * @param {module:math.Vec3} v - Vector by which to scale the matrix.
+	 * @return {module:math.Mat4} - The scaled matrix.
+	 */
+	set scale(v) {
+		const x = v.x;
+		const y = v.y;
+		const z = v.z;
+
+		this._m[0] *= x;
+		this._m[1] *= x;
+		this._m[2] *= x;
+		this._m[3] *= x;
+		this._m[4] *= y;
+		this._m[5] *= y;
+		this._m[6] *= y;
+		this._m[7] *= y;
+		this._m[8] *= z;
+		this._m[9] *= z;
+		this._m[10] *= z;
+		this._m[11] *= z;
+
+		return this;
+	}
+
+	/**
+	 * Sets this matrix translation values.
+	 *
+	 * @param {module:math.Vec3} v - Vector containing translation values.
+	 * @return {module:math.m4} - The updated matrix.
+	 */
+	set translation(v) {
+		this._m[12] = v.x;
+		this._m[13] = v.y;
+		this._m[14] = v.z;
+
+		return this;
+	}
+
+
+	/**
 	 * Copies the values of the specified matrix into this matrix.
 	 *
 	 * @param {module:math.Mat4} m - The matrix from which to copy the values.
@@ -155,6 +232,63 @@ export default class Mat4 {
 
 		return this;
 	}
+
+	/**
+	 * Sets this matrix to a rotation defined by the specified quaternion.
+	 *
+	 * @return {module:math.Mat4} - The rotation matrix.
+	 */
+	setRotationFromQuaternion(q) {
+		this.orientation = q;
+
+		this._m[3]  = 0.0;
+		this._m[7]  = 0.0;
+		this._m[11] = 0.0;
+		this._m[12] = 0.0;
+		this._m[13] = 0.0;
+		this._m[14] = 0.0;
+
+		this._m[15] = 1.0;
+	}
+
+
+	/**
+	 * Sets this matrix to a rotation of theta around the specified axis.
+	 *
+	 * @param {Number} theta - The angle (in radians) by which to rotate.
+	 * @param {module:math.Vec3} axis - The axis to rotate around.
+	 * @return {module:math.m4} - The resulting rotation matrix.
+	 */
+	setFromAxisRotation(theta, axis) {
+		const c = Math.cos(theta);
+		const _c = 1 - c;
+		const s = Math.sin(theta);
+		const a = axis.clone().normalize();
+
+		this._m[0] = _c * a.x * a.x + c;
+		this._m[1] = _c * a.x * a.y + s * a.z;
+		this._m[2] = _c * a.x * a.z - s * a.y;
+
+		this._m[4] = _c * a.y * a.x - s * a.z;
+		this._m[5] = _c * a.y * a.y + c;
+		this._m[6] = _c * a.y * a.z + s * a.x;
+
+		this._m[8] = _c * a.z * a.x + s * a.y;
+		this._m[9] = _c * a.z * a.y - s * a.x;
+		this._m[10]= _c * a.z * a.z + c;
+
+		this._m[3]  = 0.0;
+		this._m[7]  = 0.0;
+		this._m[11] = 0.0;
+		this._m[12] = 0.0;
+		this._m[13] = 0.0;
+		this._m[14] = 0.0;
+
+		this._m[15] = 1.0;
+
+		return this;
+	}
+
 
 	/**
 	 * Transposes the matrix.
@@ -364,6 +498,66 @@ export default class Mat4 {
 	}
 
 	/**
+	 * Sets this matrix to a rotation around the X axis.
+	 *
+	 * @param {Number} theta - Angle in radians around the X axis.
+	 * @return {module:math.m4} - The rotation matrix.
+	 */
+	setRotationX(theta) {
+		const c = Math.cos(theta);
+		const s = Math.sin(theta);
+		this.identity();
+
+		this._m[5] = c;
+		this._m[6] = s;
+
+		this._m[9]  = -s;
+		this._m[10] = c;
+
+		return this;
+	}
+
+	/**
+	 * Sets this matrix to a rotation around the Y axis.
+	 *
+	 * @param {Number} theta - Angle in radians around the Y axis.
+	 * @return {module:math.m4} - The rotation matrix.
+	 */
+	setRotationY(theta) {
+		const c = Math.cos(theta);
+		const s = Math.sin(theta);
+		this.identity();
+
+		this._m[0] = c;
+		this._m[2] = -s;
+
+		this._m[8]  = s;
+		this._m[10] = c;
+
+		return this;
+	}
+
+	/**
+	 * Sets this matrix to a rotation around the Z axis.
+	 *
+	 * @param {Number} theta - Angle in radians around the Z axis.
+	 * @return {module:math.m4} - The rotation matrix.
+	 */
+	setRotationZ(theta) {
+		const c = Math.cos(theta);
+		const s = Math.sin(theta);
+		this.identity();
+
+		this._m[0] = c;
+		this._m[1] = s;
+
+		this._m[4]  = -s;
+		this._m[5] = c;
+
+		return this;
+	}
+
+	/**
 	 * Applies a rotation in R3 around the X axis to the matrix.
 	 *
 	 * @param {Number} theta - Angle in radians by which to rotate.
@@ -462,58 +656,15 @@ export default class Mat4 {
 	/**
 	 * Applies a rotation around the specified axis to the matrix.
 	 *
-	 * @param {module:math.Vec3} axis - The axis to rotate around.
 	 * @param {Number} theta - The angle (in radians) by which to rotate.
+	 * @param {module:math.Vec3} axis - The axis to rotate around.
 	 * @return {module:math.m4} - The rotated matrix.
 	 */
-	rotate(axis, theta) {
-		const c = Math.cos(theta);
-		const _c = 1 - c;
-		const s = Math.sin(theta);
-		const r = Mat4.identity();
-		const a = axis.clone().normalize();
-
-		r._m[0] = _c * a.x * a.x + c;
-		r._m[1] = _c * a.x * a.y + s * a.z;
-		r._m[2] = _c * a.x * a.z - s * a.y;
-
-		r._m[4] = _c * a.y * a.x - s * a.z;
-		r._m[5] = _c * a.y * a.y + c;
-		r._m[6] = _c * a.y * a.z + s * a.x;
-
-		r._m[8] = _c * a.z * a.x + s * a.y;
-		r._m[9] = _c * a.z * a.y - s * a.x;
-		r._m[10]= _c * a.z * a.z + c;
+	rotate(theta, axis) {
+		const r = new Mat4();
+		r.setFromAxisRotation(theta, axis);
 
 		this.multiply(r);
-
-		return this;
-	}
-
-	/**
-	 * Scales the matrix by the given vector.
-	 *
-	 * @param {module:math.Vec3} v - Vector by which to scale the matrix.
-	 * @return {module:math.Mat4} - The scaled matrix.
-	 */
-	scale(v) {
-		const x = v.x;
-		const y = v.y;
-		const z = v.z;
-
-		this._m[0] *= x;
-		this._m[1] *= x;
-		this._m[2] *= x;
-		this._m[3] *= x;
-		this._m[4] *= y;
-		this._m[5] *= y;
-		this._m[6] *= y;
-		this._m[7] *= y;
-		this._m[8] *= z;
-		this._m[9] *= z;
-		this._m[10] *= z;
-		this._m[11] *= z;
-
 		return this;
 	}
 

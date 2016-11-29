@@ -1,6 +1,6 @@
 'use strict';
 
-import Object3D from '../../../src/3d/object3d.js';
+import Object3D from 'src/3d/object3d.js';
 
 export default class Object3DTest {
 

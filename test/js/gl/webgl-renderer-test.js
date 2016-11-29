@@ -1,13 +1,16 @@
 'use strict';
 
-import {Logger, DEFAULT_LOGGER as DL} from '../../../src/log.js';
-import WebGLRenderer from '../../../src/gl/webgl-renderer.js';
-import Program from '../../../src/gl/program.js';
-import SimpleProgram from '../../../src/gl/programs/simple.js';
-import Vec3 from '../../../src/math/vec3.js';
-import Mat4 from '../../../src/math/mat4.js';
-import Scene from '../../../src/3d/scene.js';
-import Mesh3D from '../../../src/3d/mesh3d.js';
+import {Logger, DEFAULT_LOGGER as DL} from 'src/util/log.js';
+import WebGLRenderer from 'src/gl/webgl-renderer.js';
+import SimpleProgram from 'src/gl/programs/simple.js';
+import Vec3 from 'src/math/vec3.js';
+import Quat from 'src/math/quat.js';
+import Scene from 'src/3d/scene.js';
+import Mesh3D from 'src/3d/mesh3d.js';
+import Camera from 'src/3d/camera/camera.js';
+import OrbitControl from 'src/3d/control/orbit.js';
+
+import createBoxGeometry from 'src/3d/geometry/box.js';
 
 export default class WebGLRendererTest {
 
@@ -21,8 +24,10 @@ export default class WebGLRendererTest {
 		WebGLRendererTest.createTestInstance();
 
 		// WebGLRendererTest.testScene();
-		WebGLRendererTest.benchmarkMesh3D();
+		// WebGLRendererTest.testObjectRotation();
+		// WebGLRendererTest.testCameraPose();
 		// WebGLRendererTest.benchmarkStaticMesh3D();
+		WebGLRendererTest.benchmarkMesh3D();
 
 		console.timeEnd('Perf');
 		console.log(`%c---------------------------------------`,'color:blue;');
@@ -38,18 +43,208 @@ export default class WebGLRendererTest {
 		const renderer = new WebGLRenderer({ canvas: canvas });
 		renderer.start();
 		WebGLRendererTest.renderer = renderer;
-
 	}
 
 	static testScene() {
 		const r = WebGLRendererTest.renderer;
 		const simple_p = r.createProgram('simple', '/test/shaders/', SimpleProgram);
 		const scene = new Scene();
-		scene.addCamera(new Mat4().perspective(45, r.aspectRatio(), 0.1, 100.0));
 
-		const cube = new Mesh3D('cube', boxGeometry(0,0,0,1), 'simple');
-		cube.translateZ(-5);
+		const camera = new Camera({aspect_ratio: r.aspectRatio()});
+		camera.setPosition(new Vec3(0.0,0.0,3.0));
+		scene.addCamera(camera);
+
+		const cube = new Mesh3D('cube', createBoxGeometry(), 'simple');
 		scene.addChild(cube);
+
+		scene.addUpdateListener((delta_t) => {
+			cube.model.rotateX(delta_t / 2000.0);
+			cube.model.rotateY(delta_t / 1000.0);
+		});
+
+		r._context.enable(WebGLRenderingContext.DEPTH_TEST);
+		r.background = [0.1, 0.2, 0.3, 1.0];
+
+		simple_p.ready().then((e) => {
+			r.useProgram('simple');
+			r.addScene(scene);
+		});
+	}
+
+	static testObjectRotation() {
+		const r = WebGLRendererTest.renderer;
+		const simple_p = r.createProgram('simple', '/test/shaders/', SimpleProgram);
+		const scene = new Scene();
+		const camera = new Camera({aspect_ratio: r.aspectRatio()});
+		camera.setPosition(new Vec3(0.0,0.0,20.0));
+		scene.addCamera(camera);
+
+		let y_offset = 4.0;
+		let x_offset = -8.0;
+		const cube_x_1 = new Mesh3D('cube_x_1', createBoxGeometry(), 'simple');
+		const cube_x_2 = new Mesh3D('cube_x_2', createBoxGeometry(), 'simple');
+		const cube_x_3 = new Mesh3D('cube_x_3', createBoxGeometry(), 'simple');
+		const cube_x_4 = new Mesh3D('cube_x_4', createBoxGeometry(), 'simple');
+		const cube_x_5 = new Mesh3D('cube_x_5', createBoxGeometry(), 'simple');
+		cube_x_1.origin = new Vec3(x_offset, y_offset, 0.0);
+		x_offset += 4.0;
+		cube_x_2.origin = new Vec3(x_offset, y_offset, 0.0);
+		x_offset += 4.0;
+		cube_x_3.origin = new Vec3(x_offset, y_offset, 0.0);
+		x_offset += 4.0;
+		cube_x_4.origin = new Vec3(x_offset, y_offset, 0.0);
+		x_offset += 4.0;
+		cube_x_5.origin = new Vec3(x_offset, y_offset, 0.0);
+		x_offset += 4.0;
+		scene.addChild(cube_x_1);
+		scene.addChild(cube_x_2);
+		scene.addChild(cube_x_3);
+		scene.addChild(cube_x_4);
+		scene.addChild(cube_x_5);
+
+		y_offset -= 4.0;
+		x_offset = -8.0;
+
+		const cube_y_1 = new Mesh3D('cube_y_1', createBoxGeometry(), 'simple');
+		const cube_y_2 = new Mesh3D('cube_y_2', createBoxGeometry(), 'simple');
+		const cube_y_3 = new Mesh3D('cube_y_3', createBoxGeometry(), 'simple');
+		const cube_y_4 = new Mesh3D('cube_y_4', createBoxGeometry(), 'simple');
+		const cube_y_5 = new Mesh3D('cube_y_5', createBoxGeometry(), 'simple');
+		cube_y_1.origin = new Vec3(x_offset, y_offset, 0.0);
+		x_offset += 4.0;
+		cube_y_2.origin = new Vec3(x_offset, y_offset, 0.0);
+		x_offset += 4.0;
+		cube_y_3.origin = new Vec3(x_offset, y_offset, 0.0);
+		x_offset += 4.0;
+		cube_y_4.origin = new Vec3(x_offset, y_offset, 0.0);
+		x_offset += 4.0;
+		cube_y_5.origin = new Vec3(x_offset, y_offset, 0.0);
+		x_offset += 4.0;
+		scene.addChild(cube_y_1);
+		scene.addChild(cube_y_2);
+		scene.addChild(cube_y_3);
+		scene.addChild(cube_y_4);
+		scene.addChild(cube_y_5);
+
+		y_offset -= 4.0;
+		x_offset = -8.0;
+
+		const cube_z_1 = new Mesh3D('cube_z_1', createBoxGeometry(), 'simple');
+		const cube_z_2 = new Mesh3D('cube_z_2', createBoxGeometry(), 'simple');
+		const cube_z_3 = new Mesh3D('cube_z_3', createBoxGeometry(), 'simple');
+		const cube_z_4 = new Mesh3D('cube_z_4', createBoxGeometry(), 'simple');
+		const cube_z_5 = new Mesh3D('cube_z_5', createBoxGeometry(), 'simple');
+		cube_z_1.origin = new Vec3(x_offset, y_offset, 0.0);
+		x_offset += 4.0;
+		cube_z_2.origin = new Vec3(x_offset, y_offset, 0.0);
+		x_offset += 4.0;
+		cube_z_3.origin = new Vec3(x_offset, y_offset, 0.0);
+		x_offset += 4.0;
+		cube_z_4.origin = new Vec3(x_offset, y_offset, 0.0);
+		x_offset += 4.0;
+		cube_z_5.origin = new Vec3(x_offset, y_offset, 0.0);
+		x_offset += 4.0;
+		scene.addChild(cube_z_1);
+		scene.addChild(cube_z_2);
+		scene.addChild(cube_z_3);
+		scene.addChild(cube_z_4);
+		scene.addChild(cube_z_5);
+
+		scene.invalidateModel();
+
+		const X_AXIS = new Vec3(1.0, 0.0, 0.0);
+		const Y_AXIS = new Vec3(0.0, 1.0, 0.0);
+		const Z_AXIS = new Vec3(0.0, 0.0, 1.0);
+
+		const cube_x_orientation = new Quat();
+		const cube_y_orientation = new Quat();
+		const cube_z_orientation = new Quat();
+
+		let angle = 0;
+
+		scene.addUpdateListener((delta_t) => {
+
+			angle += delta_t / 1000.0;
+			// X Rotations
+			cube_x_orientation.fromAxisRotation(angle, X_AXIS);
+			cube_x_1.orientation = cube_x_orientation;
+
+			cube_x_2.localModel.setRotationX(angle);
+			cube_x_2.localModel.translation = cube_x_2.origin;
+			cube_x_2._computeWorldModel();
+
+			cube_x_3.localModel.setFromAxisRotation(angle, X_AXIS);
+			cube_x_3.localModel.translation = cube_x_3.origin;
+			cube_x_3._computeWorldModel();
+
+			cube_x_4.rotate(delta_t / 1000.0, X_AXIS);
+
+			cube_x_5.rotateX(delta_t / 1000.0);
+
+			// Y Rotations
+			cube_y_orientation.fromAxisRotation(angle, Y_AXIS);
+			cube_y_1.orientation = cube_y_orientation;
+
+			cube_y_2.localModel.setRotationY(angle);
+			cube_y_2.localModel.translation = cube_y_2.origin;
+			cube_y_2._computeWorldModel();
+
+			cube_y_3.localModel.setFromAxisRotation(angle, Y_AXIS);
+			cube_y_3.localModel.translation = cube_y_3.origin;
+			cube_y_3._computeWorldModel();
+
+			cube_y_4.rotate(delta_t / 1000.0, Y_AXIS);
+
+			cube_y_5.rotateY(delta_t / 1000.0);
+
+			// Z Rotations
+			cube_z_orientation.fromAxisRotation(angle, Z_AXIS);
+			cube_z_1.orientation = cube_z_orientation;
+
+			cube_z_2.localModel.setRotationZ(angle);
+			cube_z_2.localModel.translation = cube_z_2.origin;
+			cube_z_2._computeWorldModel();
+
+			cube_z_3.localModel.setFromAxisRotation(angle, Z_AXIS);
+			cube_z_3.localModel.translation = cube_z_3.origin;
+			cube_z_3._computeWorldModel();
+
+			cube_z_4.rotate(delta_t / 1000.0, Z_AXIS);
+
+			cube_z_5.rotateZ(delta_t / 1000.0);
+		});
+
+		r._context.enable(WebGLRenderingContext.DEPTH_TEST);
+		r.background = [0.1, 0.2, 0.3, 1.0];
+		r.clear(WebGLRenderingContext.COLOR_BUFFER_BIT);
+
+		simple_p.ready().then((e) => {
+			r.useProgram('simple');
+			r.addScene(scene);
+		});
+	}
+
+	static testCameraPose() {
+		const r = WebGLRendererTest.renderer;
+		const simple_p = r.createProgram('simple', '/test/shaders/', SimpleProgram);
+		const scene = new Scene();
+		const camera = new Camera({aspect_ratio: r.aspectRatio()});
+		scene.addCamera(camera);
+
+		const cube = new Mesh3D('cube', createBoxGeometry(), 'simple');
+		scene.addChild(cube);
+
+		// Camera pose update
+		const z_axis = new Vec3(0.0, 0.0, 1.0);
+		const camera_orientation = new Quat();
+		let angle = 0;
+
+		scene.addUpdateListener((delta_t) => {
+			angle += delta_t / 10000;
+			camera_orientation.fromAxisRotation(angle, z_axis);
+			camera.setOrientation(camera_orientation);
+			camera.setPosition(new Vec3(0.0, 0.0, 3.0));
+		});
 
 		r._context.enable(WebGLRenderingContext.DEPTH_TEST);
 		r.background = [0.1, 0.2, 0.3, 1.0];
@@ -65,33 +260,38 @@ export default class WebGLRendererTest {
 		const r = WebGLRendererTest.renderer;
 		const simple_p = r.createProgram('simple', '/test/shaders/', SimpleProgram);
 		const scene = new Scene();
-		scene.addCamera(new Mat4().perspective(45, r.aspectRatio(), 0.1, 100.0));
+		const camera = new Camera({aspect_ratio: r.aspectRatio()});
+		camera.setPosition(new Vec3(0.0,0.0,3.0));
+		scene.addCamera(camera);
+		const control = new OrbitControl(camera);
 
-
-		const NUM = 27;
+		const NUM = Math.pow(16, 3);
+		const WIDTH = 2.0;
 		const SIZE = Math.floor(Math.cbrt(NUM));
-		const SCALE = 0.3 / SIZE;
-		const OFFSET = 2.0 / 0.3 * SCALE;
+		const OFFSET = WIDTH / (SIZE + 1);
+		const SCALE = 0.25 * OFFSET;
+		const SCALE_VECTOR = new Vec3(SCALE, SCALE, SCALE);
 
 		const BYTE_OFFSET = 6*2*3*3;
 		const geometry = new Float32Array(NUM * BYTE_OFFSET);
+		const box_origin = new Vec3();
 		for(let i = 0 ; i < NUM ; i++) {
-			// const cube = new Mesh3D('cube' + i, boxGeometry(), 'simple');
 			const ix = (i%SIZE);
 			const iy = Math.floor(i / (SIZE*SIZE));
 			const iz = Math.floor(i % (SIZE*SIZE) / SIZE);
 
-			geometry.set(boxGeometry(-1.0 + ix * OFFSET, -1.0 + iy * OFFSET, -1.0 + iz * OFFSET, SCALE), BYTE_OFFSET * i);
+			box_origin.x = -1.0 + (ix + 1) * OFFSET;
+			box_origin.y = -1.0 + (iy + 1) * OFFSET;
+			box_origin.z = -1.0 + (iz + 1) * OFFSET;
+			geometry.set(createBoxGeometry(box_origin, SCALE_VECTOR), BYTE_OFFSET * i);
 		}
 
 		const cube = new Mesh3D('cube', geometry , 'simple');
-		cube.translateZ(-3.0);
 		scene.addChild(cube);
 		scene.addUpdateListener((delta_t) => {
-			cube.model.rotateX(delta_t / 10000);
-			cube.model.rotateZ(delta_t / 10000);
+			cube.rotateX(delta_t / 10000);
+			cube.rotateZ(delta_t / 10000);
 		});
-
 
 		r._context.enable(WebGLRenderingContext.DEPTH_TEST);
 		r.background = [0.1, 0.2, 0.3, 1.0];
@@ -105,35 +305,46 @@ export default class WebGLRendererTest {
 	static benchmarkMesh3D() {
 		const r = WebGLRendererTest.renderer;
 		const simple_p = r.createProgram('simple', '/test/shaders/', SimpleProgram);
-		const scene = new Scene();
-		scene.addCamera(new Mat4().perspective(45, r.aspectRatio(), 0.1, 100.0));
+		const scene = new Scene('main-scene');
+		const camera = new Camera({aspect_ratio: r.aspectRatio()});
+		camera.setPosition(new Vec3(0.0, 0.0, 6.0));
+		scene.addCamera(camera);
 
-		const NUM = 27;
+		const control = new OrbitControl(camera);
+
+		const NUM = Math.pow(32, 3);
+		const WIDTH = 2.0;
 		const SIZE = Math.floor(Math.cbrt(NUM));
-		const SCALE = 0.3 / SIZE;
-		const OFFSET = 2.0 / 0.3 * SCALE;
+		const OFFSET = WIDTH / (SIZE + 1);
+		const SCALE = 0.25 * OFFSET;
 		const SCALE_VECTOR = new Vec3(SCALE, SCALE, SCALE);
 
 		const BYTE_OFFSET = 6*2*3*3;
 		const geometry = new Float32Array(NUM * BYTE_OFFSET);
+		let once = false;
+
 		for(let i = 0 ; i < NUM ; i++) {
-			const cube = new Mesh3D('cube' + i, boxGeometry(0,0,0,1), 'simple');
+			const cube = new Mesh3D('cube' + i, createBoxGeometry(), 'simple');
 			const ix = (i%SIZE);
 			const iy = Math.floor(i / (SIZE*SIZE));
 			const iz = Math.floor(i % (SIZE*SIZE) / SIZE);
 
-			cube.translateX(-1.0 + ix * OFFSET);
-			cube.translateY(-1.0 + iy * OFFSET);
-			cube.translateZ(-1.0 + iz * OFFSET);
-			cube.translateZ(-3.0);
-			cube.model.scale(SCALE_VECTOR);
+			cube.translateX(-1.0 + (ix + 1) * OFFSET);
+			cube.translateY(-1.0 + (iy + 1) * OFFSET);
+			cube.translateZ(-1.0 + (iz + 1) * OFFSET);
+			cube.scale(SCALE_VECTOR);
 
-			scene.addChild(cube);
 			scene.addUpdateListener((delta_t) => {
-				cube.model.rotateX(delta_t / 10000);
-				cube.model.rotateZ(delta_t / 10000);
+				cube.rotateX(delta_t / 10000);
+				cube.rotateZ(delta_t / 10000);
 			});
+			scene.addChild(cube);
 		}
+
+		scene.addUpdateListener((delta_t) => {
+			scene.rotateX(delta_t / 20000);
+			scene.rotateZ(delta_t / 30000);
+		});
 
 		r._context.enable(WebGLRenderingContext.DEPTH_TEST);
 		r.background = [0.1, 0.2, 0.3, 1.0];
@@ -143,44 +354,5 @@ export default class WebGLRendererTest {
 			r.addScene(scene);
 		});
 	}
-}
-
-function boxGeometry(ox, oy, oz, s) {
-	const i = 1.0;
-	const p0 = [ox + i * s, oy + i * s, oz + i * s];
-	const p1 = [ox - i * s, oy + i * s, oz + i * s];
-	const p2 = [ox - i * s, oy - i * s, oz + i * s];
-	const p3 = [ox + i * s, oy - i * s, oz + i * s];
-	const p4 = [ox + i * s, oy - i * s, oz - i * s];
-	const p5 = [ox + i * s, oy + i * s, oz - i * s];
-	const p6 = [ox - i * s, oy + i * s, oz - i * s];
-	const p7 = [ox - i * s, oy - i * s, oz - i * s];
-
-	// 6 face * 2 triangles by face * 3 points per triangle * 3 components by points
-	const vertices = new Float32Array(6*2*3*3);
-
-	let idx = 0;
-	const stride = 3*3;
-
-	// Front
-	vertices.set(Array.prototype.concat(p0,p1,p2), stride * idx++);
-	vertices.set(Array.prototype.concat(p0,p2,p3), stride * idx++);
-	// Back
-	vertices.set(Array.prototype.concat(p4,p5,p6), stride * idx++);
-	vertices.set(Array.prototype.concat(p4,p6,p7), stride * idx++);
-	// Left
-	vertices.set(Array.prototype.concat(p1,p6,p7), stride * idx++);
-	vertices.set(Array.prototype.concat(p1,p7,p2), stride * idx++);
-	// Right
-	vertices.set(Array.prototype.concat(p0,p3,p4), stride * idx++);
-	vertices.set(Array.prototype.concat(p0,p4,p5), stride * idx++);
-	// Top
-	vertices.set(Array.prototype.concat(p0,p5,p6), stride * idx++);
-	vertices.set(Array.prototype.concat(p0,p6,p1), stride * idx++);
-	// Bottom
-	vertices.set(Array.prototype.concat(p3,p2,p7), stride * idx++);
-	vertices.set(Array.prototype.concat(p3,p7,p4), stride * idx++);
-
-	return vertices;
 }
 

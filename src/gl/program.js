@@ -1,11 +1,11 @@
 /**
  * @fileOverview Class representing an OpenGL ES program
  * @author Noodep
- * @version 0.15
+ * @version 0.16
  */
 'use strict';
 
-import {dl, l, el} from '../log.js';
+import {dl, l, el} from '../util/log.js';
 
 export default class Program {
 
@@ -17,7 +17,7 @@ export default class Program {
 	 * Creates a shader program with the specified name.
 	 * If no path is specified, the function will look for shaders
 	 * in the folder {@code DEFAULT_SHADER_PATH/name/name.{vert|frag}}
-	 * 
+	 *
 	 * @param {WebGLRenderingContext} context - The context with which this program will be associated.
 	 * @param {string} name - Name of this program.
 	 * @param {string} [path=DEFAULT_SHADER_PATH] - Location of the shaders directory.
@@ -31,9 +31,8 @@ export default class Program {
 		this._name = name;
 		this._shaders = new Map();
 		this._program = undefined;
-		this._parameters = new Map();
-		this._parameters.set(WebGLRenderingContext.ACTIVE_UNIFORMS, new Map());
-		this._parameters.set(WebGLRenderingContext.ACTIVE_ATTRIBUTES, new Map());
+		this._uniforms = {};
+		this._attributes = {};
 
 		if(!path.endsWith('/'))
 			path += '/';
@@ -69,11 +68,13 @@ export default class Program {
 	 * @return {WebGLUniformLocation} - The uniform location if it exists undefined otherwise.
 	 */
 	getUniform(name) {
-		return this._parameters.get(WebGLRenderingContext.ACTIVE_UNIFORMS).get(name);
+		return this._uniforms[name];
+		// return this._parameters.get(WebGLRenderingContext.ACTIVE_UNIFORMS).get(name);
 	}
 
 	getAttribute(name) {
-		return this._parameters.get(WebGLRenderingContext.ACTIVE_ATTRIBUTES).get(name);
+		return this._attributes[name];
+		// return this._parameters.get(WebGLRenderingContext.ACTIVE_ATTRIBUTES).get(name);
 	}
 
 	/**
@@ -83,7 +84,7 @@ export default class Program {
 	 *
 	 * @param {Number} type - Must be WebGLRenderingContext.VERTEX_SHADER or WebGLRenderingContext.FRAGMENT_SHADER.
 	 * @return {Promise} - A promise that resolves when the shader is loaded and compiled.
-	 */ 
+	 */
 	createShader(type) {
 		const file = this._path + this._name + Program.SHADER_EXTENSIONS.get(type);
 		const c = this._context;
@@ -129,11 +130,12 @@ export default class Program {
 		const p_func = Program.QUALIFYING_FUNCTION.get(parameter);
 		const a_func = `getActive${p_func}`;
 		const l_func = `get${p_func}Location`;
+		const storage = (parameter==WebGLRenderingContext.ACTIVE_ATTRIBUTES) ? this._attributes:this._uniforms;
 
 		for(let idx = 0 ; idx < num ; idx++) {
 			const info = c[a_func](this._program, idx);
 			const location = c[l_func](this._program, info.name);
-			this._parameters.get(parameter).set(info.name, location);
+			storage[info.name] = location;
 			dl(`Found ${p_func} : ${info.name} with index ${location}`);
 		}
 	}

@@ -166,6 +166,15 @@ export default class Vec3 {
 	}
 
 	/**
+	 * Check if this vector is a unit vector.
+	 *
+	 * @return {Boolean} - true if this vector is a unit vector, false otherwise.
+	 */
+	isUnit() {
+		return Math.abs(this.length() - 1.0) < EPSILON32;
+	}
+
+	/**
 	 * Normalize this vector.
 	 *
 	 * @return {module:math.Vec3} - This vector normalized.
@@ -189,14 +198,28 @@ export default class Vec3 {
 	}
 
 	/**
-	 * Inverses this vector.
+	 * Inverts this vector.
 	 *
 	 * @return {module:math.Vec3} - The inversed vector.
 	 */
-	inverse() {
+	invert() {
 		this._v[0] = 1.0 / this._v[0];
 		this._v[1] = 1.0 / this._v[1];
 		this._v[2] = 1.0 / this._v[2];
+
+		return this;
+	}
+
+	/**
+	 * Adds the specified vector to this vector.
+	 *
+	 * @param {module:math.Vec3} v3 - Vector to add to this vector.
+	 * @return {module:math.Vec3} - The translated vector.
+	 */
+	add(v3) {
+		this._v[0] += v3._v[0];
+		this._v[1] += v3._v[1];
+		this._v[2] += v3._v[2];
 
 		return this;
 	}
@@ -240,16 +263,19 @@ export default class Vec3 {
 	}
 
 	/**
-	 * Computes the cross product of the two specified vectors.
+	 * Computes the cross product of this vector and the specified vector.
 	 *
-	 * @param {module:math.Vec3} v3$1 - First vector by which to compute the cross product.
-	 * @param {module:math.Vec3} v3$2 - Second vector by which to compute the cross product.
+	 * @param {module:math.Vec3} v3 - The vector by which to compute the cross product.
 	 * @return {module:math.Vec3} - The result of the cross product.
 	 */
-	cross(v3$1, v3$2) {
-		this._v[0] = v3$1._v[1] * v3$2._v[2] - v3$1._v[2] * v3$2._v[1];
-		this._v[1] = v3$1._v[2] * v3$2._v[0] - v3$1._v[0] * v3$2._v[2];
-		this._v[2] = v3$1._v[0] * v3$2._v[1] - v3$1._v[1] * v3$2._v[0];
+	cross(v3) {
+		const x = this._v[0];
+		const y = this._v[1];
+		const z = this._v[2];
+
+		this._v[0] = y * v3._v[2] - z * v3._v[1];
+		this._v[1] = z * v3._v[0] - x * v3._v[2];
+		this._v[2] = x * v3._v[1] - y * v3._v[0];
 
 		return this;
 	}
@@ -293,7 +319,7 @@ export default class Vec3 {
 	/**
 	 * Rotates this vector in R3 around the Z axis
 	 *
-	 * @param {number} theta - Angle by which to rotate the vector.
+	 * @param {Number} theta - Angle by which to rotate the vector.
 	 * @return {Vec3} - The rotated vector.
 	 */
 	rotateZ(theta) {
@@ -307,5 +333,54 @@ export default class Vec3 {
 
 		return this;
 	}
+
+	/**
+	 * Translates this vector in R3 on the X axis by the specified amount.
+	 *
+	 * @param {Number} delta_x - amount by which to translate this vector on the X axis.
+	 * @return {module:math.Vec3} - The translated vector.
+	 */
+	translateX(delta_x) {
+		this._v[0] += delta_x;
+
+		return this;
+	}
+
+	/**
+	 * Translates this vector in R3 on the Y axis by the specified amount.
+	 *
+	 * @param {Number} delta_y - amount by which to translate this vector on the Y axis.
+	 * @return {module:math.Vec3} - The translated vector.
+	 */
+	translateY(delta_y) {
+		this._v[1] += delta_y;
+
+		return this;
+	}
+
+	/**
+	 * Translates this vector in R3 on the Z axis by the specified amount.
+	 *
+	 * @param {Number} delta_z - amount by which to translate this vector on the Z axis.
+	 * @return {module:math.Vec3} - The translated vector.
+	 */
+	translateZ(delta_z) {
+		this._v[2] += delta_z;
+
+		return this;
+	}
+
+	/**
+	 * Returns a human readable string representing this vector.
+	 *
+	 * @param {Number} [p=16] - precision to use when printing coordinate values.
+	 * @return {String} - A human readable String representing this vector.
+	 */
+	toString(precision = 16) {
+		return `[${this._v[0].toFixed(precision)}, ${this._v[1].toFixed(precision)}, ${this._v[2].toFixed(precision)}]`;
+	}
 }
 
+Vec3.X_AXIS = new Vec3(1.0, 0.0, 0.0);
+Vec3.Y_AXIS = new Vec3(0.0, 1.0, 0.0);
+Vec3.Z_AXIS = new Vec3(0.0, 0.0, 1.0);

@@ -1,6 +1,6 @@
 'use strict';
 
-import {Logger, DEFAULT_LOGGER, dl, wl, l, el} from '../../src/log';
+import {Logger, DEFAULT_LOGGER, dl, wl, l, el} from 'src/util/log.js';
 
 export default class LogTest {
 

@@ -1,11 +1,11 @@
 /**
  * @fileOverview Scene.
  * @author Noodep
- * @version 0.03
+ * @version 0.04
  */
 'use strict';
 
-import {dl} from '../log.js';
+import {dl} from '../util/log.js';
 import Mat4 from '../math/mat4.js';
 import Renderable from './renderable.js';
 import Object3D from './object3d.js';
@@ -21,7 +21,7 @@ export default class Scene extends Object3D {
 	 * @return {module:3d.Scene} - The newly created Scene.
 	 */
 	constructor(scene_id) {
-		super(scene_id);
+		super({id: scene_id});
 		this._lights = new Set();
 		this._cameras = new Array();
 
@@ -56,8 +56,8 @@ export default class Scene extends Object3D {
 	/**
 	 * Adds a camera projection matrix
 	 */
-	addCamera(proj) {
-		this._cameras.push(proj);
+	addCamera(camera) {
+		this._cameras.push(camera);
 	}
 
 	/**
@@ -90,6 +90,12 @@ export default class Scene extends Object3D {
 	 */
 	update(delta_t) {
 		this._update_listeners.forEach((listener) => listener(delta_t));
+
+		// Update Models
+		super.update(delta_t);
+		for(let child of this.children) {
+			child.update(delta_t);
+		}
 	}
 
 	/**
@@ -114,10 +120,9 @@ export default class Scene extends Object3D {
 	applyProgramState(renderer, program_name) {
 		renderer.useProgram(program_name);
 		const program = renderer.getActiveProgram();
-		const projection = this._cameras[this._active_camera];
-		const view = Mat4.identity();
+		const camera = this._cameras[this._active_camera];
 
-		program.applyState(renderer, projection, view);
+		program.applyState(renderer, camera.projection, camera.view);
 	}
 }
 
