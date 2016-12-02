@@ -18,7 +18,7 @@ export default class WebGLRendererTest {
 		console.log(`%c----- Testing src/gl/webgl-renderer.js -----`,'color:blue;');
 		console.time('Perf');
 
-		DL.level = Logger.LEVELS.NONE;
+		DL.level = Logger.LEVELS.DEBUG;
 
 		// Fix issue with multiple instance not being possible.
 		WebGLRendererTest.createTestInstance();
@@ -62,7 +62,7 @@ export default class WebGLRendererTest {
 			cube.model.rotateY(delta_t / 1000.0);
 		});
 
-		r._context.enable(WebGLRenderingContext.DEPTH_TEST);
+		r.enable(WebGLRenderingContext.DEPTH_TEST);
 		r.background = [0.1, 0.2, 0.3, 1.0];
 
 		simple_p.ready().then((e) => {
@@ -214,7 +214,7 @@ export default class WebGLRendererTest {
 			cube_z_5.rotateZ(delta_t / 1000.0);
 		});
 
-		r._context.enable(WebGLRenderingContext.DEPTH_TEST);
+		r.enable(WebGLRenderingContext.DEPTH_TEST);
 		r.background = [0.1, 0.2, 0.3, 1.0];
 		r.clear(WebGLRenderingContext.COLOR_BUFFER_BIT);
 
@@ -246,7 +246,7 @@ export default class WebGLRendererTest {
 			camera.setPosition(new Vec3(0.0, 0.0, 3.0));
 		});
 
-		r._context.enable(WebGLRenderingContext.DEPTH_TEST);
+		r.enable(WebGLRenderingContext.DEPTH_TEST);
 		r.background = [0.1, 0.2, 0.3, 1.0];
 		r.clear(WebGLRenderingContext.COLOR_BUFFER_BIT);
 
@@ -293,7 +293,7 @@ export default class WebGLRendererTest {
 			cube.rotateZ(delta_t / 10000);
 		});
 
-		r._context.enable(WebGLRenderingContext.DEPTH_TEST);
+		r.enable(WebGLRenderingContext.DEPTH_TEST);
 		r.background = [0.1, 0.2, 0.3, 1.0];
 		r.clear(WebGLRenderingContext.COLOR_BUFFER_BIT);
 
@@ -346,7 +346,7 @@ export default class WebGLRendererTest {
 			scene.rotateZ(delta_t / 30000);
 		});
 
-		r._context.enable(WebGLRenderingContext.DEPTH_TEST);
+		r.enable(WebGLRenderingContext.DEPTH_TEST);
 		r.background = [0.1, 0.2, 0.3, 1.0];
 		r.clear(WebGLRenderingContext.COLOR_BUFFER_BIT);
 

@@ -74,7 +74,7 @@ export default class OrbitTest {
 		const cube = new Mesh3D('cube', geometry , 'simple');
 		scene.addChild(cube);
 
-		r._context.enable(WebGLRenderingContext.DEPTH_TEST);
+		r.enable(WebGLRenderingContext.DEPTH_TEST);
 		r.background = [0.1, 0.2, 0.3, 1.0];
 		r.clear(WebGLRenderingContext.COLOR_BUFFER_BIT);
 

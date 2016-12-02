@@ -57,6 +57,20 @@ export default class WebGLRenderer {
 	}
 
 	/**
+	 * Enables the specified capability.
+	 */
+	enable(capability) {
+		this._context.enable(capability);
+	}
+
+	/**
+	 * Disables the specified capability.
+	 */
+	disable(capability) {
+		this._context.disable(capability);
+	}
+
+	/**
 	 * Adds a scene to this renderer unless a scene with the same id is already present.
 	 *
 	 * @return {Boolean} - true if the scene was successfully added, false otherwise.
