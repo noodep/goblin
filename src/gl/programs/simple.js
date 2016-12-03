@@ -30,9 +30,6 @@ export default class SimpleProgram extends Program {
 		c.uniformMatrix4fv(this.getUniform('u_projection_mat'), false, projection.matrix);
 		c.uniformMatrix4fv(this.getUniform('u_view_mat'), false, view.matrix);
 
-		const avp = this.getAttribute('a_vertex_position');
-		c.enableVertexAttribArray(avp);
-		c.vertexAttribPointer(avp, 3, WebGLRenderingContext.FLOAT, false, 0, 0);
 	}
 }
 

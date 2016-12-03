@@ -203,6 +203,9 @@ export default class Object3D {
 	update() {
 		if(!this._is_model_valid)
 			this._revalidateModel();
+
+		for(let child of this.children)
+			child.update();
 	}
 
 	/**

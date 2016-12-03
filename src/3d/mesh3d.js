@@ -28,6 +28,10 @@ export default class Mesh3D extends Renderable {
 		const c = renderer._context;
 		c.uniformMatrix4fv(p.getUniform('u_model_mat'), false, this.worldModel.matrix);
 		renderer.activateBufferObject(this._buffer_id);
+
+		const avp = p.getAttribute('a_vertex_position');
+		c.vertexAttribPointer(avp, 3, WebGLRenderingContext.FLOAT, false, 0, 0);
+		c.enableVertexAttribArray(avp);
 	}
 
 	render(renderer) {

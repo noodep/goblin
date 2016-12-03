@@ -27,7 +27,8 @@ export default class WebGLRendererTest {
 		// WebGLRendererTest.testObjectRotation();
 		// WebGLRendererTest.testCameraPose();
 		// WebGLRendererTest.benchmarkStaticMesh3D();
-		WebGLRendererTest.benchmarkMesh3D();
+		// WebGLRendererTest.benchmarkMesh3D();
+		WebGLRendererTest.sceneModification();
 
 		console.timeEnd('Perf');
 		console.log(`%c---------------------------------------`,'color:blue;');
@@ -349,6 +350,56 @@ export default class WebGLRendererTest {
 		r.enable(WebGLRenderingContext.DEPTH_TEST);
 		r.background = [0.1, 0.2, 0.3, 1.0];
 		r.clear(WebGLRenderingContext.COLOR_BUFFER_BIT);
+
+		simple_p.ready().then((e) => {
+			r.addScene(scene);
+		});
+	}
+
+	static sceneModification() {
+		const r = WebGLRendererTest.renderer;
+		const simple_p = r.createProgram('simple', '/test/shaders/', SimpleProgram);
+		const scene = new Scene('main-scene');
+		const camera = new Camera({aspect_ratio: r.aspectRatio()});
+		camera.setPosition(new Vec3(0.0, 0.0, 6.0));
+		scene.addCamera(camera);
+
+		const control = new OrbitControl(camera);
+
+		const SCALE = 0.01;
+		const SCALE_VECTOR = new Vec3(SCALE, SCALE, SCALE);
+		const BYTE_OFFSET = 6*2*3*3;
+
+		const box_origin = new Vec3();
+		const sun = new Mesh3D(`sun`, createBoxGeometry(box_origin, SCALE_VECTOR), 'simple');
+		scene.addChild(sun);
+		scene.addUpdateListener((delta_t) => {
+			sun.rotateZ(delta_t / 20000);
+		});
+		scene.initializeObject3D(r, sun);
+
+		const createRandomBox = (parent, dist, create) => {
+
+			const cube = new Mesh3D(`cube${Math.random()}`, createBoxGeometry(box_origin, SCALE_VECTOR), 'simple');
+			cube.translateX(Math.random() * dist - dist / 2.0);
+			scene.addUpdateListener((delta_t) => {
+				cube.rotateZ(delta_t / 5000 * dist);
+			});
+			parent.addChild(cube);
+			scene.initializeObject3D(r, cube);
+
+			if(create > 0.4)
+				createRandomBox(cube, dist/3, create / 2);
+		}
+
+		createRandomBox(sun, 5 + Math.random() * 10, Math.random());
+		createRandomBox(sun, 5 + Math.random() * 10, Math.random());
+		createRandomBox(sun, 5 + Math.random() * 10, Math.random());
+		createRandomBox(sun, 5 + Math.random() * 10, Math.random());
+		createRandomBox(sun, 5 + Math.random() * 10, Math.random());
+
+		r.enable(WebGLRenderingContext.DEPTH_TEST);
+		r.background = [0.1, 0.2, 0.3, 1.0];
 
 		simple_p.ready().then((e) => {
 			r.addScene(scene);

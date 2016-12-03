@@ -93,9 +93,6 @@ export default class Scene extends Object3D {
 
 		// Update Models
 		super.update(delta_t);
-		for(let child of this.children) {
-			child.update(delta_t);
-		}
 	}
 
 	/**
