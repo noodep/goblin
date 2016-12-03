@@ -23,7 +23,7 @@ export default class Renderable extends Object3D {
 	 * @return {module:3d.Renderable} - The newly created Renderable.
 	 */
 	constructor(renderable_id, geometry, program_name) {
-		super(renderable_id);
+		super({id: renderable_id});
 		this._buffer_id = UUIDv4();
 		this._geometry = geometry;
 		this._program_name = program_name;
