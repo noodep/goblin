@@ -7,10 +7,12 @@ import Vec3 from 'src/math/vec3.js';
 import Quat from 'src/math/quat.js';
 import Scene from 'src/3d/scene.js';
 import Mesh3D from 'src/3d/mesh3d.js';
+import IndexedMesh3D from 'src/3d/indexed-mesh3d.js';
+import IndexedGeometry from 'src/3d/geometry/indexed-geometry.js';
 import Camera from 'src/3d/camera/camera.js';
 import OrbitControl from 'src/3d/control/orbit.js';
 
-import createBoxGeometry from 'src/3d/geometry/box.js';
+import {createBoxGeometry, createIndexedBoxGeometry} from 'src/3d/geometry/box.js';
 
 export default class WebGLRendererTest {
 
@@ -18,30 +20,49 @@ export default class WebGLRendererTest {
 		console.log(`%c----- Testing src/gl/webgl-renderer.js -----`,'color:blue;');
 		console.time('Perf');
 
-		DL.level = Logger.LEVELS.DEBUG;
+		DL.level = Logger.LEVELS.NONE;
 
 		// Fix issue with multiple instance not being possible.
-		WebGLRendererTest.createTestInstance();
+		// WebGLRendererTest.createWebGLTestInstance();
+		WebGLRendererTest.createWebGL2TestInstance();
 
 		// WebGLRendererTest.testScene();
 		// WebGLRendererTest.testObjectRotation();
 		// WebGLRendererTest.testCameraPose();
 		// WebGLRendererTest.benchmarkStaticMesh3D();
+		WebGLRendererTest.benchmarkStaticIndexedMesh3D();
 		// WebGLRendererTest.benchmarkMesh3D();
-		WebGLRendererTest.sceneModification();
+		// WebGLRendererTest.sceneModification();
 
 		console.timeEnd('Perf');
 		console.log(`%c---------------------------------------`,'color:blue;');
 		console.log('\n');
 	}
 
-	static createTestInstance() {
+	static createWebGLTestInstance() {
 		const body = document.querySelector('body');
 		const canvas = document.createElement('canvas');
 		canvas.width = body.clientWidth;
 		canvas.height = body.clientHeight;
 		body.appendChild(canvas);
 		const renderer = new WebGLRenderer({ canvas: canvas });
+		renderer.start();
+		WebGLRendererTest.renderer = renderer;
+	}
+
+	static createWebGL2TestInstance() {
+		const body = document.querySelector('body');
+		const canvas = document.createElement('canvas');
+		canvas.width = body.clientWidth;
+		canvas.height = body.clientHeight;
+		body.appendChild(canvas);
+		const renderer = new WebGLRenderer({
+			canvas: canvas,
+			context_type: 'webgl2',
+			webgl_options: {
+				antialias: true
+			}
+		});
 		renderer.start();
 		WebGLRendererTest.renderer = renderer;
 	}
@@ -303,6 +324,52 @@ export default class WebGLRendererTest {
 		});
 	}
 
+	static benchmarkStaticIndexedMesh3D() {
+		const r = WebGLRendererTest.renderer;
+		const simple_p = r.createProgram('simple', '/test/shaders/', SimpleProgram);
+		const scene = new Scene();
+		const camera = new Camera({aspect_ratio: r.aspectRatio()});
+		camera.setPosition(new Vec3(0.0,0.0,3.0));
+		scene.addCamera(camera);
+		const control = new OrbitControl(camera);
+
+		const NUM = Math.pow(32, 3);
+		const WIDTH = 2.0;
+		const SIZE = Math.floor(Math.cbrt(NUM));
+		const OFFSET = WIDTH / (SIZE + 1);
+		const SCALE = 0.25 * OFFSET;
+		const SCALE_VECTOR = new Vec3(SCALE, SCALE, SCALE);
+
+		const vertices = new Float32Array(NUM * 8 * 3);
+		const indices = new Uint32Array(NUM * 36);
+		const box_origin = new Vec3();
+		for(let i = 0 ; i < NUM ; i++) {
+			const ix = (i%SIZE);
+			const iy = Math.floor(i / (SIZE*SIZE));
+			const iz = Math.floor(i % (SIZE*SIZE) / SIZE);
+
+			box_origin.x = -1.0 + (ix + 1) * OFFSET;
+			box_origin.y = -1.0 + (iy + 1) * OFFSET;
+			box_origin.z = -1.0 + (iz + 1) * OFFSET;
+			const indexed_mesh = createIndexedBoxGeometry(box_origin, SCALE_VECTOR, Float32Array, Uint32Array, WebGLRenderingContext.UNSIGNED_INT, i * 8);
+			vertices.set(indexed_mesh.vertices, 8*3*i);
+			indices.set(indexed_mesh.indices, 36*i);
+		}
+
+		const indexed_geometry = new IndexedGeometry(indices, vertices, WebGLRenderingContext.UNSIGNED_INT);
+		const cubes = new IndexedMesh3D('cube', indexed_geometry, 'simple');
+
+		scene.addChild(cubes);
+
+		r.enable(WebGLRenderingContext.DEPTH_TEST);
+		r.background = [0.1, 0.2, 0.3, 1.0];
+		r.clear(WebGLRenderingContext.COLOR_BUFFER_BIT);
+
+		simple_p.ready().then((e) => {
+			r.addScene(scene);
+		});
+	}
+
 	static benchmarkMesh3D() {
 		const r = WebGLRendererTest.renderer;
 		const simple_p = r.createProgram('simple', '/test/shaders/', SimpleProgram);
@@ -405,5 +472,6 @@ export default class WebGLRendererTest {
 			r.addScene(scene);
 		});
 	}
+
 }
 

@@ -6,8 +6,9 @@
  */
 
 import Vec3 from '../../math/vec3.js';
+import IndexedGeometry from './indexed-geometry.js';
 
-export default function createBoxGeometry(origin = new Vec3(), scale = Vec3.identity()) {
+export function createBoxGeometry(origin = new Vec3(), scale = Vec3.identity(), vertex_typed_array = Float32Array) {
 	const i = 1.0;
 	const p0 = [origin.x + i * scale.x, origin.y + i * scale.y, origin.z + i * scale.z];
 	const p1 = [origin.x - i * scale.x, origin.y + i * scale.y, origin.z + i * scale.z];
@@ -18,8 +19,8 @@ export default function createBoxGeometry(origin = new Vec3(), scale = Vec3.iden
 	const p6 = [origin.x - i * scale.x, origin.y + i * scale.y, origin.z - i * scale.z];
 	const p7 = [origin.x - i * scale.x, origin.y - i * scale.y, origin.z - i * scale.z];
 
-	// 6 face * 2 triangles by face * 3 points per triangle * 3 components by points
-	const vertices = new Float32Array(6*2*3*3);
+	// 6 faces * 2 triangles by face * 3 points per triangle * 3 components by points
+	const vertices = new vertex_typed_array(6*2*3*3);
 
 	let idx = 0;
 	const stride = 3*3;
@@ -46,3 +47,29 @@ export default function createBoxGeometry(origin = new Vec3(), scale = Vec3.iden
 	return vertices;
 }
 
+export function createIndexedBoxGeometry(origin = new Vec3(), scale = Vec3.identity(), vertex_typed_array = Float32Array, index_typed_array = Uint8Array, type = WebGLRenderingContext.UNSIGNED_BYTE, index_offset = 0) {
+	const i = 1.0;
+
+	// 8 vertices * 3 components by vertex
+	const vertices = new vertex_typed_array([
+		origin.x + i * scale.x, origin.y + i * scale.y, origin.z + i * scale.z,
+		origin.x - i * scale.x, origin.y + i * scale.y, origin.z + i * scale.z,
+		origin.x - i * scale.x, origin.y - i * scale.y, origin.z + i * scale.z,
+		origin.x + i * scale.x, origin.y - i * scale.y, origin.z + i * scale.z,
+		origin.x + i * scale.x, origin.y - i * scale.y, origin.z - i * scale.z,
+		origin.x + i * scale.x, origin.y + i * scale.y, origin.z - i * scale.z,
+		origin.x - i * scale.x, origin.y + i * scale.y, origin.z - i * scale.z,
+		origin.x - i * scale.x, origin.y - i * scale.y, origin.z - i * scale.z
+	]);
+
+	const indices = new index_typed_array([
+		0 + index_offset, 1 + index_offset, 2 + index_offset, 0 + index_offset, 2 + index_offset, 3 + index_offset,
+		0 + index_offset, 3 + index_offset, 4 + index_offset, 0 + index_offset, 4 + index_offset, 5 + index_offset,
+		0 + index_offset, 5 + index_offset, 6 + index_offset, 0 + index_offset, 6 + index_offset, 1 + index_offset,
+		1 + index_offset, 6 + index_offset, 7 + index_offset, 1 + index_offset, 7 + index_offset, 2 + index_offset,
+		7 + index_offset, 4 + index_offset, 3 + index_offset, 7 + index_offset, 3 + index_offset, 2 + index_offset,
+		4 + index_offset, 7 + index_offset, 6 + index_offset, 4 + index_offset, 6 + index_offset, 5 + index_offset
+	]);
+
+	return new IndexedGeometry(indices, vertices, WebGLRenderingContext.UNSIGNED_BYTE);
+}

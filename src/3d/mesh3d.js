@@ -1,7 +1,7 @@
 /**
  * @fileOverview Mesh3D class that represent a Renderable with an underlying triangular mesh.
  * @author Noodep
- * @version 0.02
+ * @version 0.11
  */
 'use strict';
 

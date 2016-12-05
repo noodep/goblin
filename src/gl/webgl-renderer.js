@@ -19,10 +19,11 @@ export default class WebGLRenderer {
 	 * Creates a WebGLRenderer that uses a WebGLRenderingContext as rendering support.
 	 *
 	 * @param {HTMLCanvasElement} canvas - the canvas element to be used as context.
+	 * @param {String} context_type - type of the context backing this renderer (e.g. 'webgl', 'webgl2').
 	 * @param {Object} webgl_options - options that will be passed as argument when trying to instanciate the WebGLRenderingContext.
 	 * @return {module:gl.WebGLRenderer} - The newly created renderer.
 	 */
-	constructor({ canvas, webgl_options } = {}) {
+	constructor({ canvas, context_type, webgl_options } = {}) {
 		dl('Creating WebGlRenderer.')
 		this._canvas = canvas;
 		this._scenes = new Map();
@@ -36,7 +37,7 @@ export default class WebGLRenderer {
 		this._context = undefined;
 		this._animation_frame = undefined;
 
-		this._initContext(webgl_options);
+		this._initContext(context_type, webgl_options);
 	}
 
 	/**
@@ -281,9 +282,9 @@ export default class WebGLRenderer {
 	 *
 	 * @throws {Error} - if unable to create a webgl context.
 	 */
-	_initContext(options = WebGLRenderer.DEFAULT_WEBGL_OPTIONS) {
+	_initContext(context_type = 'webgl', options = WebGLRenderer.DEFAULT_WEBGL_OPTIONS) {
 		dl(`Creating WebGlRenderer context with options ${options}.`);
-		this._context = this._canvas.getContext('webgl', options);
+		this._context = this._canvas.getContext(context_type, options);
 
 		if(!this._context)
 			throw new Error('Unable to create webgl context.');

@@ -42,7 +42,7 @@ export default class Renderable extends Object3D {
 			WebGLRenderingContext.STATIC_DRAW
 		);
 
-		renderer.updateBufferObjectData(this._buffer_id, this._geometry);
+		renderer.updateBufferObjectData(this._buffer_id, this._geometry, 0, WebGLRenderingContext.ARRAY_BUFFER);
 	}
 
 	setShaderState() {
