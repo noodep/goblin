@@ -12,7 +12,7 @@ export default class OrbitControl {
 
 	constructor(target, { element = document, radius = 1, sensitivity = OrbitControl.DEFAULT_SENSITIVITY, sensitivity_modifier = OrbitControl.DEFAULT_SENSITIVITY_MODIFIER } = {}) {
 		this._target = target;
-		this._element = document;
+		this._element = element;
 		this._radius = radius;
 		this._theta = Math.PI / 2.0;
 		this._phi = 0;
