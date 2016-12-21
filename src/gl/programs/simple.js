@@ -27,8 +27,8 @@ export default class SimpleProgram extends Program {
 	applyState(renderer, projection, view) {
 		const c = renderer._context;
 
-		c.uniformMatrix4fv(this.getUniform('u_projection_mat'), false, projection.matrix);
-		c.uniformMatrix4fv(this.getUniform('u_view_mat'), false, view.matrix);
+		c.uniformMatrix4fv(this.getUniform('projection'), false, projection.matrix);
+		c.uniformMatrix4fv(this.getUniform('view'), false, view.matrix);
 
 	}
 }

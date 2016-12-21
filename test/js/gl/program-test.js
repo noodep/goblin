@@ -20,7 +20,7 @@ export default class ProgramTest {
 
 	static testSimpleProgram() {
 		const canvas = document.createElement('canvas');
-		const ctx = canvas.getContext('webgl');
+		const ctx = canvas.getContext('webgl2');
 
 		const simple = new Program({
 			context: ctx,

@@ -5,7 +5,7 @@
  */
 'use strict';
 
-import Renderable from './renderable.js';
+import Renderable from '../gl/renderable.js';
 
 export default class Mesh3D extends Renderable {
 
@@ -24,19 +24,12 @@ export default class Mesh3D extends Renderable {
 	}
 
 	setShaderState(renderer) {
+		super.setShaderState(renderer);
 		const p = renderer.getActiveProgram();
 		const c = renderer._context;
-		c.uniformMatrix4fv(p.getUniform('u_model_mat'), false, this.worldModel.matrix);
-		renderer.activateBufferObject(this._buffer_id);
 
-		const avp = p.getAttribute('a_vertex_position');
-		c.vertexAttribPointer(avp, 3, WebGLRenderingContext.FLOAT, false, 0, 0);
-		c.enableVertexAttribArray(avp);
+		c.uniformMatrix4fv(p.getUniform('model'), false, this.worldModel.matrix);
 	}
 
-	render(renderer) {
-		var l = this._geometry.length;
-		renderer._context.drawArrays(WebGLRenderingContext.TRIANGLES, 0, l/3);
-	}
 }
 

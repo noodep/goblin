@@ -7,7 +7,7 @@
 
 import {dl} from '../util/log.js';
 import Mat4 from '../math/mat4.js';
-import Renderable from './renderable.js';
+import Renderable from '../gl/renderable.js';
 import Object3D from './object3d.js';
 
 export default class Scene extends Object3D {
@@ -106,6 +106,7 @@ export default class Scene extends Object3D {
 			for(let renderable of renderables) {
 				renderable.setShaderState(renderer);
 				renderable.render(renderer);
+				renderable.cleanShaderState(renderer);
 			};
 		});
 	}

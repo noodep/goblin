@@ -1,13 +1,16 @@
-attribute vec3 a_vertex_position;
+#version 300 es
+precision mediump float;
 
-uniform mat4 u_model_mat;
-uniform mat4 u_view_mat;
-uniform mat4 u_projection_mat;
+in vec3 position;
 
-varying vec4 v_color;
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
+
+out vec4 color;
 
 void main(void) {
-	gl_Position = u_projection_mat * u_view_mat * u_model_mat * vec4(a_vertex_position, 1.0);
-	v_color = vec4(a_vertex_position, 1.0);
+	gl_Position = projection * view * model * vec4(position, 1.0);
+	color = vec4(position, 1.0);
 }
 

@@ -8,7 +8,7 @@
 
 import {dl, wl} from '../util/log.js';
 import {UUIDv4} from '../crypto/uuid.js';
-import Object3D from './object3d.js';
+import Object3D from '../3d/object3d.js';
 
 export default class Renderable extends Object3D {
 
@@ -24,8 +24,9 @@ export default class Renderable extends Object3D {
 	 */
 	constructor(renderable_id, geometry, program_name) {
 		super({id: renderable_id});
-		this._buffer_id = UUIDv4();
+		this._vao = undefined;
 		this._geometry = geometry;
+
 		this._program_name = program_name;
 	}
 
@@ -35,22 +36,21 @@ export default class Renderable extends Object3D {
 
 	initialize(renderer) {
 		dl(`Initializing Renderable with id ${this.id}.`);
-		renderer.createBufferObject(
-			this._buffer_id,
-			this._geometry.byteLength,
-			WebGLRenderingContext.ARRAY_BUFFER,
-			WebGLRenderingContext.STATIC_DRAW
-		);
 
-		renderer.updateBufferObjectData(this._buffer_id, this._geometry, 0, WebGLRenderingContext.ARRAY_BUFFER);
+		this._geometry.initializeContextBuffers(renderer);
+		this._vao = this._geometry.initializeVertexArrayProcedure(renderer, this._program_name);
 	}
 
-	setShaderState() {
-		wl('Cannot set the shader state of a Renderable directly. The setShaderState function needs to be implemented in the extending class.');
+	setShaderState(renderer) {
+		renderer.activateVertexArray(this._vao);
 	}
 
-	render() {
-		wl('Cannot render a Renderable directly. The render function needs to be implemented in the extending class.');
+	cleanShaderState(renderer) {
+		renderer.activateVertexArray(null);
+	}
+
+	render(renderer) {
+		this._geometry.render(renderer);
 	}
 }
 

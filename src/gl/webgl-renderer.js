@@ -177,7 +177,6 @@ export default class WebGLRenderer {
 		return this._programs.get(this._active_program);
 	}
 
-
 	/**
 	 * Creates a new buffer object with the specified id and allocates the underlying buffer object's storage.
 	 *
@@ -187,7 +186,7 @@ export default class WebGLRenderer {
 	 * @param {GLenum} [buffer_usage=STATIC_DRAW] - usage of the buffer.
 	 * @return {Boolean} - true if the buffer was successfully created, false otherwise.
 	 */
-	createBufferObject(buffer_id, size, buffer_type = WebGLRenderingContext.ARRAY_BUFFER, buffer_usage = WebGLRenderingContext.STATIC_DRAW) {
+	createBuffer(buffer_id, size, buffer_type = WebGLRenderingContext.ARRAY_BUFFER, buffer_usage = WebGLRenderingContext.STATIC_DRAW) {
 		if(this._buffer_objects.has(buffer_id)) {
 			wl(`The vertex buffer object with id ${buffer_id} already exists.`);
 			return false;
@@ -205,7 +204,7 @@ export default class WebGLRenderer {
 	 *
 	 * @return {Boolean} - true if the buffer object exists and was successfully deleted, false otherwise.
 	 */
-	deleteBufferObject(buffer_id) {
+	deleteBuffer(buffer_id) {
 		if(!this._buffer_objects.has(buffer_id)) {
 			wl(`The vertex buffer object with id ${buffer_id} does not exists`);
 			return false;
@@ -222,7 +221,7 @@ export default class WebGLRenderer {
 	 * possible values are WebGLRenderingContext.ARRAY_BUFFER or WebGLRenderingContext.ELEMENT_ARRAY_BUFFER.
 	 * @return {Boolean} - true if the buffer object with the specified exists and was activated, false otherwise.
 	 */
-	activateBufferObject(buffer_id, buffer_type = WebGLRenderingContext.ARRAY_BUFFER) {
+	activateBuffer(buffer_id, buffer_type = WebGLRenderingContext.ARRAY_BUFFER) {
 		if(this._active_buffer_object == buffer_id) {
 			wl(`Buffer with id ${buffer_id} already active.`);
 			return false;
@@ -247,9 +246,43 @@ export default class WebGLRenderer {
 	 * @param {GLintptr} [offset=0] - offset indicating where to start the data replacement.
 	 * @param {GLenum} [buffer_type=ARRAY_BUFFER] - type of buffer to update.
 	 */
-	updateBufferObjectData(buffer_id, buffer_data, offset = 0, buffer_type = WebGLRenderingContext.ARRAY_BUFFER) {
-		this.activateBufferObject(buffer_id, buffer_type);
+	updateBufferData(buffer_id, buffer_data, offset = 0, buffer_type = WebGLRenderingContext.ARRAY_BUFFER) {
+		this.activateBuffer(buffer_id, buffer_type);
 		this._context.bufferSubData(buffer_type, offset, buffer_data);
+	}
+
+	/**
+	 * Creates a new vertex array object with the specified id.
+	 *
+	 * @return {WebGLVertexArrayObject} - the newly created vertex array object.
+	 */
+	createVertexArray() {
+		return this._context.createVertexArray();
+	}
+
+	/**
+	 * Activates the specified vertex array object.
+	 */
+	activateVertexArray(vao) {
+		return this._context.bindVertexArray(vao);
+	}
+
+	/**
+	 * Enables the specified attribute.
+	 */
+	enableAttribute(name, attribute) {
+		const program = this.getActiveProgram();
+		const pointer = program.getAttribute(name);
+		this._context.vertexAttribPointer(
+			pointer,
+			attribute.size,
+			attribute.type,
+			WebGLRenderingContext.FALSE,
+			attribute.stride,
+			attribute.offset
+		);
+
+		this._context.enableVertexAttribArray(pointer);
 	}
 
 	/**
