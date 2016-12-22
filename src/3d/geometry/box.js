@@ -43,13 +43,13 @@ export default class Box {
 	}
 
 	static generateBoxMesh(origin = new Vec3(), scale = Vec3.identity(), vertex_typed_array = Float32Array) {
-		const vertices = Box.generateBoxVertices(origin, scale);
 		// 6 faces * 2 triangles by face * 3 vertices per triangle * 3 components by vertex
+		const indices = Box.generateBoxIndices();
+		const vertices = Box.generateBoxVertices(origin, scale);
 		const data = new vertex_typed_array(6 * 2 * 3 * 3);
-		const box = Box.generateBoxIndices();
 		const stride = 3;
 		let offset = 0;
-		box.forEach(index => {
+		indices.forEach(index => {
 			data.set(vertices[index], stride * offset++);
 		});
 		return data;
@@ -66,8 +66,15 @@ export default class Box {
 
 	static createIndexedBoxGeometry(origin = new Vec3(), scale = Vec3.identity(), vertex_typed_array = Float32Array, index_typed_array = Uint8Array, index_type = WebGLRenderingContext.UNSIGNED_BYTE, index_offset = 0) {
 		// 8 vertices * 3 components by vertex
-		const data = Box.generateBoxMesh(origin, scale, vertex_typed_array);
-		const indices = new index_typed_array(Box.generateBoxIndices(offset));
+		const indices = new index_typed_array(Box.generateBoxIndices(index_offset));
+		const vertices = Box.generateBoxVertices(origin, scale);
+		const data = new vertex_typed_array(8 * 3);
+
+		const stride = 3;
+		let offset = 0;
+		vertices.forEach(vertex => {
+			data.set(vertex, stride * offset++);
+		});
 
 		const geometry = new IndexedGeometry(indices, data, WebGLRenderingContext.TRIANGLES, index_type);
 		geometry.addAttribute('position', new BufferAttribute(3));

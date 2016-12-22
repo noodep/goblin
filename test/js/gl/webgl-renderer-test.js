@@ -479,7 +479,7 @@ export default class WebGLRendererTest {
 		const BYTE_OFFSET = 6*2*3*3;
 
 		const box_origin = new Vec3();
-		const sun = new Mesh3D(`sun`, Box.createBoxGeometry(box_origin, SCALE_VECTOR), 'simple');
+		const sun = new Mesh3D(`sun`, Box.createIndexedBoxGeometry(box_origin, SCALE_VECTOR), 'simple');
 		scene.addChild(sun);
 		scene.addUpdateListener((delta_t) => {
 			sun.rotateZ(delta_t / 20000);
@@ -487,7 +487,7 @@ export default class WebGLRendererTest {
 
 		const createRandomBox = (parent, dist, create) => {
 
-			const cube = new Mesh3D(`cube${Math.random()}`, Box.createBoxGeometry(box_origin, SCALE_VECTOR), 'simple');
+			const cube = new Mesh3D(`cube${Math.random()}`, Box.createIndexedBoxGeometry(box_origin, SCALE_VECTOR), 'simple');
 			cube.translateX(Math.random() * dist - dist / 2.0);
 			scene.addUpdateListener((delta_t) => {
 				cube.rotateZ(delta_t / 5000 * dist);
