@@ -111,7 +111,7 @@ export default class Program {
 
 		c.linkProgram(this._program);
 		if(!c.getProgramParameter(this._program, WebGLRenderingContext.LINK_STATUS))
-			throw new Error(`Unable to ling program "${this._name}"`);
+			throw new Error(`Unable to link program "${this._name}"`);
 
 		c.validateProgram(this._program);
 		if(!c.getProgramParameter(this._program, WebGLRenderingContext.VALIDATE_STATUS))
