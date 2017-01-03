@@ -81,6 +81,27 @@ export default class Box {
 		return geometry;
 	}
 
+	static createIndexedColoredBoxGeometry(color = Vec3.identity(), origin = new Vec3(), scale = Vec3.identity(), vertex_typed_array = Float32Array, index_typed_array = Uint8Array, index_type = WebGLRenderingContext.UNSIGNED_BYTE, index_offset = 0) {
+		// 8 vertices * 6 components by vertex
+		const indices = new index_typed_array(Box.generateBoxIndices(index_offset));
+		const vertices = Box.generateBoxVertices(origin, scale);
+		const data = new vertex_typed_array(8 * 6);
+
+		const element_stride = 6;
+		let offset = 0;
+		vertices.forEach(vertex => {
+			data.set(vertex, element_stride * offset);
+			data.set(color._v, element_stride * offset + 3);
+			offset++;
+		});
+
+		const stride = element_stride * vertex_typed_array.BYTES_PER_ELEMENT;
+		const geometry = new IndexedGeometry(indices, data, WebGLRenderingContext.TRIANGLES, index_type);
+		geometry.addAttribute('position', new BufferAttribute(3, WebGLRenderingContext.FLOAT, 0, stride));
+		geometry.addAttribute('color', new BufferAttribute(3, WebGLRenderingContext.FLOAT, 3 * vertex_typed_array.BYTES_PER_ELEMENT, stride));
+		return geometry;
+	}
+
 	static createIndexedBoxGeometryWithNormals(origin = new Vec3(), scale = Vec3.identity(), vertex_typed_array = Float32Array, index_typed_array = Uint8Array, index_type = WebGLRenderingContext.UNSIGNED_BYTE) {
 		const vertices = Box.generateBoxVertices(origin, scale);
 		// 6 faces * 2 triangles by face * 3 vertices per triangle * 6 components.

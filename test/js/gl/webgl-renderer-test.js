@@ -467,7 +467,7 @@ export default class WebGLRendererTest {
 
 	static sceneModification() {
 		const r = WebGLRendererTest.createWebGLContext();
-		const simple_p = r.createProgram('simple', '/test/shaders/', SimpleProgram);
+		const simple_p = r.createProgram('color', '/test/shaders/', SimpleProgram);
 		const scene = new Scene('main-scene');
 		const camera = new Camera({aspect_ratio: r.aspectRatio()});
 		camera.setPosition(new Vec3(0.0, 0.0, 6.0));
@@ -479,15 +479,16 @@ export default class WebGLRendererTest {
 		const BYTE_OFFSET = 6*2*3*3;
 
 		const box_origin = new Vec3();
-		const sun = new Mesh3D(`sun`, Box.createIndexedBoxGeometry(box_origin, SCALE_VECTOR), 'simple');
+		const sun = new Mesh3D(`sun`, Box.createIndexedColoredBoxGeometry(new Vec3(0.99, 0.72, 0.07), box_origin, SCALE_VECTOR), 'color');
 		scene.addChild(sun);
 		scene.addUpdateListener((delta_t) => {
 			sun.rotateZ(delta_t / 20000);
 		});
 
 		const createRandomBox = (parent, dist, create) => {
+			const color = Vec3.random();
 
-			const cube = new Mesh3D(`cube${Math.random()}`, Box.createIndexedBoxGeometry(box_origin, SCALE_VECTOR), 'simple');
+			const cube = new Mesh3D(`cube${Math.random()}`, Box.createIndexedColoredBoxGeometry(color, box_origin, SCALE_VECTOR), 'color');
 			cube.translateX(Math.random() * dist - dist / 2.0);
 			scene.addUpdateListener((delta_t) => {
 				cube.rotateZ(delta_t / 5000 * dist);
