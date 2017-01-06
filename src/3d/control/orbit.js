@@ -126,7 +126,7 @@ export default class OrbitControl {
 	 * Moves the target vertically along the virtual sphere.
 	 */
 	_zoom(delta) {
-		this._radius = Math.max(this._radius + delta, 0.1);
+		this._radius = Math.max(this._radius + delta, 0);
 	}
 
 	/**
