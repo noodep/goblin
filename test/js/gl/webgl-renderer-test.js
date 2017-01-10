@@ -32,7 +32,6 @@ export default class WebGLRendererTest {
 		WebGLRendererTest.testLightedBox();
 		WebGLRendererTest.sceneModification();
 
-
 		console.timeEnd('Perf');
 		console.log(`%c---------------------------------------`,'color:blue;');
 		console.log('\n');
