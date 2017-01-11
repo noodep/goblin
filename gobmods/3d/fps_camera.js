@@ -54,13 +54,13 @@
 			// this._camera.setForwardAcceleration(this._acceleration);
 		// } else if ( e. keyCode == 83 || e.keyCode == 38) {
 			// this._camera.setForwardAcceleration(-this._acceleration);
-		if (e. keyCode == 65 || e.keyCode == 37) {
+		if (e. keyCode == 65) {
 			this._camera.setLateralAcceleration(-this._acceleration);
-		} else if (e. keyCode == 68 || e.keyCode == 39) {
+		} else if (e. keyCode == 68) {
 			this._camera.setLateralAcceleration(this._acceleration);
-		} else if (e.keyCode == 87 || e. keyCode == 38) {
+		} else if (e.keyCode == 87) {
 			this._camera.setVerticalAcceleration(-this._acceleration);
-		} else if (e.keyCode == 83 || e.keyCode == 40) {
+		} else if (e.keyCode == 83) {
 			this._camera.setVerticalAcceleration(this._acceleration);
 		} else if (e.keyCode == 82) {
 			this.goToResetLocation();

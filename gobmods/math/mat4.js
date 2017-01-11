@@ -486,7 +486,15 @@
 		return this;
 	}
 
+	m4.prototype.equals = function(m) {
+		for (let i = 0; i < 16; i++) {
+			if (this.m[i] !== m.m[i]) {
+				return false;
+			}
+		}
 
+		return true;
+	}
 
 	/**
 	 * Creates a human readable string of the matrix.
