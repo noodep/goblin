@@ -239,7 +239,7 @@
 	}
 
 	quat.prototype.equals = function(q) {
-		return this.v[0] === q.v[0] && this.v[1] === v.v[1] && this.v[2] === v.v[2] && this.v[2] === v.v[2];
+		return this.v[0] === q.v[0] && this.v[1] === q.v[1] && this.v[2] === q.v[2] && this.v[2] === q.v[2];
 	}
 
 	quat.prototype.toArray = function() {
