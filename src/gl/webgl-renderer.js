@@ -115,7 +115,7 @@ export default class WebGLRenderer {
 	 *
 	 * @return {Program} - The newly created program.
 	 */
-	createProgram(name, path, ProgramClass) {
+	createProgram(name, path, ProgramClass, options) {
 		if(!ProgramClass || !(ProgramClass.prototype instanceof Program))
 			throw new Error(`${ProgramClass} is unknown or does not extends Program.`);
 
@@ -132,7 +132,7 @@ export default class WebGLRenderer {
 		if(path)
 			configuration['path'] = path;
 
-		const program = new ProgramClass(configuration);
+		const program = new ProgramClass(configuration, options);
 		this._programs.set(name, program);
 
 		return program;

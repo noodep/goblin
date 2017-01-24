@@ -14,11 +14,11 @@ export default class SimpleProgram extends Program {
 	 * @memberOf module:gl.programs
 	 * @alias SimpleProgram
 	 *
-	 * @param {Object} options - This program options {@see Program}.
+	 * @param {Object} configuration - This program configuration {@see Program}.
 	 * @return {module:gl.programs.SimpleProgram} - The newly created SimpleProgram.
 	 */
-	constructor(options) {
-		super(options)
+	constructor(configuration) {
+		super(configuration)
 	}
 
 	/**
@@ -29,7 +29,6 @@ export default class SimpleProgram extends Program {
 
 		c.uniformMatrix4fv(this.getUniform('projection'), false, projection.matrix);
 		c.uniformMatrix4fv(this.getUniform('view'), false, view.matrix);
-
 	}
 }
 
