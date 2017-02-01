@@ -199,7 +199,6 @@
 			// list to be called when ready
 			else
 				p.callbacks.push(callback);
-			
 			return;
 		}
 
@@ -225,7 +224,7 @@
 		_.Ajax.request({
 			url: vs_file,
 			onsuccess: function(response) {
-				program.vs =  self.createShader(response, self.c.VERTEX_SHADER);			
+				program.vs =  self.createShader(response, self.c.VERTEX_SHADER);
 				if(program.fs) {
 					program.state = 'compiling';
 					self.compileProgram(name);
@@ -268,9 +267,9 @@
 
 	/**
 	 * Creates a new program object and attach shaders to it.
-	 * This function initialize references to uniforms and attributes 
+	 * This function initialize references to uniforms and attributes
 	 * automatically (using reflection).
-	 * @param {string} name Name of the program to compile. 
+	 * @param {string} name Name of the program to compile.
 	 * @throws {Error} If the program fails to link or validate.
 	 */
 	WGLC.prototype.compileProgram = function(name) {
@@ -284,7 +283,7 @@
 			p.state = 'failed';
 			throw new Error("Unable to initialize the shader program.");
 		}
-		
+
 		this.qualify(p, 'u');
 		this.qualify(p, 'a');
 
@@ -329,7 +328,7 @@
 
 		for(var index = 0 ; index < len ; index++) {
 			// Dynamically calls appropriate function getActive{uniform|attribute}
-			var qualifier = this.c['getActive' + fname](p.program, index).name;	
+			var qualifier = this.c['getActive' + fname](p.program, index).name;
 			_.dl('Looking for ' + fname + ' ' + qualifier + ' location.');
 			res[qualifier] = this.c['get'+ fname + 'Location'](p.program, qualifier);
 			_.dl('found : ' + res[qualifier]);
@@ -359,7 +358,7 @@
 	WGLC.prototype.getProgram = function(program_id) {
 		if(!this.programExists(program_id))
 			throw new Error('Unknown program : ' + program_id);
-		var p = this._programs[program_id];		
+		var p = this._programs[program_id];
 		return p;
 	};
 
@@ -410,7 +409,7 @@
 	 */
 	WGLC.prototype.getScene = function(scene_id) {
 		if(!this.sceneExists(scene_id)) throw new Error('Unknown scene : ' + scene_id);
-		return this._scenes[scene_id];		
+		return this._scenes[scene_id];
 	};
 
 	/**
@@ -501,23 +500,31 @@
 	}
 
 	WGLC.prototype.createFrameBuffer = function(buffer_id) {
+		const ext = this.c.getExtension('WEBGL_color_buffer_float');
+
 		//Creates framebuffer
-		var fb = this.c.createFramebuffer();
+		const fb = this.c.createFramebuffer();
 		this._fbos[buffer_id] = fb;
 		this.makeFBOActive(buffer_id);
 
-		var rb_color = this.c.createRenderbuffer();
-		var rb_depth = this.c.createRenderbuffer();
-		this._rbos[_.GUID()] = rb_color;
-		this._rbos[_.GUID()] = rb_depth;
-		this.c.bindRenderbuffer(this.c.RENDERBUFFER, rb_color);
-		this.c.renderbufferStorage(this.c.RENDERBUFFER, this.c.RGBA4, this._canvas.width, this._canvas.height);
-		this.c.framebufferRenderbuffer(this.c.FRAMEBUFFER, this.c.COLOR_ATTACHMENT0, this.c.RENDERBUFFER, rb_color);
+		// Init color attachement
+		const tx_color = this.c.createTexture();
+		this._texs[_.GUID()] = tx_color;
+		this.c.bindTexture(WebGLRenderingContext.TEXTURE_2D, tx_color);
+		this.c.texParameteri(WebGLRenderingContext.TEXTURE_2D, WebGLRenderingContext.TEXTURE_MAG_FILTER, WebGLRenderingContext.NEAREST);
+		this.c.texParameteri(WebGLRenderingContext.TEXTURE_2D, WebGLRenderingContext.TEXTURE_MIN_FILTER, WebGLRenderingContext.NEAREST);
+		this.c.texImage2D(WebGLRenderingContext.TEXTURE_2D, 0, WebGLRenderingContext.RGBA, this._canvas.width, this._canvas.height, 0, WebGLRenderingContext.RGBA, WebGLRenderingContext.UNSIGNED_BYTE, null);
 
-		this.c.bindRenderbuffer(this.c.RENDERBUFFER, rb_depth);
-		this.c.renderbufferStorage(this.c.RENDERBUFFER, this.c.DEPTH_COMPONENT16, this._canvas.width, this._canvas.height);
-		this.c.framebufferRenderbuffer(this.c.FRAMEBUFFER, this.c.DEPTH_ATTACHMENT, this.c.RENDERBUFFER, rb_depth);
-		
+		// Init depth attachement
+		const rb_depth = this.c.createRenderbuffer();
+		this._rbos[_.GUID()] = rb_depth;
+		this.c.bindRenderbuffer(WebGLRenderingContext.RENDERBUFFER, rb_depth);
+		this.c.renderbufferStorage(WebGLRenderingContext.RENDERBUFFER, WebGLRenderingContext.DEPTH_COMPONENT16, this._canvas.width, this._canvas.height);
+
+		// Binds attachements to the framebuffer
+		this.c.framebufferTexture2D(WebGLRenderingContext.FRAMEBUFFER, WebGLRenderingContext.COLOR_ATTACHMENT0, WebGLRenderingContext.TEXTURE_2D, tx_color, 0);
+		this.c.framebufferRenderbuffer(WebGLRenderingContext.FRAMEBUFFER, WebGLRenderingContext.DEPTH_ATTACHMENT, WebGLRenderingContext.RENDERBUFFER, rb_depth);
+
 		if (this.c.checkFramebufferStatus(this.c.FRAMEBUFFER) != this.c.FRAMEBUFFER_COMPLETE) {
 			_.el("this combination of attachments does not work");
 			return;
@@ -548,14 +555,14 @@
 	WGLC.prototype.linkAttribute = function(attribute, qualifier_size , stride, offset) {
 		var s = stride || 0;
 		var o = offset || 0;
-		this.c.enableVertexAttribArray(attribute);	
+		this.c.enableVertexAttribArray(attribute);
 		this.c.vertexAttribPointer(attribute, qualifier_size, this.c.FLOAT, false, s, o);
 	}
 
 	WGLC.prototype.linkProjectionUniform = function(uniform) {
 		this.c.uniformMatrix4fv(uniform, false, this._projection_mat.m);
 	}
-	
+
 	WGLC.prototype.renderPoint = function(offset, size) {
 		this.c.drawArrays(this.c.POINTS, offset, size);
 	}
