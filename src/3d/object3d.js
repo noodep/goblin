@@ -110,7 +110,7 @@ export default class Object3D {
 	 *
 	 * @return {module:math.Vec3} - This Object3d scaling.
 	 */
-	get scale() {
+	get size() {
 		return this._scale;
 	}
 
@@ -119,7 +119,7 @@ export default class Object3D {
 	 *
 	 * @param {module:math.Vec3} v3 - This Object3d new scaling.
 	 */
-	set scale(v3) {
+	set size(v3) {
 		this._scale.copy(v3);
 		this.invalidateModel();
 	}
