@@ -315,7 +315,15 @@
 	// 	return this;
 	// }
 
+	m3.prototype.equals = function(m) {
+		for (let i = 0; i < 9; i++) {
+			if (this.m[i] !== m.m[i]) {
+				return false;
+			}
+		}
 
+		return true;
+	}
 
 	/**
 	 * Creates a human readable string of the matrix.

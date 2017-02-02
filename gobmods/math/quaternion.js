@@ -238,6 +238,14 @@
 		return this.mul(quat.fromAxisAngle(axis, angle));
 	}
 
+	quat.prototype.equals = function(q) {
+		return this.v[0] === q.v[0] && this.v[1] === q.v[1] && this.v[2] === q.v[2] && this.v[2] === q.v[2];
+	}
+
+	quat.prototype.toArray = function() {
+		return this.v.slice();
+	}
+
 	quat.prototype.toString = function(p = 16) {
 		return '[' + this.v[0].toFixed(p) + ',' + this.v[1].toFixed(p) + ',' + this.v[2].toFixed(p) + ',' + this.v[3].toFixed(p) + ']';
 	}
