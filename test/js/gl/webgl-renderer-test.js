@@ -9,7 +9,7 @@ import BufferAttribute from 'src/gl/buffer-attribute.js';
 import Vec3 from 'src/math/vec3.js';
 import Quat from 'src/math/quat.js';
 import Scene from 'src/3d/scene.js';
-import Mesh3D from 'src/3d/mesh3d.js';
+import Renderable from 'src/gl/renderable.js';
 import Camera from 'src/3d/camera/camera.js';
 import OrbitControl from 'src/3d/control/orbit.js';
 
@@ -26,9 +26,9 @@ export default class WebGLRendererTest {
 		WebGLRendererTest.testScene();
 		WebGLRendererTest.testObjectRotation();
 		WebGLRendererTest.testCameraPose();
-		WebGLRendererTest.benchmarkMesh3D();
-		WebGLRendererTest.benchmarkStaticMesh3D();
-		WebGLRendererTest.benchmarkStaticIndexedMesh3D();
+		WebGLRendererTest.benchmarkMesh();
+		WebGLRendererTest.benchmarkStaticMesh();
+		WebGLRendererTest.benchmarkStaticIndexedMesh();
 		WebGLRendererTest.testLightedBox();
 		WebGLRendererTest.sceneModification();
 
@@ -78,7 +78,7 @@ export default class WebGLRendererTest {
 		camera.setPosition(new Vec3(0.0,0.0,3.0));
 		scene.addCamera(camera);
 
-		const cube = new Mesh3D('cube', Box.createBoxGeometry(), 'simple');
+		const cube = new Renderable('cube', Box.createBoxGeometry(), 'simple');
 		scene.addChild(cube);
 
 		scene.addUpdateListener((delta_t) => {
@@ -104,11 +104,11 @@ export default class WebGLRendererTest {
 
 		let y_offset = 4.0;
 		let x_offset = -8.0;
-		const cube_x_1 = new Mesh3D('cube_x_1', Box.createBoxGeometry(), 'simple');
-		const cube_x_2 = new Mesh3D('cube_x_2', Box.createBoxGeometry(), 'simple');
-		const cube_x_3 = new Mesh3D('cube_x_3', Box.createBoxGeometry(), 'simple');
-		const cube_x_4 = new Mesh3D('cube_x_4', Box.createBoxGeometry(), 'simple');
-		const cube_x_5 = new Mesh3D('cube_x_5', Box.createBoxGeometry(), 'simple');
+		const cube_x_1 = new Renderable('cube_x_1', Box.createBoxGeometry(), 'simple');
+		const cube_x_2 = new Renderable('cube_x_2', Box.createBoxGeometry(), 'simple');
+		const cube_x_3 = new Renderable('cube_x_3', Box.createBoxGeometry(), 'simple');
+		const cube_x_4 = new Renderable('cube_x_4', Box.createBoxGeometry(), 'simple');
+		const cube_x_5 = new Renderable('cube_x_5', Box.createBoxGeometry(), 'simple');
 		cube_x_1.origin = new Vec3(x_offset, y_offset, 0.0);
 		x_offset += 4.0;
 		cube_x_2.origin = new Vec3(x_offset, y_offset, 0.0);
@@ -128,11 +128,11 @@ export default class WebGLRendererTest {
 		y_offset -= 4.0;
 		x_offset = -8.0;
 
-		const cube_y_1 = new Mesh3D('cube_y_1', Box.createBoxGeometry(), 'simple');
-		const cube_y_2 = new Mesh3D('cube_y_2', Box.createBoxGeometry(), 'simple');
-		const cube_y_3 = new Mesh3D('cube_y_3', Box.createBoxGeometry(), 'simple');
-		const cube_y_4 = new Mesh3D('cube_y_4', Box.createBoxGeometry(), 'simple');
-		const cube_y_5 = new Mesh3D('cube_y_5', Box.createBoxGeometry(), 'simple');
+		const cube_y_1 = new Renderable('cube_y_1', Box.createBoxGeometry(), 'simple');
+		const cube_y_2 = new Renderable('cube_y_2', Box.createBoxGeometry(), 'simple');
+		const cube_y_3 = new Renderable('cube_y_3', Box.createBoxGeometry(), 'simple');
+		const cube_y_4 = new Renderable('cube_y_4', Box.createBoxGeometry(), 'simple');
+		const cube_y_5 = new Renderable('cube_y_5', Box.createBoxGeometry(), 'simple');
 		cube_y_1.origin = new Vec3(x_offset, y_offset, 0.0);
 		x_offset += 4.0;
 		cube_y_2.origin = new Vec3(x_offset, y_offset, 0.0);
@@ -152,11 +152,11 @@ export default class WebGLRendererTest {
 		y_offset -= 4.0;
 		x_offset = -8.0;
 
-		const cube_z_1 = new Mesh3D('cube_z_1', Box.createBoxGeometry(), 'simple');
-		const cube_z_2 = new Mesh3D('cube_z_2', Box.createBoxGeometry(), 'simple');
-		const cube_z_3 = new Mesh3D('cube_z_3', Box.createBoxGeometry(), 'simple');
-		const cube_z_4 = new Mesh3D('cube_z_4', Box.createBoxGeometry(), 'simple');
-		const cube_z_5 = new Mesh3D('cube_z_5', Box.createBoxGeometry(), 'simple');
+		const cube_z_1 = new Renderable('cube_z_1', Box.createBoxGeometry(), 'simple');
+		const cube_z_2 = new Renderable('cube_z_2', Box.createBoxGeometry(), 'simple');
+		const cube_z_3 = new Renderable('cube_z_3', Box.createBoxGeometry(), 'simple');
+		const cube_z_4 = new Renderable('cube_z_4', Box.createBoxGeometry(), 'simple');
+		const cube_z_5 = new Renderable('cube_z_5', Box.createBoxGeometry(), 'simple');
 		cube_z_1.origin = new Vec3(x_offset, y_offset, 0.0);
 		x_offset += 4.0;
 		cube_z_2.origin = new Vec3(x_offset, y_offset, 0.0);
@@ -253,7 +253,7 @@ export default class WebGLRendererTest {
 		const camera = new Camera({aspect_ratio: r.aspectRatio()});
 		scene.addCamera(camera);
 
-		const cube = new Mesh3D('cube', Box.createBoxGeometry(), 'simple');
+		const cube = new Renderable('cube', Box.createBoxGeometry(), 'simple');
 		scene.addChild(cube);
 
 		// Camera pose update
@@ -277,7 +277,7 @@ export default class WebGLRendererTest {
 		});
 	}
 
-	static benchmarkMesh3D() {
+	static benchmarkMesh() {
 		const r = WebGLRendererTest.createWebGLContext();
 		const simple_p = r.createProgram('simple', '/test/shaders/', SimpleProgram);
 		const scene = new Scene('main-scene');
@@ -295,7 +295,7 @@ export default class WebGLRendererTest {
 		const SCALE_VECTOR = new Vec3(SCALE, SCALE, SCALE);
 
 		for(let i = 0 ; i < NUM ; i++) {
-			const cube = new Mesh3D('cube' + i, Box.createBoxGeometry(), 'simple');
+			const cube = new Renderable('cube' + i, Box.createBoxGeometry(), 'simple');
 			const ix = (i%SIZE);
 			const iy = Math.floor(i / (SIZE*SIZE));
 			const iz = Math.floor(i % (SIZE*SIZE) / SIZE);
@@ -326,7 +326,7 @@ export default class WebGLRendererTest {
 		});
 	}
 
-	static benchmarkStaticMesh3D() {
+	static benchmarkStaticMesh() {
 		const r = WebGLRendererTest.createWebGLContext();
 		const simple_p = r.createProgram('simple', '/test/shaders/', SimpleProgram);
 		const scene = new Scene();
@@ -359,7 +359,7 @@ export default class WebGLRendererTest {
 		const geometry = new Geometry(buffer, buffer.length / 3, WebGLRenderingContext.TRIANGLES);
 		geometry.addAttribute('position', new BufferAttribute(3));
 
-		const cube = new Mesh3D('cube', geometry , 'simple');
+		const cube = new Renderable('cube', geometry , 'simple');
 		scene.addChild(cube);
 		scene.addUpdateListener((delta_t) => {
 			cube.rotateX(delta_t / 10000);
@@ -375,7 +375,7 @@ export default class WebGLRendererTest {
 		});
 	}
 
-	static benchmarkStaticIndexedMesh3D() {
+	static benchmarkStaticIndexedMesh() {
 		const r = WebGLRendererTest.createWebGLContext();
 		const simple_p = r.createProgram('simple', '/test/shaders/', SimpleProgram);
 		const scene = new Scene();
@@ -412,7 +412,7 @@ export default class WebGLRendererTest {
 
 		const indexed_geometry = new IndexedGeometry(indices, vertices, WebGLRenderingContext.TRIANGLES, WebGLRenderingContext.UNSIGNED_INT);
 		indexed_geometry.addAttribute('position', new BufferAttribute(3));
-		const cubes = new Mesh3D('cube', indexed_geometry, 'simple');
+		const cubes = new Renderable('cube', indexed_geometry, 'simple');
 
 		scene.addChild(cubes);
 
@@ -442,7 +442,7 @@ export default class WebGLRendererTest {
 		const SCALE_VECTOR = new Vec3(SCALE, SCALE, SCALE);
 
 		for(let i = 0 ; i < NUM ; i++) {
-			const cube = new Mesh3D('cube' + i, Box.createIndexedBoxGeometryWithNormals(), 'light');
+			const cube = new Renderable('cube' + i, Box.createIndexedBoxGeometryWithNormals(), 'light');
 			const ix = (i%SIZE);
 			const iy = Math.floor(i / (SIZE*SIZE));
 			const iz = Math.floor(i % (SIZE*SIZE) / SIZE);
@@ -478,7 +478,7 @@ export default class WebGLRendererTest {
 		const BYTE_OFFSET = 6*2*3*3;
 
 		const box_origin = new Vec3();
-		const sun = new Mesh3D(`sun`, Box.createIndexedColoredBoxGeometry(new Vec3(0.99, 0.72, 0.07), box_origin, SCALE_VECTOR), 'color');
+		const sun = new Renderable(`sun`, Box.createIndexedColoredBoxGeometry(new Vec3(0.99, 0.72, 0.07), box_origin, SCALE_VECTOR), 'color');
 		scene.addChild(sun);
 		scene.addUpdateListener((delta_t) => {
 			sun.rotateZ(delta_t / 20000);
@@ -487,7 +487,7 @@ export default class WebGLRendererTest {
 		const createRandomBox = (parent, dist, create) => {
 			const color = Vec3.random();
 
-			const cube = new Mesh3D(`cube${Math.random()}`, Box.createIndexedColoredBoxGeometry(color, box_origin, SCALE_VECTOR), 'color');
+			const cube = new Renderable(`cube${Math.random()}`, Box.createIndexedColoredBoxGeometry(color, box_origin, SCALE_VECTOR), 'color');
 			cube.translateX(Math.random() * dist - dist / 2.0);
 			scene.addUpdateListener((delta_t) => {
 				cube.rotateZ(delta_t / 5000 * dist);

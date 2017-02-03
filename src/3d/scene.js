@@ -117,7 +117,7 @@ export default class Scene extends Object3D {
 	 */
 	applyProgramState(renderer, program_name) {
 		renderer.useProgram(program_name);
-		const program = renderer.getActiveProgram();
+		const program = renderer.activeProgram;
 		const camera = this._cameras[this._active_camera];
 
 		program.applyState(renderer, camera.projection, camera.view);

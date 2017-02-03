@@ -39,8 +39,8 @@ export default class IndexedGeometry extends Geometry {
 		renderer.updateBufferData(this._ebo_id, this._indices, 0, WebGLRenderingContext.ELEMENT_ARRAY_BUFFER);
 	}
 
-	initializeVertexArrayProcedure(renderer, program_name) {
-		const vao = super.initializeVertexArrayProcedure(renderer, program_name);
+	initializeVertexArrayProcedure(renderer) {
+		const vao = super.initializeVertexArrayProcedure(renderer);
 
 		renderer.activateVertexArray(vao);
 		renderer.activateBuffer(this._ebo_id, WebGLRenderingContext.ELEMENT_ARRAY_BUFFER);

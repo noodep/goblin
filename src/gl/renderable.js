@@ -26,8 +26,8 @@ export default class Renderable extends Object3D {
 		super({id: renderable_id});
 		this._vao = undefined;
 		this._geometry = geometry;
-
 		this._program_name = program_name;
+		this._model_uniform_location = undefined;
 	}
 
 	get programName() {
@@ -36,13 +36,18 @@ export default class Renderable extends Object3D {
 
 	initialize(renderer) {
 		dl(`Initializing Renderable with id ${this.id}.`);
+		renderer.useProgram(this._program_name);
+
+		const program = renderer.activeProgram;
+		this._model_uniform_location = program.getUniform('model');
 
 		this._geometry.initializeContextBuffers(renderer);
-		this._vao = this._geometry.initializeVertexArrayProcedure(renderer, this._program_name);
+		this._vao = this._geometry.initializeVertexArrayProcedure(renderer);
 	}
 
 	setShaderState(renderer) {
 		renderer.activateVertexArray(this._vao);
+		renderer._context.uniformMatrix4fv(this._model_uniform_location, false, this.worldModel.matrix);
 	}
 
 	cleanShaderState(renderer) {

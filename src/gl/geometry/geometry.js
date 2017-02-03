@@ -55,13 +55,12 @@ export default class Geometry {
 		renderer.updateBufferData(this._vbo_id, this._buffer, 0, WebGLRenderingContext.ARRAY_BUFFER);
 	}
 
-	initializeVertexArrayProcedure(renderer, program_name) {
+	initializeVertexArrayProcedure(renderer) {
 		const vao = renderer.createVertexArray();
 
-		renderer.useProgram(program_name);
 		renderer.activateVertexArray(vao);
-
 		renderer.activateBuffer(this._vbo_id);
+
 		this._attributes.forEach((attribute, name) => {
 			renderer.enableAttribute(name, attribute);
 		});

@@ -168,7 +168,7 @@ export default class WebGLRenderer {
 	 * @param {String} name - Name of the program to be returned.
 	 * @return {Program} - the current active program or undefined if no program is in use.
 	 */
-	getActiveProgram() {
+	get activeProgram() {
 		if(!this._active_program) {
 			wl(`There is no active program at the moment.`);
 			return undefined;
@@ -271,7 +271,7 @@ export default class WebGLRenderer {
 	 * Enables the specified attribute.
 	 */
 	enableAttribute(name, attribute) {
-		const program = this.getActiveProgram();
+		const program = this.activeProgram;
 		const pointer = program.getAttribute(name);
 		this._context.vertexAttribPointer(
 			pointer,
