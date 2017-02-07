@@ -2,8 +2,11 @@
  * @fileOverview Geometry object containing data and it description.
  *
  * @author Noodep
- * @version 0.2
+ * @version 0.3
  */
+
+'use strict';
+
 import {UUIDv4} from '../../crypto/uuid.js';
 
 export default class Geometry {

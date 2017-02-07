@@ -1,5 +1,6 @@
 /**
  * @fileOverview Polygon triangulation utility
+ *
  * @author Noodep
  * @version 0.13
  */

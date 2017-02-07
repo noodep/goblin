@@ -1,26 +1,27 @@
 /**
- * @fileOverview Class representing a simple OpenGL ES program.
+ * @fileOverview Class representing a simple OpenGL ES program with a sampler.
  *
  * @author Noodep
- * @version 0.03
+ * @version 0.02
  */
 
 'use strict';
 
 import Program from '../program.js';
 
-export default class SimpleProgram extends Program {
+export default class SamplerProgram extends Program {
 
 	/**
 	 * @constructor
 	 * @memberOf module:gl.programs
-	 * @alias SimpleProgram
+	 * @alias SamplerProgram
 	 *
 	 * @param {Object} configuration - This program configuration {@see Program}.
-	 * @return {module:gl.programs.SimpleProgram} - The newly created SimpleProgram.
+	 * @return {module:gl.programs.SamplerProgram} - The newly created SamplerProgram.
 	 */
-	constructor(configuration) {
+	constructor(configuration, options) {
 		super(configuration)
+		this._sampler_unit = options.sampler_unit;
 	}
 
 	/**
@@ -31,6 +32,7 @@ export default class SimpleProgram extends Program {
 
 		c.uniformMatrix4fv(this.getUniform('projection'), false, projection.matrix);
 		c.uniformMatrix4fv(this.getUniform('view'), false, view.matrix);
+		c.uniform1i(this.getUniform('sampler'), this._sampler_unit);
 	}
 }
 

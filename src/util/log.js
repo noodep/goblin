@@ -1,8 +1,10 @@
 /**
  * @fileOverview General purpose Logger and associated utilities.
+ *
  * @author Noodep
- * @version 0.13
+ * @version 0.14
  */
+
 'use strict';
 
 export class Logger {

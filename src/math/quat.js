@@ -1,7 +1,8 @@
 /**
  * @fileOverview quaternion manipulation.
+ *
  * @author Noodep
- * @version 0.01
+ * @version 0.02
  */
 
 'use strict';
@@ -70,20 +71,6 @@ export default class Quaternion {
 		q._q[1] = 0.0;
 		q._q[2] = 0.0;
 		q._q[3] = 0.0;
-
-		return q;
-	}
-
-	/**
-	 * Creates a new random quaternion.
-	 *
-	 * @return {module:math.Quaternion} - The newly created quaternion set with random values between 0.0 and 1.0.
-	 */
-	static random() {
-		const q = new Quaternion();
-		q._q[0] = Math.random();
-		q._q[1] = Math.random();
-		q._q[2] = Math.random();
 
 		return q;
 	}

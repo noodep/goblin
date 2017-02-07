@@ -1,9 +1,11 @@
 /**
  * @fileOverview Renderable class that represent a Object3D  thst can be rendered on screen.
  * Such object has a shader program associated with it and a geometry of some kind.
+ *
  * @author Noodep
- * @version 0.03
+ * @version 0.04
  */
+
 'use strict';
 
 import {dl, wl} from '../util/log.js';

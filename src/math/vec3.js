@@ -1,7 +1,8 @@
 /**
  * @fileOverview 3 components vector manipulation.
+ *
  * @author Noodep
- * @version 0.44
+ * @version 0.45
  */
 
 'use strict';

@@ -5,6 +5,8 @@
  * @version 0.11
  */
 
+ 'use strict';
+
 import Vec3 from '../../math/vec3.js';
 import BufferAttribute from '../../gl/buffer-attribute.js';
 import Geometry from '../../gl/geometry/geometry.js';
@@ -12,7 +14,7 @@ import IndexedGeometry from '../../gl/geometry/indexed-geometry.js';
 
 export default class Box {
 	static generateBoxVertices(origin = new Vec3(), scale = Vec3.identity()) {
-		const i = 1.0;
+		const i = 0.5;
 		return [
 			[origin.x + i * scale.x, origin.y + i * scale.y, origin.z + i * scale.z],
 			[origin.x - i * scale.x, origin.y + i * scale.y, origin.z + i * scale.z],
@@ -78,6 +80,7 @@ export default class Box {
 
 		const geometry = new IndexedGeometry(indices, data, WebGLRenderingContext.TRIANGLES, index_type);
 		geometry.addAttribute('position', new BufferAttribute(3));
+
 		return geometry;
 	}
 
@@ -99,6 +102,7 @@ export default class Box {
 		const geometry = new IndexedGeometry(indices, data, WebGLRenderingContext.TRIANGLES, index_type);
 		geometry.addAttribute('position', new BufferAttribute(3, WebGLRenderingContext.FLOAT, 0, stride));
 		geometry.addAttribute('color', new BufferAttribute(3, WebGLRenderingContext.FLOAT, 3 * vertex_typed_array.BYTES_PER_ELEMENT, stride));
+
 		return geometry;
 	}
 
@@ -145,6 +149,7 @@ export default class Box {
 		const stride = 6 * vertex_typed_array.BYTES_PER_ELEMENT;
 		geometry.addAttribute('position', new BufferAttribute(3, WebGLRenderingContext.FLOAT, 0, stride));
 		geometry.addAttribute('normal', new BufferAttribute(3, WebGLRenderingContext.FLOAT, 3 * vertex_typed_array.BYTES_PER_ELEMENT, stride));
+
 		return geometry;
 	}
 }

@@ -1,6 +1,8 @@
 /**
  * Class representing a 3D renderer that uses a WebGLRenderingContext.
- * @version 0.06
+ *
+ * @author Noodep
+ * @version 0.07
  */
 
 'use strict';

@@ -3,6 +3,7 @@
 import {Logger, DEFAULT_LOGGER as DL} from 'src/util/log.js';
 import WebGLRenderer from 'src/gl/webgl-renderer.js';
 import SimpleProgram from 'src/gl/programs/simple.js';
+import SamplerProgram from 'src/gl/programs/sampler.js';
 import Geometry from 'src/gl/geometry/geometry.js';
 import IndexedGeometry from 'src/gl/geometry/indexed-geometry.js';
 import BufferAttribute from 'src/gl/buffer-attribute.js';
@@ -13,7 +14,11 @@ import Renderable from 'src/gl/renderable.js';
 import Camera from 'src/3d/camera/camera.js';
 import OrbitControl from 'src/3d/control/orbit.js';
 
+
 import Box from 'src/3d/geometry/box.js';
+import Plane from 'src/3d/geometry/plane.js';
+import TextUtils from 'src/text/text-utils.js';
+
 
 export default class WebGLRendererTest {
 
@@ -29,8 +34,9 @@ export default class WebGLRendererTest {
 		WebGLRendererTest.benchmarkMesh();
 		WebGLRendererTest.benchmarkStaticMesh();
 		WebGLRendererTest.benchmarkStaticIndexedMesh();
-		WebGLRendererTest.testLightedBox();
+		WebGLRendererTest.testLight();
 		WebGLRendererTest.sceneModification();
+		WebGLRendererTest.textDisplay();
 
 		console.timeEnd('Perf');
 		console.log(`%c---------------------------------------`,'color:blue;');
@@ -425,7 +431,7 @@ export default class WebGLRendererTest {
 		});
 	}
 
-	static testLightedBox() {
+	static testLight() {
 		const r = WebGLRendererTest.createWebGLContext();
 		const light_p = r.createProgram('light', '/test/shaders/', SimpleProgram);
 		const scene = new Scene();
@@ -434,25 +440,23 @@ export default class WebGLRendererTest {
 		const control = new OrbitControl(camera, {element: r._canvas});
 		camera.setPosition(new Vec3(0.0, 0.0, 2.0));
 
-		const NUM = Math.pow(8, 3);
-		const WIDTH = 2.0;
-		const SIZE = Math.floor(Math.cbrt(NUM));
-		const OFFSET = WIDTH / (SIZE + 1);
-		const SCALE = 0.25 * OFFSET;
-		const SCALE_VECTOR = new Vec3(SCALE, SCALE, SCALE);
+
+		const NUM = Math.pow(4, 3);
+		const SIZE = 5.0;
+		const SCALE = Math.sqrt(SIZE);
 
 		for(let i = 0 ; i < NUM ; i++) {
 			const cube = new Renderable('cube' + i, Box.createIndexedBoxGeometryWithNormals(), 'light');
-			const ix = (i%SIZE);
-			const iy = Math.floor(i / (SIZE*SIZE));
-			const iz = Math.floor(i % (SIZE*SIZE) / SIZE);
+			const plane = new Renderable('plane' + i, Plane.createIndexedPlaneGeometryWithNormals(), 'light');
 
-			cube.translateX(-1.0 + (ix + 1) * OFFSET);
-			cube.translateY(-1.0 + (iy + 1) * OFFSET);
-			cube.translateZ(-1.0 + (iz + 1) * OFFSET);
-			cube.scale(SCALE_VECTOR);
+			cube.origin = Vec3.random().add(new Vec3(-1, -0.5, -0.5)).scale(SIZE);
+			cube.size = Vec3.random().scale(1 / SIZE);
+
+			plane.origin = Vec3.random().add(new Vec3(0, -0.5, -0.5)).scale(SIZE);
+			plane.size = Vec3.random().scale(1 / SIZE);
 
 			scene.addChild(cube);
+			scene.addChild(plane);
 		}
 
 		r.enable(WebGLRenderingContext.DEPTH_TEST);
@@ -505,6 +509,48 @@ export default class WebGLRendererTest {
 		simple_p.ready().then((e) => {
 			r.addScene(scene);
 			setTimeout(() => { createRandomBox(sun, 1 + Math.random() * 3, Math.random()); }, Math.random() * 2000);
+		});
+	}
+
+	static textDisplay() {
+		const r = WebGLRendererTest.createWebGLContext();
+		const c = r._context;
+		const sampler = r.createProgram('sampler', '/test/shaders/', SamplerProgram, {sampler_unit: 0});
+
+		const scene = new Scene();
+
+		const camera = new Camera({aspect_ratio: r.aspectRatio()});
+		scene.addCamera(camera);
+
+		const control = new OrbitControl(camera, {element: r._canvas});
+		camera.setPosition(new Vec3(0.0, 0.0, 2.0));
+
+		const atlas = TextUtils.createAtlas(TextUtils.GLYPH_SETS['basic+digits'], 64, 'monospace');
+
+		console.log(atlas);
+
+		const texture = c.createTexture();
+		c.activeTexture(WebGLRenderingContext.TEXTURE0);
+		c.bindTexture(WebGLRenderingContext.TEXTURE_2D, texture);
+		c.texParameteri(WebGLRenderingContext.TEXTURE_2D, WebGLRenderingContext.TEXTURE_MAG_FILTER, WebGLRenderingContext.LINEAR);
+		c.texParameteri(WebGLRenderingContext.TEXTURE_2D, WebGLRenderingContext.TEXTURE_MIN_FILTER, WebGLRenderingContext.LINEAR_MIPMAP_NEAREST);
+		c.pixelStorei(WebGLRenderingContext.UNPACK_FLIP_Y_WEBGL, true);
+		c.texImage2D(WebGLRenderingContext.TEXTURE_2D, 0, WebGLRenderingContext.RGBA, atlas.texture.width, atlas.texture.height, 0, WebGLRenderingContext.RGBA, WebGLRenderingContext.UNSIGNED_BYTE, atlas.texture);
+		c.generateMipmap(WebGLRenderingContext.TEXTURE_2D);
+
+		const text_geometry = TextUtils.createTextGeometry('!"#$%&\'()*+,-./0123456789:;<=>?@ ABCDEFGHIJKLMNOPQRSTUVWXYZ [\\]^_` abcdefghijklmnopqrstuvwxyz', atlas);
+
+		const hello_world = new Renderable('hello-world', text_geometry, 'sampler');
+		hello_world.rotateX(Math.PI / 2.0);
+		scene.addChild(hello_world);
+
+		r.enable(WebGLRenderingContext.DEPTH_TEST);
+		r.enable(WebGLRenderingContext.BLEND);
+		c.blendFunc(WebGLRenderingContext.SRC_ALPHA, WebGLRenderingContext.ONE_MINUS_SRC_ALPHA);
+		r.background = [0.1, 0.2, 0.3, 1.0];
+
+		sampler.ready().then((e) => {
+			r.addScene(scene);
 		});
 	}
 

@@ -2,8 +2,10 @@
  * @fileOverview GL Attribute defines the caracteristics of a piece of rendering data.
  *
  * @author Noodep
- * @version 0.2
+ * @version 0.3
  */
+
+'use strict';
 
 export default class BufferAttribute {
 

@@ -3,8 +3,10 @@
  * This geometry is to be rendered with draw elements.
  *
  * @author Noodep
- * @version 0.1
+ * @version 0.3
  */
+
+'use strict';
 
 import {UUIDv4} from '../../crypto/uuid.js';
 import Geometry from './geometry.js';

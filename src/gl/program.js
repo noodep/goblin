@@ -1,8 +1,10 @@
 /**
- * @fileOverview Class representing an OpenGL ES program
+ * @fileOverview Class representing an OpenGL ES program.
+ *
  * @author Noodep
- * @version 0.16
+ * @version 0.17
  */
+
 'use strict';
 
 import {dl, l, el} from '../util/log.js';

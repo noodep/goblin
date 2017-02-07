@@ -1,7 +1,8 @@
 /**
- * @fileOverview Simple Polygon object
+ * @fileOverview Simple Polygon object.
+ *
  * @author Noodep
- * @version 0.03
+ * @version 0.04
  */
 
 'use strict';
