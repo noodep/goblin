@@ -300,7 +300,7 @@ export default class WebGLRenderer {
 			previous_timestamp = current_timestamp;
 
 			this._animation_frame = window.requestAnimationFrame(__loop);
-			this.clear(WebGLRenderingContext.COLOR_BUFFER_BIT);
+			this.clear(WebGLRenderingContext.COLOR_BUFFER_BIT | WebGLRenderingContext.DEPTH_BUFFER_BIT);
 			this._scenes.forEach((scene) => {
 				scene.update(delta_t);
 				scene.render(this);
