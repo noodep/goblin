@@ -8,8 +8,8 @@
 'use strict';
 
 import Vec3 from '../math/vec3.js';
-import IndexedGeometry from 'src/gl/geometry/indexed-geometry.js';
-import BufferAttribute from 'src/gl/buffer-attribute.js';
+import IndexedGeometry from '../gl/geometry/indexed-geometry.js';
+import BufferAttribute from '../gl/buffer-attribute.js';
 
 import Plane from '../3d/geometry/plane.js';
 
