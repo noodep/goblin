@@ -527,8 +527,6 @@ export default class WebGLRendererTest {
 
 		const atlas = TextUtils.createAtlas(TextUtils.GLYPH_SETS['basic+digits'], 64, 'monospace');
 
-		console.log(atlas);
-
 		const texture = c.createTexture();
 		c.activeTexture(WebGLRenderingContext.TEXTURE0);
 		c.bindTexture(WebGLRenderingContext.TEXTURE_2D, texture);
@@ -538,10 +536,13 @@ export default class WebGLRendererTest {
 		c.texImage2D(WebGLRenderingContext.TEXTURE_2D, 0, WebGLRenderingContext.RGBA, atlas.texture.width, atlas.texture.height, 0, WebGLRenderingContext.RGBA, WebGLRenderingContext.UNSIGNED_BYTE, atlas.texture);
 		c.generateMipmap(WebGLRenderingContext.TEXTURE_2D);
 
-		const text_geometry = TextUtils.createTextGeometry('!"#$%&\'()*+,-./0123456789:;<=>?@ ABCDEFGHIJKLMNOPQRSTUVWXYZ [\\]^_` abcdefghijklmnopqrstuvwxyz', atlas);
+		const string = '!"#$%&\'()*+,-./0123456789:;<=>?@ ABCDEFGHIJKLMNOPQRSTUVWXYZ [\\]^_` abcdefghijklmnopqrstuvwxyz';
+		const text_geometry = TextUtils.createTextGeometry(string, atlas);
+		const text_width = TextUtils.getTextWidth(string, atlas);
 
 		const hello_world = new Renderable('hello-world', text_geometry, 'sampler');
 		hello_world.rotateX(Math.PI / 2.0);
+		hello_world.translateX(-text_width / 2.0);
 		scene.addChild(hello_world);
 
 		r.enable(WebGLRenderingContext.DEPTH_TEST);

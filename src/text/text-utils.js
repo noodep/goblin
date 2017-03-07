@@ -68,15 +68,42 @@ export default class TextUtils {
 		return atlas;
 	}
 
+	/**
+	 * Returns the width of the specified text using the specified atlas.
+	 * The width is normalized for a height of 1.
+	 *
+	 * @param {String} text - String of text for which the width will be computed.
+	 * @param {Object} atlas - Atlas previously created by createAtlas function.
+	 * @return {Number} - The normalized width of the specified text.
+	 */
+	static getTextWidth(text, atlas) {
+		const glyphs = Array.from(text);
+		const glyph_count = glyphs.length;
+
+		let width = 0;
+		for(let idx = 0 ; idx < glyph_count ; idx++) {
+			const glyph = glyphs[idx];
+			const glyph_data = atlas.glyphs[glyph];
+
+			if(!glyph_data)
+				throw new Error(`Unknown glyph ${glyph}. Please use an atlas containing this glyph.`);
+
+			const ratio = glyph_data.w / glyph_data.h;
+			width += ratio;
+		}
+
+		return width;
+	}
+
 	static createTextGeometry(text, atlas) {
 		const glyphs = Array.from(text);
 		const glyph_count = glyphs.length;
 
-		const index_typed_array = Uint8Array;
-		const index_type = WebGLRenderingContext.UNSIGNED_BYTE;
-		if(glyph_count * 4 > 256) {
-			const index_typed_array = Uint16Array;
-			const index_type = WebGLRenderingContext.UNSIGNED_SHORT;
+		let index_typed_array = Uint8Array;
+		let index_type = WebGLRenderingContext.UNSIGNED_BYTE;
+		if(glyph_count * 4 > 255) {
+			index_typed_array = Uint16Array;
+			index_type = WebGLRenderingContext.UNSIGNED_SHORT;
 		}
 
 		const element_stride = 5;
