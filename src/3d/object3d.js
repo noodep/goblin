@@ -24,9 +24,9 @@ export default class Object3D {
 	 * @param {Array} [scale] - a 3 dimensional array containing this object scaling.
 	 * @return {module:3d.Object3d} - The newly created Object3d.
 	 */
-	constructor({ id = UUIDv4(), parent, origin = new Vec3(), orientation = Quat.identity(), scale = Vec3.identity() } = {}) {
+	constructor({ id = UUIDv4(), origin = new Vec3(), orientation = Quat.identity(), scale = Vec3.identity() } = {}) {
 		this._id = id;
-		this._parent = parent;
+		this._parent = undefined;
 		this._children = new Map();
 		this._origin = origin;
 		this._orientation = orientation;

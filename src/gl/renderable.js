@@ -19,26 +19,27 @@ export default class Renderable extends Object3D {
 	 * @memberOf module:3d
 	 * @alias Renderable
 	 *
-	 * @param {String} renderable_id - This object id.
 	 * @param {Array} geometry - This object geometry.
 	 * @param {String} program - The name of this object rendering program.
+	 * @param {Object} options - Object3D options - id, origin, orientation, scale.
 	 * @return {module:3d.Renderable} - The newly created Renderable.
 	 */
-	constructor(renderable_id, geometry, program_name) {
-		super({id: renderable_id});
+	constructor({ geometry, program, options } = {}) {
+		super(options);
 		this._vao = undefined;
 		this._geometry = geometry;
-		this._program_name = program_name;
+		this._program = program;
 		this._model_uniform_location = undefined;
 	}
 
-	get programName() {
-		return this._program_name;
+
+	get program() {
+		return this._program;
 	}
 
 	initialize(renderer) {
 		dl(`Initializing Renderable with id ${this.id}.`);
-		renderer.useProgram(this._program_name);
+		renderer.useProgram(this._program);
 
 		const program = renderer.activeProgram;
 		this._model_uniform_location = program.getUniform('model');

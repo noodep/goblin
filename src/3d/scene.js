@@ -78,7 +78,7 @@ export default class Scene extends Object3D {
 	 * Add the specified {@code Renderable} to this {@code Scene} program cache.
 	 */
 	addRenderableToProgramCache(renderable) {
-		const program_name = renderable.programName;
+		const program_name = renderable.program;
 		if(!this._program_cache.has(program_name))
 			this._program_cache.set(program_name, new Set());
 
