@@ -16,10 +16,19 @@ export default class Plane {
 	static generatePlaneVertices(origin = new Vec3(), scale = Vec3.identity()) {
 		const i = 0.5;
 		return [
-			[origin.x - i * scale.x, origin.y, origin.z + i * scale.z],
-			[origin.x + i * scale.x, origin.y, origin.z + i * scale.z],
-			[origin.x + i * scale.x, origin.y, origin.z - i * scale.z],
 			[origin.x - i * scale.x, origin.y, origin.z - i * scale.z],
+			[origin.x + i * scale.x, origin.y, origin.z - i * scale.z],
+			[origin.x + i * scale.x, origin.y, origin.z + i * scale.z],
+			[origin.x - i * scale.x, origin.y, origin.z + i * scale.z],
+		];
+	}
+
+	static generatePlaneUVs() {
+		return [
+			[0.0, 0.0],
+			[1.0, 0.0],
+			[1.0, 1.0],
+			[0.0, 0.0]
 		];
 	}
 
@@ -69,6 +78,29 @@ export default class Plane {
 
 		return geometry;
 	}
+
+	static createIndexedUVPlaneGeometry(origin = new Vec3(), scale = Vec3.identity(), vertex_typed_array = Float32Array, index_typed_array = Uint8Array, index_type = WebGLRenderingContext.UNSIGNED_BYTE, index_offset = 0) {
+		// 4 vertices * 3 components by vertex
+		const indices = new index_typed_array(Plane.generatePlaneIndices(index_offset));
+		const vertices = Plane.generatePlaneVertices(origin, scale);
+		const element_stride = 3 + 2;
+		const data = new vertex_typed_array(4 * element_stride);
+		const uvs = Plane.generatePlaneUVs();
+
+		for(let vertex_idx = 0; vertex_idx < vertices.length ; vertex_idx++) {
+			const vertex = vertices[vertex_idx];
+			const uv = uvs[vertex_idx];
+			data.set(Array.prototype.concat(vertex, uv), element_stride * vertex_idx);
+		}
+
+		const geometry = new IndexedGeometry(indices, data, WebGLRenderingContext.TRIANGLES, WebGLRenderingContext.UNSIGNED_BYTE);
+		const stride = element_stride * Float32Array.BYTES_PER_ELEMENT;
+		geometry.addAttribute('position', new BufferAttribute(3, WebGLRenderingContext.FLOAT, 0, stride));
+		geometry.addAttribute('uv', new BufferAttribute(2, WebGLRenderingContext.FLOAT, 3 * Float32Array.BYTES_PER_ELEMENT, stride));
+
+		return geometry;
+	}
+
 
 	static createIndexedColoredPlaneGeometry(color = Vec3.identity(), origin = new Vec3(), scale = Vec3.identity(), vertex_typed_array = Float32Array, index_typed_array = Uint8Array, index_type = WebGLRenderingContext.UNSIGNED_BYTE, index_offset = 0) {
 		// 4 vertices * 6 components by vertex

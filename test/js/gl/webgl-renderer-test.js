@@ -530,7 +530,7 @@ export default class WebGLRendererTest {
 			options: {
 				id: 'hello-world',
 				origin: new Vec3(-text_width / 2.0, 0.0, 0.0),
-				orientation: Quat.fromAxisRotation(Math.PI / 2.0, Vec3.X_AXIS)
+				orientation: Quat.fromAxisRotation(-Math.PI / 2.0, Vec3.X_AXIS)
 			}
 		});
 		scene.addChild(hello_world);
