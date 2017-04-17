@@ -372,6 +372,29 @@ export default class Vec3 {
 	}
 
 	/**
+	 * Transforms this vec3 by the specified matrix.
+	 *
+	 * @param {module:math.Mat4} m - The matrix by which to transform this vec3;
+	 * @return {module:math.Vec3} - The transformed vector.
+	 */
+	transform(m) {
+		const x = this._v[0];
+		const y = this._v[1];
+		const z = this._v[2];
+
+		this._v[0] = m._m[0] * x + m._m[4] * y + m._m[8]  * z + m._m[12];
+		this._v[1] = m._m[1] * x + m._m[5] * y + m._m[9]  * z + m._m[13];
+		this._v[2] = m._m[2] * x + m._m[6] * y + m._m[10] * z + m._m[14];
+		const w = m._m[3] * x + m._m[7] * y + m._m[11] * z + m._m[15];
+
+		this._v[0] /= w;
+		this._v[1] /= w;
+		this._v[2] /= w;
+
+		return this;
+	}
+
+	/**
 	 * Returns a human readable string representing this vector.
 	 *
 	 * @param {Number} [p=16] - precision to use when printing coordinate values.
