@@ -182,6 +182,33 @@ export default class Mat4 {
 
 
 	/**
+	 * Copies the values of the specified array into this matrix assuming column major flatenning.
+	 *
+	 * @param {array} a - The array from which to copy the values.
+	 * @return {module:math.Mat4} - This matrix with the new values.
+	 */
+	fromArray(a) {
+		this._m[0] = a[0];
+		this._m[1] = a[1];
+		this._m[2] = a[2];
+		this._m[3] = a[3];
+		this._m[4] = a[4];
+		this._m[5] = a[5];
+		this._m[6] = a[6];
+		this._m[7] = a[7];
+		this._m[8] = a[8];
+		this._m[9] = a[9];
+		this._m[10] = a[10];
+		this._m[11] = a[11];
+		this._m[12] = a[12];
+		this._m[13] = a[13];
+		this._m[14] = a[14];
+		this._m[15] = a[15];
+
+		return this;
+	}
+
+	/**
 	 * Copies the values of the specified matrix into this matrix.
 	 *
 	 * @param {module:math.Mat4} m - The matrix from which to copy the values.
