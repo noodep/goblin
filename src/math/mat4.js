@@ -43,6 +43,33 @@ export default class Mat4 {
 	}
 
 	/**
+	 * Creates a new matrix using the content of the specified array assuming  column major flatenning.
+	 *
+	 * @return {module:math.Mat4} - The newly created matrix.
+	 */
+	static fromArray(a) {
+		const m = new Mat4();
+		m._m[0] = a[0];
+		m._m[1] = a[1];
+		m._m[2] = a[2];
+		m._m[3] = a[3];
+		m._m[4] = a[4];
+		m._m[5] = a[5];
+		m._m[6] = a[6];
+		m._m[7] = a[7];
+		m._m[8] = a[8];
+		m._m[9] = a[9];
+		m._m[10] = a[10];
+		m._m[11] = a[11];
+		m._m[12] = a[12];
+		m._m[13] = a[13];
+		m._m[14] = a[14];
+		m._m[15] = a[15];
+
+		return m;
+	}
+
+	/**
 	 * Creates a new identity matrix.
 	 *
 	 * @return {module:math.Mat4} - The newly created matrix set to identity.
@@ -79,6 +106,7 @@ export default class Mat4 {
 	/**
 	 * Sets this matrix to a rotation defined by the specified quaternion.
 	 *
+	 * @param {module:math.Quat} q - Quaternion to use to set this matrix orientation.
 	 * @return {module:math.Mat4} - The rotation matrix.
 	 */
 	set orientation(q) {
