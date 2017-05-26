@@ -32,7 +32,7 @@
 
 	/**
 	 * Copies values of vector v into this vector.
-	 * @param  {module:math.v3} v Vector from which to copy values. 
+	 * @param  {module:math.v3} v Vector from which to copy values.
 	 * @return {module:math.v3} This vector.
 	 */
 	v3.prototype.copy = function(v) {
@@ -220,7 +220,7 @@
 	};
 
 	v3.prototype.equals = function(v) {
-		return v && this.v[0] === v.v[0] && this.v[1] === v.v[1] && this.v[2] === v.v[2];
+		return v && v.v && this.v[0] === v.v[0] && this.v[1] === v.v[1] && this.v[2] === v.v[2];
 	}
 
 	v3.prototype.toString = function(p = 16) {
