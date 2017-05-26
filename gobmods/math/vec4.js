@@ -222,7 +222,7 @@
 	};
 
 	v4.prototype.equals = function(v) {
-		return this.v[0] === v.v[0] && this.v[1] === v.v[1] && this.v[2] === v.v[2] && this.v[3] === v.v[3];
+		return v && this.v[0] === v.v[0] && this.v[1] === v.v[1] && this.v[2] === v.v[2] && this.v[3] === v.v[3];
 	}
 
 

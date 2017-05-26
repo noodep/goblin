@@ -220,7 +220,7 @@
 	};
 
 	v3.prototype.equals = function(v) {
-		return this.v[0] === v.v[0] && this.v[1] === v.v[1] && this.v[2] === v.v[2];
+		return v && this.v[0] === v.v[0] && this.v[1] === v.v[1] && this.v[2] === v.v[2];
 	}
 
 	v3.prototype.toString = function(p = 16) {
