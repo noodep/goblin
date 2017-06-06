@@ -34,7 +34,8 @@ export default class WebGLRendererTest {
 		WebGLRendererTest.benchmarkMesh();
 		WebGLRendererTest.benchmarkStaticMesh();
 		WebGLRendererTest.benchmarkStaticIndexedMesh();
-		WebGLRendererTest.testLight();
+		WebGLRendererTest.testIndexedGeometryWithNormals();
+		WebGLRendererTest.testIndexedColoredGeometryWithNormals();
 		WebGLRendererTest.sceneModification();
 		WebGLRendererTest.textDisplay();
 
@@ -392,7 +393,7 @@ export default class WebGLRendererTest {
 		});
 	}
 
-	static testLight() {
+	static testIndexedGeometryWithNormals() {
 		const r = WebGLRendererTest.createWebGLContext();
 		const light_p = r.createProgram('light', '/test/shaders/', SimpleProgram);
 		const scene = new Scene();
@@ -429,6 +430,43 @@ export default class WebGLRendererTest {
 
 			scene.addChild(cube);
 			scene.addChild(plane);
+		}
+
+		r.enable(WebGLRenderingContext.DEPTH_TEST);
+		r.background = [0.1, 0.2, 0.3, 1.0];
+		r.clear(WebGLRenderingContext.COLOR_BUFFER_BIT);
+
+		light_p.ready().then((e) => {
+			r.addScene(scene);
+		});
+	}
+
+	static testIndexedColoredGeometryWithNormals() {
+		const r = WebGLRendererTest.createWebGLContext();
+		const light_p = r.createProgram('light', '/test/shaders/', SimpleProgram);
+		const scene = new Scene();
+		const camera = new Camera({aspect_ratio: r.aspectRatio()});
+		scene.addCamera(camera);
+		const control = new OrbitControl(camera, {element: r._canvas});
+		camera.setPosition(new Vec3(0.0, 0.0, 2.0));
+
+
+		const NUM = Math.pow(4, 3);
+		const SIZE = 5.0;
+		const SCALE = Math.sqrt(SIZE);
+
+		for(let i = 0 ; i < NUM ; i++) {
+			const cube = new Renderable({
+				geometry: Box.createIndexedColoredBoxGeometryWithNormals(Vec3.random()),
+				program: 'light',
+				options: {
+					id: `cube_${i}`,
+					origin: Vec3.random().add(new Vec3(-0.5, -0.5, -0.5)).scale(SIZE),
+					scale: Vec3.random().scale(1 / SIZE)
+				}
+			});
+
+			scene.addChild(cube);
 		}
 
 		r.enable(WebGLRenderingContext.DEPTH_TEST);

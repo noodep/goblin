@@ -28,20 +28,11 @@ export default class Box {
 	}
 
 	static generateBoxIndices(index_offset = 0) {
-		return [
-			// Front
-			0 + index_offset, 1 + index_offset, 2 + index_offset, 0 + index_offset, 2 + index_offset, 3 + index_offset,
-			// Right
-			0 + index_offset, 3 + index_offset, 4 + index_offset, 0 + index_offset, 4 + index_offset, 5 + index_offset,
-			// Top
-			0 + index_offset, 5 + index_offset, 6 + index_offset, 0 + index_offset, 6 + index_offset, 1 + index_offset,
-			// Left
-			1 + index_offset, 6 + index_offset, 7 + index_offset, 1 + index_offset, 7 + index_offset, 2 + index_offset,
-			// Bottom
-			7 + index_offset, 4 + index_offset, 3 + index_offset, 7 + index_offset, 3 + index_offset, 2 + index_offset,
-			// Back
-			4 + index_offset, 7 + index_offset, 6 + index_offset, 4 + index_offset, 6 + index_offset, 5 + index_offset
-		];
+		return Box.INDICES.map(index => index + index_offset);
+	}
+
+	static generatePerFaceBoxIndices(index_offset = 0) {
+		return Box.PER_FACE_INDICES.map(index => index + index_offset);
 	}
 
 	static generateBoxMesh(origin = new Vec3(), scale = Vec3.identity(), vertex_typed_array = Float32Array) {
@@ -111,32 +102,9 @@ export default class Box {
 		// 6 faces * 2 triangles by face * 3 vertices per triangle * 6 components.
 		// 6 components = 1 point per vertex * 3 components per point + 1 normal per vertex * 3 components per normal.
 		const data = new vertex_typed_array(6 * 2 * 3 * 6);
-		const box = Box.generateBoxIndices();
-		const indices = new index_typed_array([
-			0 , 1 , 2 , 0 , 2 , 3 ,
-			4 , 5 , 6 , 4 , 6 , 7 ,
-			8 , 9 , 10, 8 , 10, 11,
-			12, 13, 14, 12, 14, 15,
-			16, 17, 18, 16, 18, 19,
-			20, 21, 22, 20, 22, 23
-		]);
-		const structure = [
-			// Front
-			{ vertices: [0,1,2,3], normal: [ 0.0, 0.0, 1.0] },
-			// Right
-			{ vertices: [0,3,4,5], normal: [ 1.0, 0.0, 0.0] },
-			// Top
-			{ vertices: [0,5,6,1], normal: [ 0.0, 1.0, 0.0] },
-			// Left
-			{ vertices: [1,6,7,2], normal: [-1.0, 0.0, 0.0] },
-			// Bottom
-			{ vertices: [7,4,3,2], normal: [ 0.0,-1.0, 0.0] },
-			// Back
-			{ vertices: [4,7,6,5], normal: [ 0.0, 0.0,-1.0] },
-		];
-
+		const indices = new index_typed_array(Box.generatePerFaceBoxIndices());
 		let offset = 0;
-		structure.forEach(face => {
+		Box.STRUCTURE.forEach(face => {
 			face.vertices.forEach(vertex => {
 				data.set(vertices[vertex], offset)
 				offset += 3;
@@ -152,5 +120,64 @@ export default class Box {
 
 		return geometry;
 	}
+
+	static createIndexedColoredBoxGeometryWithNormals(color = Vec3.identity(), origin = new Vec3(), scale = Vec3.identity(), vertex_typed_array = Float32Array, index_typed_array = Uint8Array, index_type = WebGLRenderingContext.UNSIGNED_BYTE) {
+		const vertices = Box.generateBoxVertices(origin, scale);
+		// 6 faces * 2 triangles by face * 3 vertices per triangle * 9 components.
+		// 9 components = 1 point per vertex * 3 components per point + 1 color per vertex * 3 components per point + 1 normal per vertex * 3 components per normal.
+		const data = new vertex_typed_array(6 * 2 * 3 * 9);
+		const indices = new index_typed_array(Box.generatePerFaceBoxIndices());
+		let offset = 0;
+		Box.STRUCTURE.forEach(face => {
+			face.vertices.forEach(vertex => {
+				data.set(vertices[vertex], offset)
+				offset += 3;
+				data.set(color._v, offset)
+				offset += 3;
+				data.set(face.normal, offset)
+				offset += 3;
+			});
+		});
+
+		const geometry = new IndexedGeometry(indices, data, WebGLRenderingContext.TRIANGLES, index_type);
+		const stride = 9 * vertex_typed_array.BYTES_PER_ELEMENT;
+		geometry.addAttribute('position', new BufferAttribute(3, WebGLRenderingContext.FLOAT, 0, stride));
+		geometry.addAttribute('color', new BufferAttribute(3, WebGLRenderingContext.FLOAT, 3 * vertex_typed_array.BYTES_PER_ELEMENT, stride));
+		geometry.addAttribute('normal', new BufferAttribute(3, WebGLRenderingContext.FLOAT, 6 * vertex_typed_array.BYTES_PER_ELEMENT, stride));
+
+		return geometry;
+	}
 }
 
+Box.INDICES = [
+	0, 1, 2, 0, 2, 3,
+	0, 3, 4, 0, 4, 5,
+	0, 5, 6, 0, 6, 1,
+	1, 6, 7, 1, 7, 2,
+	7, 4, 3, 7, 3, 2,
+	4, 7, 6, 4, 6, 5
+];
+
+Box.PER_FACE_INDICES = [
+	0 , 1 , 2 , 0 , 2 , 3 ,
+	4 , 5 , 6 , 4 , 6 , 7 ,
+	8 , 9 , 10, 8 , 10, 11,
+	12, 13, 14, 12, 14, 15,
+	16, 17, 18, 16, 18, 19,
+	20, 21, 22, 20, 22, 23
+];
+
+Box.STRUCTURE = [
+	// Front
+	{ vertices: [0,1,2,3], normal: [ 0.0, 0.0, 1.0] },
+	// Right
+	{ vertices: [0,3,4,5], normal: [ 1.0, 0.0, 0.0] },
+	// Top
+	{ vertices: [0,5,6,1], normal: [ 0.0, 1.0, 0.0] },
+	// Left
+	{ vertices: [1,6,7,2], normal: [-1.0, 0.0, 0.0] },
+	// Bottom
+	{ vertices: [7,4,3,2], normal: [ 0.0,-1.0, 0.0] },
+	// Back
+	{ vertices: [4,7,6,5], normal: [ 0.0, 0.0,-1.0] }
+];
