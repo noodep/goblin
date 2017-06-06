@@ -238,8 +238,11 @@
 		return this.mul(quat.fromAxisAngle(axis, angle));
 	}
 
-	quat.prototype.equals = function(q) {
-		return this.v[0] === q.v[0] && this.v[1] === q.v[1] && this.v[2] === q.v[2] && this.v[2] === q.v[2];
+	quat.prototype.equals = function(q, epsilon = Number.EPSILON) {
+		return q && q.v && _.eq(this.v[0], q.v[0], epsilon) &&
+			_.eq(this.v[1], q.v[1], epsilon) &&
+			_.eq(this.v[2], q.v[2], epsilon) &&
+			_.eq(this.v[3], q.v[3], epsilon);
 	}
 
 	quat.prototype.toArray = function() {

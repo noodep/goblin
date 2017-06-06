@@ -221,8 +221,11 @@
 		}
 	};
 
-	v4.prototype.equals = function(v) {
-		return v && v.v && && this.v[0] === v.v[0] && this.v[1] === v.v[1] && this.v[2] === v.v[2] && this.v[3] === v.v[3];
+	v4.prototype.equals = function(v, epsilon = Number.EPSILON) {
+		return v && v.v && _.eq(this.v[0], v.v[0], epsilon) &&
+			_.eq(this.v[1], v.v[1], epsilon) &&
+			_.eq(this.v[2], v.v[2], epsilon) &&
+			_.eq(this.v[3], v.v[3], epsilon);
 	}
 
 
