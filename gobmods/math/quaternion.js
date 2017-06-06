@@ -156,6 +156,26 @@
 	}
 
 	/**
+	 * Calculates the axis about which this quaternion rotates.
+	 */
+	quat.prototype.getAxis = function() {
+		const w = this.v[3];
+		const s = Math.sqrt(1 - w*w);
+		if (s === 0) {
+			return new _.v3(); // null vector
+		}
+
+		return new _.v3(this.v[0] / s, this.v[1] / s, this.v[2] / s);
+	}
+
+	/**
+	 * Calculates the angle rotated about the axis returned from getAxis().
+	 */
+	quat.prototype.getAngle = function() {
+		return 2 * Math.acos(this.v[3]);
+	}
+
+	/**
 	 * Calculates the Euler angles described by the quaterion.
 	 * The angles are applied in the order such that:
 	 *	q == quat.fromEulerAngles(q.toEulerAgles()).
@@ -163,6 +183,15 @@
 	 */
 	quat.prototype.toEulerAngles = function() {
 		return new _.v3(this.getPitch(), this.getYaw(), this.getRoll());
+	}
+
+	quat.prototype.magnitude = quat.prototype.mag = function() {
+		var x = this.v[0], y = this.v[1], z = this.v[2], w = this.v[3];
+		return Math.sqrt(x*x + y*y + z*z + w*w);
+	}
+
+	quat.prototype.normalize = function() {
+		return this.scale(1 / this.magnitude());
 	}
 
 	/**
