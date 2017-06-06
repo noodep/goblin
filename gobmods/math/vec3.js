@@ -228,7 +228,7 @@
 	};
 
 	v3.prototype.toArray = function() {
-		return this.v.slice();
+		return [].concat(this.v);
 	};
 
 	Object.defineProperty(v3.prototype, 'str', {

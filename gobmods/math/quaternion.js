@@ -243,7 +243,7 @@
 	}
 
 	quat.prototype.toArray = function() {
-		return this.v.slice();
+		return [].concat(this.v);
 	}
 
 	quat.prototype.toString = function(p = 16) {

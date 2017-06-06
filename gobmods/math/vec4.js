@@ -231,7 +231,7 @@
 	};
 
 	v4.prototype.toArray = function() {
-		return this.v.slice();
+		return [].concat(this.v);
 	};
 
 	Object.defineProperty(v4.prototype, 'str', {
