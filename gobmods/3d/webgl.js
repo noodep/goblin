@@ -509,7 +509,6 @@
 
 		// Init color attachement
 		const tx_color = this.c.createTexture();
-		this._texs[_.GUID()] = tx_color;
 		this.c.bindTexture(WebGLRenderingContext.TEXTURE_2D, tx_color);
 		this.c.texParameteri(WebGLRenderingContext.TEXTURE_2D, WebGLRenderingContext.TEXTURE_MAG_FILTER, WebGLRenderingContext.NEAREST);
 		this.c.texParameteri(WebGLRenderingContext.TEXTURE_2D, WebGLRenderingContext.TEXTURE_MIN_FILTER, WebGLRenderingContext.NEAREST);
@@ -542,6 +541,81 @@
 			this.c.bindFramebuffer(this.c.FRAMEBUFFER, buffer);
 			this._active_framebuffer = id;
 		}
+	}
+
+	/**
+	 * Loads a specified image and creates a WebGL texture to store the data.
+	 *
+	 */
+	WGLC.prototype.createTexImage = function(options = {}) {
+		if (!options.filename) {
+			throw new Error('Error: no filename for image.');
+		}
+		if (!options.id) {
+			throw new Error('Error: no id for image.');
+		}
+
+		var callback = options.callback || function(){};
+
+		// Check if the texture already exists
+		var texture = this.getTexImage(options.id);
+		if (texture) {
+			_.dl(`Texture ${options.id} already exists.`);
+
+			if (texture.state === 'ready') {
+				callback();
+			} else {
+				texture.callbacks.push(callback);
+			}
+
+			return;
+		}
+
+		// Create a new texture
+
+		// Create HTMLImageElement to load the image
+		var image = new Image();
+		// Object to store the information
+		var texture = {
+			texture: undefined,
+			image: image,
+			filename: options.filename,
+			state: 'notready',
+			callbacks: callback
+		};
+
+		image.onload = () => {
+			texture.texture = this.c.createTexture();
+			this._texs[options.id] = texture;
+
+			this.c.bindTexture(WebGLRenderingContext.TEXTURE_2D, texture.texture);
+			this.c.texParameteri(WebGLRenderingContext.TEXTURE_2D,
+				WebGLRenderingContext.TEXTURE_MAG_FILTER,
+				WebGLRenderingContext.LINEAR);
+			this.c.texParameteri(WebGLRenderingContext.TEXTURE_2D,
+				WebGLRenderingContext.TEXTURE_MIN_FILTER,
+				WebGLRenderingContext.LINEAR_MIPMAP_LINEAR);
+			this.c.texImage2D(WebGLRenderingContext.TEXTURE_2D, 0,
+				WebGLRenderingContext.RGBA, WebGLRenderingContext.RGBA,
+				WebGLRenderingContext.UNSIGNED_BYTE, image);
+			this.c.generateMipmap(WebGLRenderingContext.TEXTURE_2D);
+			this.c.bindTexture(WebGLRenderingContext.TEXTURE_2D, null);
+
+			texture.state = 'ready';
+			for (let cb in texture.callbacks) {
+				cb();
+			}
+		};
+		image.onerror = () => {
+			_.el(`Error: image ${name} could not be loaded.`);
+			texture.state = 'error';
+		};
+
+		image.src = DEFAULT_TEXTURE_PATH + options.filename;
+	}
+
+	WGLC.prototype.getTexImage = function(id) {
+		return this._texs[id];
 	}
 
 	WGLC.prototype.linkUniform1f = function(uniform, value) {
