@@ -35,6 +35,10 @@ export default class Box {
 		return Box.PER_FACE_INDICES.map(index => index + index_offset);
 	}
 
+	static generateOutlineBoxIndices(index_offset = 0) {
+		return Box.OUTLINE_INDICES.map(index => index + index_offset);
+	}
+
 	static generateBoxMesh(origin = new Vec3(), scale = Vec3.identity(), vertex_typed_array = Float32Array) {
 		// 6 faces * 2 triangles by face * 3 vertices per triangle * 3 components by vertex
 		const indices = Box.generateBoxIndices();
@@ -91,6 +95,28 @@ export default class Box {
 
 		const stride = element_stride * vertex_typed_array.BYTES_PER_ELEMENT;
 		const geometry = new IndexedGeometry(indices, data, WebGLRenderingContext.TRIANGLES, index_type);
+		geometry.addAttribute('position', new BufferAttribute(3, WebGLRenderingContext.FLOAT, 0, stride));
+		geometry.addAttribute('color', new BufferAttribute(3, WebGLRenderingContext.FLOAT, 3 * vertex_typed_array.BYTES_PER_ELEMENT, stride));
+
+		return geometry;
+	}
+
+	static createIndexedColoredBoxOutlineGeometry(color = Vec3.identity(), origin = new Vec3(), scale = Vec3.identity(), vertex_typed_array = Float32Array, index_typed_array = Uint8Array, index_type = WebGLRenderingContext.UNSIGNED_BYTE, index_offset = 0) {
+		// 8 vertices * 6 components by vertex
+		const indices = new index_typed_array(Box.generateOutlineBoxIndices(index_offset));
+		const vertices = Box.generateBoxVertices(origin, scale);
+		const data = new vertex_typed_array(8 * 6);
+
+		const element_stride = 6;
+		let offset = 0;
+		vertices.forEach(vertex => {
+			data.set(vertex, element_stride * offset);
+			data.set(color._v, element_stride * offset + 3);
+			offset++;
+		});
+
+		const stride = element_stride * vertex_typed_array.BYTES_PER_ELEMENT;
+		const geometry = new IndexedGeometry(indices, data, WebGLRenderingContext.LINES, index_type);
 		geometry.addAttribute('position', new BufferAttribute(3, WebGLRenderingContext.FLOAT, 0, stride));
 		geometry.addAttribute('color', new BufferAttribute(3, WebGLRenderingContext.FLOAT, 3 * vertex_typed_array.BYTES_PER_ELEMENT, stride));
 
@@ -165,6 +191,12 @@ Box.PER_FACE_INDICES = [
 	12, 13, 14, 12, 14, 15,
 	16, 17, 18, 16, 18, 19,
 	20, 21, 22, 20, 22, 23
+];
+
+Box.OUTLINE_INDICES = [
+	0, 1, 1, 2, 2, 3, 3, 0,
+	4, 5, 5, 6, 6, 7, 7, 4,
+	0, 5, 1, 6, 2, 7, 3, 4
 ];
 
 Box.STRUCTURE = [
