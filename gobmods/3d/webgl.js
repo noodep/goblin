@@ -543,6 +543,14 @@
 		}
 	}
 
+	WGLC.prototype.deleteFrameBuffer = function(id) {
+		var idx = this._fbos.indexOf(id);
+		if (idx >= 0) {
+			var fbo = this._fbos.splice(idx, 1)[0];
+			this.c.deleteFrameBuffer(fbo);
+		}
+	}
+
 	/**
 	 * Loads a specified image and creates a WebGL texture to store the data.
 	 *
