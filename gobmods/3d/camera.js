@@ -107,7 +107,7 @@
 
 	Camera.prototype.getProjectionMatrix = function() {
 		this._projection_changed = false;
-		return this._projection_matrix;
+		return this._projection_matrix.clone();
 	}
 
 	// Camera.prototype.viewChanged = function() { return this._view_changed; };
@@ -117,7 +117,7 @@
 		this._view_matrix.rotateX(this._pitch);
 		this._view_matrix.rotateY(this._yaw);
 		this._view_matrix.translate(this._position);
-		return this._view_matrix;
+		return this._view_matrix.clone();
 	}
 
 	Camera.prototype.getPosition = function() {
