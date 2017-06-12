@@ -233,10 +233,6 @@
 		return '[' + this.v[0].toFixed(p) + ',' + this.v[1].toFixed(p) + ',' + this.v[2].toFixed(p) + ',' + this.v[3].toFixed(p) + ']';
 	};
 
-	v4.prototype.toArray = function() {
-		return [].concat(this.v);
-	};
-
 	Object.defineProperty(v4.prototype, 'str', {
 		get : function() { return this.toString(); },
 	});
