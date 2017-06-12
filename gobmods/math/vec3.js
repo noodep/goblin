@@ -55,7 +55,7 @@
 	 * @return {Array} - The Array.
 	 */
 	v3.prototype.toArray = function() {
-		return new Array(...this.v);
+		return [this.v[0], this.v[1], this.v[2]];
 	}
 
 	v3.prototype.scaleAdd = function(s, v) {

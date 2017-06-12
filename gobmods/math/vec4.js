@@ -50,7 +50,7 @@
 	};
 
 	v4.prototype.toArray = function() {
-		return new Array(...this.v);
+		return [this.v[0], this.v[1], this.v[2], this.v[3]];
 	}
 
 	v4.prototype.scaleAdd = function(s, v) {
