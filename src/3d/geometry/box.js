@@ -79,6 +79,26 @@ export default class Box {
 		return geometry;
 	}
 
+	static createIndexedBoxOutlineGeometry(color = Vec3.identity(), origin = new Vec3(), scale = Vec3.identity(), vertex_typed_array = Float32Array, index_typed_array = Uint8Array, index_type = WebGLRenderingContext.UNSIGNED_BYTE, index_offset = 0) {
+		// 8 vertices * 6 components by vertex
+		const indices = new index_typed_array(Box.generateOutlineBoxIndices(index_offset));
+		const vertices = Box.generateBoxVertices(origin, scale);
+		const data = new vertex_typed_array(8 * 3);
+
+		const element_stride = 3;
+		let offset = 0;
+		vertices.forEach(vertex => {
+			data.set(vertex, element_stride * offset);
+			offset++;
+		});
+
+		const stride = element_stride * vertex_typed_array.BYTES_PER_ELEMENT;
+		const geometry = new IndexedGeometry(indices, data, WebGLRenderingContext.LINES, index_type);
+		geometry.addAttribute('position', new BufferAttribute(3, WebGLRenderingContext.FLOAT, 0, stride));
+
+		return geometry;
+	}
+
 	static createIndexedColoredBoxGeometry(color = Vec3.identity(), origin = new Vec3(), scale = Vec3.identity(), vertex_typed_array = Float32Array, index_typed_array = Uint8Array, index_type = WebGLRenderingContext.UNSIGNED_BYTE, index_offset = 0) {
 		// 8 vertices * 6 components by vertex
 		const indices = new index_typed_array(Box.generateBoxIndices(index_offset));
