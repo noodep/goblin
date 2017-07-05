@@ -32,7 +32,7 @@
 
 	/**
 	 * Copies values of vector v into this vector.
-	 * @param  {module:math.v3} v Vector from which to copy values. 
+	 * @param  {module:math.v3} v Vector from which to copy values.
 	 * @return {module:math.v3} This vector.
 	 */
 	v3.prototype.copy = function(v) {
@@ -55,7 +55,7 @@
 	 * @return {Array} - The Array.
 	 */
 	v3.prototype.toArray = function() {
-		return new Array(...this.v);
+		return [this.v[0], this.v[1], this.v[2]];
 	}
 
 	v3.prototype.scaleAdd = function(s, v) {
@@ -219,16 +219,14 @@
 		}
 	};
 
-	v3.prototype.equals = function(v) {
-		return this.v[0] === v.v[0] && this.v[1] === v.v[1] && this.v[2] === v.v[2];
+	v3.prototype.equals = function(v, epsilon = Number.EPSILON) {
+		return v && v.v && _.eq(this.v[0], v.v[0], epsilon) &&
+			_.eq(this.v[1], v.v[1], epsilon) &&
+			_.eq(this.v[2], v.v[2], epsilon);
 	}
 
 	v3.prototype.toString = function(p = 16) {
 		return '[' + this.v[0].toFixed(p) + ',' + this.v[1].toFixed(p) + ',' + this.v[2].toFixed(p) + ']';
-	};
-
-	v3.prototype.toArray = function() {
-		return this.v.slice();
 	};
 
 	Object.defineProperty(v3.prototype, 'str', {

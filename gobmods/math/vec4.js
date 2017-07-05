@@ -50,7 +50,7 @@
 	};
 
 	v4.prototype.toArray = function() {
-		return new Array(...this.v);
+		return [this.v[0], this.v[1], this.v[2], this.v[3]];
 	}
 
 	v4.prototype.scaleAdd = function(s, v) {
@@ -221,17 +221,16 @@
 		}
 	};
 
-	v4.prototype.equals = function(v) {
-		return this.v[0] === v.v[0] && this.v[1] === v.v[1] && this.v[2] === v.v[2] && this.v[3] === v.v[3];
+	v4.prototype.equals = function(v, epsilon = Number.EPSILON) {
+		return v && v.v && _.eq(this.v[0], v.v[0], epsilon) &&
+			_.eq(this.v[1], v.v[1], epsilon) &&
+			_.eq(this.v[2], v.v[2], epsilon) &&
+			_.eq(this.v[3], v.v[3], epsilon);
 	}
 
 
 	v4.prototype.toString = function(p = 16) {
 		return '[' + this.v[0].toFixed(p) + ',' + this.v[1].toFixed(p) + ',' + this.v[2].toFixed(p) + ',' + this.v[3].toFixed(p) + ']';
-	};
-
-	v4.prototype.toArray = function() {
-		return this.v.slice();
 	};
 
 	Object.defineProperty(v4.prototype, 'str', {
