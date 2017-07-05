@@ -40,6 +40,15 @@ export default class WebGLRenderer {
 		this._animation_frame = undefined;
 
 		this._initContext(context_type, webgl_options);
+		this.updateCanvasDimensions();
+	}
+
+	/**
+	 * Returns this renderer's canvas's aspect ratio
+	 */
+	get aspectRatio() {
+		return this._context.drawingBufferWidth /
+			this._context.drawingBufferHeight;
 	}
 
 	/**
@@ -106,10 +115,12 @@ export default class WebGLRenderer {
 	}
 
 	/**
-	 * Returns this renderer context's aspect ratio
+	 * Updates the dimensions of the canvas to its current visible area.
 	 */
-	aspectRatio() {
-		return this._context.drawingBufferWidth / this._context.drawingBufferHeight;
+	updateCanvasDimensions() {
+		this._canvas.width = this._canvas.clientWidth;
+		this._canvas.height = this._canvas.clientHeight;
+		this._context.viewport(0, 0, this._canvas.width, this._canvas.height);
 	}
 
 	/**
