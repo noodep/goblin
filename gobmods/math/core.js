@@ -9,4 +9,8 @@
     	});
 	});
 
+	G.extend('eq', function(x, y, epsilon=Number.EPSILON) {
+		return Math.abs(x - y) < epsilon;
+	});
+
 })(this);
