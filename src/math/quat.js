@@ -2,7 +2,7 @@
  * @fileOverview quaternion manipulation.
  *
  * @author Noodep
- * @version 0.02
+ * @version 0.03
  */
 
 'use strict';
@@ -50,14 +50,15 @@ export default class Quaternion {
 	 * @return {module:math.Quaternion} - The newly created quaternion representing the specified rotation.
 	 */
 	static fromAxisRotation(theta, axis) {
-		if(!axis.isUnit())
-			axis = axis.clone().normalize();
+		return new Quaternion().fromAxisRotation(theta, axis);
+	}
 
-		const half_theta = theta / 2.0;
-		const w = Math.cos(half_theta);
-		const s = Math.sin(half_theta);
-
-		return new Quaternion(w, s * axis.x, s * axis.y, s * axis.z);
+	/**
+	 * Creates a new quaternion describing a which would transform one vector
+	 * into another vector (in terms of direction)
+	 */
+	static fromVecToVec(vec1, vec2) {
+		return new Quaternion().fromVecToVec(vec1, vec2);
 	}
 
 	/**
@@ -169,6 +170,20 @@ export default class Quaternion {
 		return this;
 	}
 
+	/**
+	 * Sets this quaternion to describe a rotation which would transform one
+	 * vector into another vector (in terms of direction)
+	 */
+	fromVecToVec(vec1, vec2) {
+		const cross = vec1.clone().cross(vec2);
+
+		// Multiply the lengths but only perform 1 square root
+		this._q[0] = vec1.dot(vec2) + Math.sqrt(vec1.length2() * vec2.length2());
+		this._q[1] = cross.x;
+		this._q[2] = cross.y;
+		this._q[3] = cross.z;
+		return this.normalize();
+	}
 
 	/**
 	 * Copies values of quaternion q into this quaternion.
@@ -208,14 +223,84 @@ export default class Quaternion {
 	}
 
 	/**
-	 * Inverts this quaternion.
+	 * Calculates the length (magnitude) of this quaternion.
 	 *
-	 * @return {module:math.Quaternion} - The inversed quaternion.
+	 * @return {Number} - A scalar representing the length of this quaternion.
 	 */
-	invert() {
+	length() {
+		return Math.sqrt(this._q[0]*this._q[0] + this._q[1]*this._q[1]
+				+ this._q[2]*this._q[2] + this._q[3]*this._q[3]);
+	}
+
+	/**
+	 * Calculates the square of the length (magnitude) of this quaternion.
+	 *
+	 * @return {Number} - A scalar representing the square of the length of this
+	 * quaternion.
+	 */
+	length2() {
+		return this._q[0]*this._q[0] + this._q[1]*this._q[1]
+				+ this._q[2]*this._q[2] + this._q[3]*this._q[3];
+	}
+
+	/**
+	 * Normalizes this quaternion, if possible.
+	 *
+	 * @return {module:math.Quaternion} - The normalized quaternion.
+	 */
+	normalize() {
+		const length = this.length();
+		if (Math.abs(length) < EPSILON32) {
+			return this;
+		} else {
+			return this.scale(1.0 / length);
+		}
+	}
+
+	/**
+	 * Conjugates this quaternion, if possible.
+	 *
+	 * @return {module:math.Quaternion} - The conjugated quaternion.
+	 */
+	conjugate() {
 		this._q[1] = -this._q[1];
 		this._q[2] = -this._q[2];
 		this._q[3] = -this._q[3];
+
+		return this;
+	}
+
+	/**
+	 * Inverts this quaternion, is possible. The inverse of q, q^-1, is such
+	 * that q * q^-1 = 1 (the identity quaternion), and is equal to q* / |q|^2
+	 * (q* is the conjugate).
+	 *
+	 * @return {module:math.Quaterion} - The inverted quaterion.
+	 */
+	invert() {
+		const length2 = this.length2();
+		if (Math.abs(length2) < EPSILON32) {
+			return this;
+		}
+
+		this._q[1] = -this._q[1];
+		this._q[2] = -this._q[2];
+		this._q[3] = -this._q[3];
+
+		return this.scale(1.0 / length2);
+	}
+
+	/**
+	 * Multiplies this quaternion by a scalar.
+	 *
+	 * @param {Number} n - Scalar by which to multiply this quaternion.
+	 * @return {module:math.Quaternion} - The scaled quaternion.
+	 */
+	scale(n) {
+		this._q[0] *= n;
+		this._q[1] *= n;
+		this._q[2] *= n;
+		this._q[3] *= n;
 
 		return this;
 	}

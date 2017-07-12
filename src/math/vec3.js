@@ -2,7 +2,7 @@
  * @fileOverview 3 components vector manipulation.
  *
  * @author Noodep
- * @version 0.45
+ * @version 0.46
  */
 
 'use strict';
@@ -158,12 +158,36 @@ export default class Vec3 {
 	}
 
 	/**
+	 * Computes the distance from this vector to another vector.
+	 *
+	 * @param {module:math.Vec3} v3 - The other vector.
+	 * @return {Number} - A scalar representing the distance from this vector to
+	 * the other vector.
+	 */
+	distance(v3) {
+		const dx = this._v[0] - v3._v[0],
+			dy = this._v[1] - v3._v[1],
+			dz = this._v[2] - v3._v[2];
+		return Math.sqrt(dx*dx + dy*dy + dz*dz);
+	}
+
+	/**
 	 * Computes the length of this vector.
 	 *
 	 * @return {Number} - A scalar representing the length of this vector.
 	 */
 	length() {
 		return Math.sqrt(this._v[0]*this._v[0] + this._v[1]*this._v[1] + this._v[2]*this._v[2]);
+	}
+
+	/**
+	 * Computes the square of the length of this vector.
+	 *
+	 * @return {Number} - A scalar representing the square of the length of this
+	 * vector.
+	 */
+	length2() {
+		return this._v[0]*this._v[0] + this._v[1]*this._v[1] + this._v[2]*this._v[2];
 	}
 
 	/**
@@ -176,13 +200,17 @@ export default class Vec3 {
 	}
 
 	/**
-	 * Normalize this vector.
+	 * Normalize this vector, if possible.
 	 *
 	 * @return {module:math.Vec3} - This vector normalized.
 	 */
 	normalize() {
 		const length = this.length();
-		return this.scale(1.0 / length);
+		if (Math.abs(length) < EPSILON32) {
+			return this;
+		} else {
+			return this.scale(1.0 / length);
+		}
 	}
 
 	/**
@@ -221,6 +249,20 @@ export default class Vec3 {
 		this._v[0] += v3._v[0];
 		this._v[1] += v3._v[1];
 		this._v[2] += v3._v[2];
+
+		return this;
+	}
+
+	/**
+	 * Subtracts the specified vector from this vector.
+	 *
+	 * @param {module:math.Vec3} v3 - Vector to substract from this vector.
+	 * @return {module:math.Vec3} - The translated vector.
+	 */
+	sub(v3) {
+		this._v[0] -= v3._v[0];
+		this._v[1] -= v3._v[1];
+		this._v[2] -= v3._v[2];
 
 		return this;
 	}
