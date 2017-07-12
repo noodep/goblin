@@ -1,7 +1,7 @@
 /**
  * @fileOverview Object3d class that represent a object that can be manipulated in a 3d environment.
  * @author Noodep
- * @version 0.32
+ * @version 0.33
  */
 
 'use strict';
@@ -11,7 +11,51 @@ import Mat4 from '../math/mat4.js';
 import Quat from '../math/quat.js';
 import Vec3 from '../math/vec3.js';
 
+/**
+ * Map between IDs of Object3Ds and the objects themselves.
+ * TODO Consider implementing this as a WeakSet. Using a (non-weak) Map keeps
+ * references to the values and so does not allow for garbage collection. Using
+ * a WeakMap would have the same problem since the Object3D instances would be
+ * values and references to them would exist in the map. Using a WeakSet would
+ * not allow for iteration over all objects, though this may not be a problem.
+ */
+const CREATED_OBJECT3DS = new Map();
+
+/**
+ * Register the ID with the Object3D instance in CREATED_OBJECT3DS. If an object
+ * with the specified ID already exists, an error is thrown.
+ */
+function registerObject3D(id, object) {
+	if (!object || CREATED_OBJECT3DS.has(id)) {
+		throw new Error(`Object3D already created with ID ${id}.`);
+	}
+
+	CREATED_OBJECT3DS.set(id, object);
+}
+
+
 export default class Object3D {
+
+	/**
+	 * Gets the Object3D with the specified ID or undefined if one does not
+	 * exist. This also returns the input if the input is already an instance of
+	 * Object3D so that IDs can be replaced in usage with the objects
+	 * themselves.
+	 */
+	static getObject3D(id) {
+		if (id instanceof Object3D) {
+			return id;
+		} else {
+			return CREATED_OBJECT3DS.get(id);
+		}
+	}
+
+	/**
+	 * Returns an iterator over the created Object3Ds.
+	 */
+	static allObject3Ds() {
+		return CREATED_OBJECT3DS.values();
+	}
 
 	/**
 	 * @constructor
@@ -25,6 +69,7 @@ export default class Object3D {
 	 * @return {module:3d.Object3d} - The newly created Object3d.
 	 */
 	constructor({ id = UUIDv4(), origin = new Vec3(), orientation = Quat.identity(), scale = Vec3.identity() } = {}) {
+		registerObject3D(id, this);
 		this._id = id;
 		this._parent = undefined;
 		this._children = new Map();
