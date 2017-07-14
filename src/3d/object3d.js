@@ -11,51 +11,7 @@ import Mat4 from '../math/mat4.js';
 import Quat from '../math/quat.js';
 import Vec3 from '../math/vec3.js';
 
-/**
- * Map between IDs of Object3Ds and the objects themselves.
- * TODO Consider implementing this as a WeakSet. Using a (non-weak) Map keeps
- * references to the values and so does not allow for garbage collection. Using
- * a WeakMap would have the same problem since the Object3D instances would be
- * values and references to them would exist in the map. Using a WeakSet would
- * not allow for iteration over all objects, though this may not be a problem.
- */
-const CREATED_OBJECT3DS = new Map();
-
-/**
- * Register the ID with the Object3D instance in CREATED_OBJECT3DS. If an object
- * with the specified ID already exists, an error is thrown.
- */
-function registerObject3D(id, object) {
-	if (!object || CREATED_OBJECT3DS.has(id)) {
-		throw new Error(`Object3D already created with ID ${id}.`);
-	}
-
-	CREATED_OBJECT3DS.set(id, object);
-}
-
-
 export default class Object3D {
-
-	/**
-	 * Gets the Object3D with the specified ID or undefined if one does not
-	 * exist. This also returns the input if the input is already an instance of
-	 * Object3D so that IDs can be replaced in usage with the objects
-	 * themselves.
-	 */
-	static getObject3D(id) {
-		if (id instanceof Object3D) {
-			return id;
-		} else {
-			return CREATED_OBJECT3DS.get(id);
-		}
-	}
-
-	/**
-	 * Returns an iterator over the created Object3Ds.
-	 */
-	static allObject3Ds() {
-		return CREATED_OBJECT3DS.values();
-	}
 
 	/**
 	 * @constructor
@@ -69,7 +25,6 @@ export default class Object3D {
 	 * @return {module:3d.Object3d} - The newly created Object3d.
 	 */
 	constructor({ id = UUIDv4(), origin = new Vec3(), orientation = Quat.identity(), scale = Vec3.identity() } = {}) {
-		registerObject3D(id, this);
 		this._id = id;
 		this._parent = undefined;
 		this._children = new Map();
@@ -79,6 +34,19 @@ export default class Object3D {
 		this._is_model_valid = false;
 		this._local_model = Mat4.identity();
 		this._world_model = Mat4.identity();
+
+		// Private transformations, applied before the public ones, which are
+		// not accessable (directly: they are incorporated into the local and
+		// world model matrices) from outside. These transformations are
+		// forewarded to children through this._world_model. TODO Create some
+		// function/intermediate matrix not containing the private
+		// transformations so that, for example, an outside object can get a
+		// matrix/transformed vector corresponding to the transformations it can
+		// see through the public getters (like Renderer.prototype.toWorldRoot()
+		// in the old version of Goblin).
+		this._private_origin = new Vec3();
+		this._private_orientation = Quat.identity();
+		this._private_scale = Vec3.identity();
 
 		// Temporary quaternion used for rotations. This avoids creating one each time.
 		this._tmp_quaternion = new Quat();
@@ -110,6 +78,15 @@ export default class Object3D {
 	set parent(parent) {
 		this._parent = parent;
 		this.invalidateModel();
+	}
+
+	/**
+	 * Getter for this Object3d children.
+	 *
+	 * @return {Iterator} - This Object3d children.
+	 */
+	get children() {
+		return this._children.values();
 	}
 
 	/**
@@ -146,7 +123,7 @@ export default class Object3D {
 	 * @param {module:math.Quat} q - This Object3d new orientation.
 	 */
 	set orientation(q) {
-		this._orientation.copy(q)
+		this._orientation.copy(q);
 		this.invalidateModel();
 	}
 
@@ -169,15 +146,6 @@ export default class Object3D {
 		this.invalidateModel();
 	}
 
-
-	/**
-	 * Getter for this Object3d children.
-	 *
-	 * @return {Iterator} - This Object3d children.
-	 */
-	get children() {
-		return this._children.values();
-	}
 
 	/**
 	 * Getter for this Object3d local model matrix.
@@ -214,6 +182,64 @@ export default class Object3D {
 		this._world_model.copy(mat4);
 		this.invalidateModel();
 	}
+
+	/**
+	 * Getter for this Object3d private origin.
+	 *
+	 * @return {module:math.Vec3} - This Object3d private origin.
+	 */
+	get _privateOrigin() {
+		return this._private_origin;
+	}
+
+	/**
+	 * Setter for this Object3d private origin.
+	 *
+	 * @param {module:math.Vec3} v3 - This Object3d new private origin.
+	 */
+	set _privateOrigin(v3) {
+		this._private_origin.copy(v3);
+		this.invalidateModel();
+	}
+
+	/**
+	 * Getter for this Object3d private orientation.
+	 *
+	 * @return {module:math.Quat} - This Object3d private orientation.
+	 */
+	get _privateOrientation() {
+		return this._private_orientation;
+	}
+
+	/**
+	 * Setter for this Object3d private orientation.
+	 *
+	 * @param {module:math.Quat} q - This Object3d new private orientation.
+	 */
+	set _privateOrientation(q) {
+		this._private_orientation.copy(q);
+		this.invalidateModel();
+	}
+
+	/**
+	 * Getter for this Object3d private scaling.
+	 *
+	 * @return {module:math.Vec3} - This Object3d private scaling.
+	 */
+	get _privateScale() {
+		return this._private_scale;
+	}
+
+	/**
+	 * Setter for this Object3d private scaling.
+	 *
+	 * @param {module:math.Vec3} v3 - This Object3d new private scaling.
+	 */
+	set _privateScale(v3) {
+		this._private_scale.copy(v3);
+		this.invalidateModel();
+	}
+
 
 	/**
 	 * Adds a child to this Object3d
@@ -259,8 +285,6 @@ export default class Object3D {
 	 */
 	invalidateModel() {
 		this._is_model_valid = false;
-		for(let child of this._children.values())
-			child.invalidateModel();
 	}
 
 	/**
@@ -365,9 +389,13 @@ export default class Object3D {
 	 */
 	_revalidateModel() {
 		this._local_model.identity();
-		this._local_model.orientation = this._orientation;
-		this._local_model.translation = this._origin;
-		this._local_model.scale = this._scale;
+		this._local_model.translate(this._origin);
+		this._local_model.rotateQuat(this._orientation);
+		this._local_model.scaleVec(this._scale);
+
+		this._local_model.translate(this._private_origin);
+		this._local_model.rotateQuat(this._private_orientation);
+		this._local_model.scaleVec(this._private_scale);
 
 		this._computeWorldModel();
 

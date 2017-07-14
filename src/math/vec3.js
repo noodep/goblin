@@ -29,6 +29,16 @@ export default class Vec3 {
 	}
 
 	/**
+	 * Creates a new vector having the same value for all components.
+	 *
+	 * @param {number} value - The value to set.
+	 * @return {module:math.Vec3} - The newly created vector.
+	 */
+	static fill(value) {
+		return new Vec3(value, value, value);
+	}
+
+	/**
 	 * Creates a new vector from a javascript Array.
 	 *
 	 * @param {Array} - The array containing the values with which to initialize this vector.
