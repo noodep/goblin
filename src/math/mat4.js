@@ -8,7 +8,7 @@
  * [03]:e41  [07]:e42  [11]:e43  [15]:e44
  *
  * @author Noodep
- * @version 0.47
+ * @version 0.48
  */
 
 'use strict';
@@ -304,6 +304,8 @@ export default class Mat4 {
 		this._m[14] = 0.0;
 
 		this._m[15] = 1.0;
+
+		return this;
 	}
 
 
@@ -709,6 +711,20 @@ export default class Mat4 {
 	}
 
 	/**
+	 * Applies a rotation described by the specified quaternion to the matrix.
+	 *
+	 * @param {module:math.Quat} quat - The quaternion to multiply by.
+	 * @return {module:math.Mat4} - The rotated matrix.
+	 */
+	rotateQuat(quat) {
+		// TODO Make this more efficient by not creating a matrix from the
+		// quaternion first.
+		const m = Mat4.identity();
+		m.setRotationFromQuaternion(quat);
+		return this.multiply(m);
+	}
+
+	/**
 	 * Applies a rotation around the specified axis to the matrix.
 	 *
 	 * @param {Number} theta - The angle (in radians) by which to rotate.
@@ -762,6 +778,31 @@ export default class Mat4 {
 	scaleZ(z) {
 		this._m[8] *= z;
 		this._m[9] *= z;
+		this._m[10] *= z;
+		this._m[11] *= z;
+
+		return this;
+	}
+
+	/**
+	 * Scales the matrix along the X, Y, and Z axes by the corresponding
+	 * components of a 3-dimensional vector.
+	 *
+	 * @param {module:math.Vec3} vec3 - Vector by which to scale the matrix.
+	 * @return {module:math.Mat4} - The scaled matrix.
+	 */
+	scaleVec(vec3) {
+		var x = vec3.x, y = vec3.y, z = vec3.z;
+		this._m[0]  *= x;
+		this._m[1]  *= x;
+		this._m[2]  *= x;
+		this._m[3]  *= x;
+		this._m[4]  *= y;
+		this._m[5]  *= y;
+		this._m[6]  *= y;
+		this._m[7]  *= y;
+		this._m[8]  *= z;
+		this._m[9]  *= z;
 		this._m[10] *= z;
 		this._m[11] *= z;
 
