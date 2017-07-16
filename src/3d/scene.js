@@ -62,6 +62,9 @@ export default class Scene extends Object3D {
 
 	/**
 	 * Recursive initialization of the specified Object3D.
+	 *
+	 * TODO This needs to update when new objects are added to the scene or any
+	 * object down the hierarchy.
 	 */
 	initializeObject3D(renderer, object) {
 		if(object instanceof Renderable) {
