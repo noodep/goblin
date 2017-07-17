@@ -6,8 +6,7 @@ in vec3 color;
 in vec3 normal;
 
 uniform mat4 model;
-uniform mat4 view;
-uniform mat4 projection;
+uniform mat4 view_projection;
 
 out vec3 true_color;
 
@@ -22,5 +21,5 @@ void main(void) {
 	float factor = max(dot(light_dir, normalized_normal), 0.0);
 
 	true_color = (ambiant_color + color) * factor;
-	gl_Position = projection * view * local_position;
+	gl_Position = view_projection * local_position;
 }
