@@ -164,6 +164,15 @@ export default class WebGLRenderer {
 		return program;
 	}
 
+	getProgram(name) {
+		const p = this._programs.get(name);
+		if (!p) {
+			wl(`Program ${name} does not exist.`);
+		}
+
+		return p;
+	}
+
 	/**
 	 * Returns the program with the specified name.
 	 *
