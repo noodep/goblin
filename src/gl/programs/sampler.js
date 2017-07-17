@@ -7,6 +7,7 @@
 
 'use strict';
 
+import Mat4 from '../../math/mat4.js';
 import Program from '../program.js';
 
 export default class SamplerProgram extends Program {
@@ -22,6 +23,10 @@ export default class SamplerProgram extends Program {
 	constructor(configuration, options) {
 		super(configuration)
 		this._sampler_unit = options.sampler_unit;
+
+		// Buffer for multiplying the projection and view matrices to avoid
+		// allocation of new matrices every applyState().
+		this._view_projection = new Mat4();
 	}
 
 	/**
@@ -30,8 +35,9 @@ export default class SamplerProgram extends Program {
 	applyState(renderer, projection, view) {
 		const c = renderer._context;
 
-		c.uniformMatrix4fv(this.getUniform('projection'), false, projection.matrix);
-		c.uniformMatrix4fv(this.getUniform('view'), false, view.matrix);
+		this._view_projection.copy(projection).multiply(view);
+		c.uniformMatrix4fv(this.getUniform('view_projection'),
+				false, this._view_projection.matrix);
 		c.uniform1i(this.getUniform('sampler'), this._sampler_unit);
 	}
 }
