@@ -82,6 +82,7 @@ export default class WebGLRenderer {
 	/**
 	 * Adds a scene to this renderer unless a scene with the same id is already present.
 	 *
+	 * @param {Scene} scene - The scene to be added to this renderer.
 	 * @return {Boolean} - true if the scene was successfully added, false otherwise.
 	 */
 	addScene(scene) {
@@ -100,14 +101,15 @@ export default class WebGLRenderer {
 	/**
 	 * Returns the scene with the specified id.
 	 *
+	 * @param {String} id - Id of the scene to be returned.
 	 * @return {Scene} - the scene with the specified id if it exists, undefined otherwise.
 	 */
-	getScene(scene_id) {
-		if(this._scenes.has(scene_id)) {
-			return this._scenes.get(scene_id);
+	getScene(id) {
+		if(this._scenes.has(id)) {
+			return this._scenes.get(id);
 		}
 
-		wl(`Scene with id ${scene_id} does not exists.`);
+		wl(`Scene with id ${id} does not exists.`);
 		return undefined;
 	}
 
@@ -162,13 +164,19 @@ export default class WebGLRenderer {
 		return program;
 	}
 
+	/**
+	 * Returns the program with the specified name.
+	 *
+	 * @param {String} name - Name of the program to be returned.
+	 * @return {Program} - the program with the specified name if it exists, undefined otherwise.
+	 */
 	getProgram(name) {
-		const p = this._programs.get(name);
-		if (!p) {
-			wl(`Program ${name} does not exist.`);
+		if (this._programs.has(name)) {
+			return this._programs.get(name);
 		}
 
-		return p;
+		wl(`Program ${name} does not exist.`);
+		return undefined;
 	}
 
 	/**
