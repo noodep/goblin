@@ -101,6 +101,20 @@ export default class WebGLRenderer {
 	}
 
 	/**
+	 * Returns the scene with the specified id.
+	 *
+	 * @return {Scene} - the scene with the specified id if it exists, undefined otherwise.
+	 */
+	getScene(scene_id) {
+		if(this._scenes.has(scene_id)) {
+			return this._scenes.get(scene_id);
+		}
+
+		wl(`Scene with id ${scene_id} does not exists.`);
+		return undefined;
+	}
+
+	/**
 	 * Removes a scene from this renderer if it exists.
 	 *
 	 * @return {Boolean} - true if the scene was successfully removed, false otherwise.
