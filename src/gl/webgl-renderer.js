@@ -33,9 +33,6 @@ export default class WebGLRenderer {
 		this._active_program = undefined;
 		this._programs = new Map();
 
-		this._active_buffer_object = undefined;
-		this._buffer_objects = new Map();
-
 		this._context = undefined;
 		this._animation_frame = undefined;
 
@@ -165,6 +162,15 @@ export default class WebGLRenderer {
 		return program;
 	}
 
+	getProgram(name) {
+		const p = this._programs.get(name);
+		if (!p) {
+			wl(`Program ${name} does not exist.`);
+		}
+
+		return p;
+	}
+
 	/**
 	 * Sets this context active program.
 	 *
@@ -172,17 +178,12 @@ export default class WebGLRenderer {
 	 * @return {Boolean} - true if the program with the specified name exists and was activated, false otherwise.
 	 */
 	useProgram(name) {
-		if(!this._programs.has(name)) {
-			wl(`Program ${name} does not exists.`);
-			return false;
-		}
-
 		if(this._active_program == name) {
 			wl(`Program already active. Try minimizing program switching.`);
 			return true;
 		}
 
-		const p = this._programs.get(name);
+		const p = this.getProgram(name);
 		this._active_program = name;
 		this._context.useProgram(p.program);
 
@@ -201,80 +202,55 @@ export default class WebGLRenderer {
 			return undefined;
 		}
 
-		return this._programs.get(this._active_program);
+		return this.getProgram(this._active_program);
 	}
 
 	/**
-	 * Creates a new buffer object with the specified id and allocates the underlying buffer object's storage.
+	 * Creates a new buffer object with the specified id and allocates the
+	 * underlying buffer object's storage.
 	 *
-	 * @param {String} id - id of the buffer object to be created.
 	 * @param {GLsizeiptr} size - size of the buffer to allocate.
 	 * @param {GLenum} [buffer_type=ARRAY_BUFFER] - type of buffer to create.
 	 * @param {GLenum} [buffer_usage=STATIC_DRAW] - usage of the buffer.
 	 * @return {Boolean} - true if the buffer was successfully created, false otherwise.
 	 */
-	createBuffer(buffer_id, size, buffer_type = WebGLRenderingContext.ARRAY_BUFFER, buffer_usage = WebGLRenderingContext.STATIC_DRAW) {
-		if(this._buffer_objects.has(buffer_id)) {
-			wl(`The vertex buffer object with id ${buffer_id} already exists.`);
-			return false;
-		}
-
+	createBuffer(size, buffer_type = WebGLRenderingContext.ARRAY_BUFFER, buffer_usage = WebGLRenderingContext.STATIC_DRAW) {
 		const buffer_object = this._context.createBuffer();
-		this._buffer_objects.set(buffer_id, buffer_object);
 		this._context.bindBuffer(buffer_type, buffer_object);
 		this._context.bufferData(buffer_type, size, buffer_usage);
-		return buffer_id;
+		this._context.bindBuffer(buffer_type, null);
+		return buffer_object;
 	}
 
 	/**
-	 * Delete the buffer object with the specified id if it exists.
-	 *
-	 * @return {Boolean} - true if the buffer object exists and was successfully deleted, false otherwise.
+	 * Delete the specified buffer object from memory.
 	 */
-	deleteBuffer(buffer_id) {
-		if(!this._buffer_objects.has(buffer_id)) {
-			wl(`The vertex buffer object with id ${buffer_id} does not exists`);
-			return false;
-		}
-
-		return this._buffer_objects.delete(buffer_id);
+	deleteBuffer(buffer) {
+		this._context.deleteBuffer(buffer);
 	}
 
 	/**
-	 * Make the buffer object with the specified id active.
+	 * Make the specified buffer object active.
 	 *
-	 * @param {String} buffer_id - id of the buffer object to make active.
-	 * @param {GLenum} buffer_type - type of buffer to bind.
-	 * possible values are WebGLRenderingContext.ARRAY_BUFFER or WebGLRenderingContext.ELEMENT_ARRAY_BUFFER.
-	 * @return {Boolean} - true if the buffer object with the specified exists and was activated, false otherwise.
+	 * @param {WebGLBuffer} buffer - The buffer to activate.
+	 * @param {GLenum} [buffer_type=ARRAY_BUFFER] - type of buffer to bind.
+	 * possible values are WebGLRenderingContext.ARRAY_BUFFER and
+	 * WebGLRenderingContext.ELEMENT_ARRAY_BUFFER.
 	 */
-	activateBuffer(buffer_id, buffer_type = WebGLRenderingContext.ARRAY_BUFFER) {
-		if(this._active_buffer_object == buffer_id) {
-			wl(`Buffer with id ${buffer_id} already active.`);
-			return false;
-		}
-
-		const buffer_object = this._buffer_objects.get(buffer_id);
-
-		if(!buffer_object) {
-			wl(`The vertex buffer object with id ${buffer_id} does not exists`);
-			return false;
-		}
-
-		this._context.bindBuffer(buffer_type, buffer_object);
-		return true;
+	activateBuffer(buffer, buffer_type = WebGLRenderingContext.ARRAY_BUFFER) {
+		this._context.bindBuffer(buffer_type, buffer);
 	}
 
 	/**
-	 * Updates data of the buffer object with the specified id.
+	 * Updates data of the specified buffer object.
 	 *
-	 * @param {String} buffer_id - id of the buffer object to make active.
+	 * @param {WebGLBuffer} buffer - The buffer to update.
 	 * @param {ArrayBuffer} buffer_data - new data to be copied.
 	 * @param {GLintptr} [offset=0] - offset indicating where to start the data replacement.
 	 * @param {GLenum} [buffer_type=ARRAY_BUFFER] - type of buffer to update.
 	 */
-	updateBufferData(buffer_id, buffer_data, offset = 0, buffer_type = WebGLRenderingContext.ARRAY_BUFFER) {
-		this.activateBuffer(buffer_id, buffer_type);
+	updateBufferData(buffer, buffer_data, offset = 0, buffer_type = WebGLRenderingContext.ARRAY_BUFFER) {
+		this.activateBuffer(buffer, buffer_type);
 		this._context.bufferSubData(buffer_type, offset, buffer_data);
 	}
 
@@ -285,6 +261,13 @@ export default class WebGLRenderer {
 	 */
 	createVertexArray() {
 		return this._context.createVertexArray();
+	}
+
+	/**
+	 * Deletes the specified vertex array object.
+	 */
+	deleteVertexArray(vao) {
+		this._context.deleteVertexArray(vao);
 	}
 
 	/**

@@ -13,7 +13,7 @@ export default class Geometry {
 
 	constructor(buffer, size, rendering_type = WebGLRenderingContext.TRIANGLES) {
 		this._attributes = new Map();
-		this._vbo_id = UUIDv4();
+		this._vbo = null;
 
 		this._buffer = buffer;
 		this._size = size;
@@ -48,21 +48,20 @@ export default class Geometry {
 	}
 
 	initializeContextBuffers(renderer) {
-		renderer.createBuffer(
-			this._vbo_id,
+		this._vbo = renderer.createBuffer(
 			this._buffer.byteLength,
 			WebGLRenderingContext.ARRAY_BUFFER,
 			WebGLRenderingContext.STATIC_DRAW
 		);
 
-		renderer.updateBufferData(this._vbo_id, this._buffer, 0, WebGLRenderingContext.ARRAY_BUFFER);
+		renderer.updateBufferData(this._vbo, this._buffer, 0, WebGLRenderingContext.ARRAY_BUFFER);
 	}
 
 	initializeVertexArrayProcedure(renderer) {
 		const vao = renderer.createVertexArray();
 
 		renderer.activateVertexArray(vao);
-		renderer.activateBuffer(this._vbo_id);
+		renderer.activateBuffer(this._vbo);
 
 		this._attributes.forEach((attribute, name) => {
 			renderer.enableAttribute(name, attribute);
@@ -76,6 +75,13 @@ export default class Geometry {
 
 	render(renderer) {
 		renderer._context.drawArrays(this._rendering_type, 0, this._size);
+	}
+
+	/**
+	 * Deletes the WebGL buffer objects of this geometr from GPU memory.
+	 */
+	destroy(renderer) {
+		renderer.deleteBuffer(this._vbo);
 	}
 }
 

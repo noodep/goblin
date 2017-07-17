@@ -15,7 +15,7 @@ export default class IndexedGeometry extends Geometry {
 
 	constructor(indices, buffer, rendering_type = WebGLRenderingContext.TRIANGLES, index_type = WebGLRenderingContext.UNSIGNED_BYTE) {
 		super(buffer, indices.length, rendering_type);
-		this._ebo_id = UUIDv4();
+		this._ebo = null;
 		this._indices = indices;
 		this._index_type = index_type;
 	}
@@ -31,21 +31,20 @@ export default class IndexedGeometry extends Geometry {
 	initializeContextBuffers(renderer) {
 		super.initializeContextBuffers(renderer);
 
-		renderer.createBuffer(
-			this._ebo_id,
+		this._ebo = renderer.createBuffer(
 			this._indices.byteLength,
 			WebGLRenderingContext.ELEMENT_ARRAY_BUFFER,
 			WebGLRenderingContext.STATIC_DRAW
 		);
 
-		renderer.updateBufferData(this._ebo_id, this._indices, 0, WebGLRenderingContext.ELEMENT_ARRAY_BUFFER);
+		renderer.updateBufferData(this._ebo, this._indices, 0, WebGLRenderingContext.ELEMENT_ARRAY_BUFFER);
 	}
 
 	initializeVertexArrayProcedure(renderer) {
 		const vao = super.initializeVertexArrayProcedure(renderer);
 
 		renderer.activateVertexArray(vao);
-		renderer.activateBuffer(this._ebo_id, WebGLRenderingContext.ELEMENT_ARRAY_BUFFER);
+		renderer.activateBuffer(this._ebo, WebGLRenderingContext.ELEMENT_ARRAY_BUFFER);
 		renderer.activateVertexArray(null);
 
 		return vao;

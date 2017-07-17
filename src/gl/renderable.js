@@ -30,25 +30,51 @@ export default class Renderable extends Object3D {
 		this._geometry = geometry;
 		this._program = program;
 		this._model_uniform_location = undefined;
-	}
 
+		// Place to store a geometry between being set with the setter and being
+		// initialized later in setShaderState().
+		this._new_geometry = null;
+	}
 
 	get program() {
 		return this._program;
 	}
 
+	get geometry() {
+		return this._geometry;
+	}
+
+	set geometry(geometry) {
+		this._new_geometry = geometry;
+	}
+
 	initialize(renderer) {
 		dl(`Initializing Renderable with id ${this.id}.`);
-		renderer.useProgram(this._program);
 
+		renderer.useProgram(this._program);
 		const program = renderer.activeProgram;
+
 		this._model_uniform_location = program.getUniform('model');
 
+		this._initializeGeometry(renderer);
+	}
+
+	_initializeGeometry(renderer) {
 		this._geometry.initializeContextBuffers(renderer);
 		this._vao = this._geometry.initializeVertexArrayProcedure(renderer);
 	}
 
 	setShaderState(renderer) {
+		if (this._new_geometry) {
+			// Destroy isn't final, we are just changing to a new geometry and
+			// vao.
+			this.destroy(renderer);
+			this._geometry = this._new_geometry;
+			this._new_geometry = null;
+
+			this._initializeGeometry(renderer);
+		}
+
 		renderer.activateVertexArray(this._vao);
 		renderer._context.uniformMatrix4fv(this._model_uniform_location, false, this.worldModel.matrix);
 	}
@@ -59,6 +85,14 @@ export default class Renderable extends Object3D {
 
 	render(renderer) {
 		this._geometry.render(renderer);
+	}
+
+	/**
+	 * Deletes the geometry and the vertex array object used from GPU memory.
+	 */
+	destroy(renderer) {
+		this._geometry.destroy(renderer);
+		renderer.deleteVertexArray(this._vao);
 	}
 }
 
