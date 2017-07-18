@@ -1,7 +1,7 @@
 /**
  * @fileOverview Object3d class that represent a object that can be manipulated in a 3d environment.
  * @author Noodep
- * @version 0.33
+ * @version 0.34
  */
 
 'use strict';
@@ -261,10 +261,11 @@ export default class Object3D {
 	 * @return {Boolean} - true if the object was removed, false if the object was not a child of this Object3d.
 	 */
 	removeChild(object) {
-		if(!this._children.has(object.id))
+		if(!this._children.has(object.id) || object.parent !== this)
 			return false;
 
 		this._children.delete(object.id);
+		object.parent = undefined;
 		return true;
 	}
 
