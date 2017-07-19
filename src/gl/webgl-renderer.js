@@ -182,16 +182,28 @@ export default class WebGLRenderer {
 	/**
 	 * Sets this context active program.
 	 *
-	 * @param {String} name - Name of the program to be used.
-	 * @return {Boolean} - true if the program with the specified name exists and was activated, false otherwise.
+	 * @param {String} name - Name of the program to be used or null to unset
+	 * the active program.
+	 * @return {Boolean} - true if the program with the specified name exists
+	 * and is activated, false otherwise.
 	 */
 	useProgram(name) {
+		if (name == null) {
+			this._active_program = null;
+			this._context.useProgram(null);
+			return false;
+		}
+
 		if(this._active_program == name) {
 			wl(`Program already active. Try minimizing program switching.`);
 			return true;
 		}
 
 		const p = this.getProgram(name);
+		if (!p) {
+			return false;
+		}
+
 		this._active_program = name;
 		this._context.useProgram(p.program);
 
