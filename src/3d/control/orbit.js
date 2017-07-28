@@ -152,8 +152,8 @@ export default class OrbitControl {
 		this._position.y = this._offset.y + this._radius * Math.cos(this._theta);
 		this._position.z = this._offset.z + this._radius * sin_theta * Math.cos(this._phi);
 
-		this._inclination.fromAxisRotation(this._theta - OrbitControl.HALFPI, this._x_axis);
-		this._azimuth.fromAxisRotation(this._phi, this._y_axis);
+		this._inclination.fromAxisRotation(this._theta - OrbitControl.HALFPI, Vec3.X_AXIS);
+		this._azimuth.fromAxisRotation(this._phi, Vec3.Y_AXIS);
 
 		this._azimuth.multiply(this._inclination);
 		this._target.setPosition(this._position);
