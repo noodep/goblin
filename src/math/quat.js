@@ -33,10 +33,12 @@ export default class Quaternion {
 	/**
 	 * Creates a new quaternion from a javascript Array with w as first value.
 	 *
-	 * @param {Array} - The array containing the values with which to initialize this quaternion.
-	 * @return {module:math.Quaternion} - The newly created quaternion set with values from the specified Array.
+	 * @param {Array} - The array (of Array-like) containing the values with
+	 * which to initialize this quaternion.
+	 * @return {module:math.Quaternion} - The newly created quaternion set with
+	 * values from the specified Array.
 	 */
-	static fromArray(array) {
+	static from(array) {
 		return new Quaternion(array[0], array[1], array[2], array[3]);
 	}
 
@@ -77,63 +79,7 @@ export default class Quaternion {
 	}
 
 	/**
-	 * Getter for this quaternion w component.
-	 *
-	 * @return {Number} - The w value;
-	 */
-	get w() { return this._q[0]; }
-
-	/**
-	 * Getter for this quaternion x component.
-	 *
-	 * @return {Number} - The x value;
-	 */
-	get x() { return this._q[1]; }
-
-	/**
-	 * Getter for this quaternion y component.
-	 *
-	 * @return {Number} - The y value;
-	 */
-	get y() { return this._q[2]; }
-
-	/**
-	 * Getter for this quaternion z component.
-	 *
-	 * @return {Number} - The z value;
-	 */
-	get z() { return this._q[3]; }
-
-	/**
-	 * Setter for this quaternion w component.
-	 *
-	 * @param {Number} w - The new w value.
-	 */
-	set w(w) { this._q[0] = w; }
-
-	/**
-	 * Setter for this quaternion x component.
-	 *
-	 * @param {Number} x - The new x value.
-	 */
-	set x(x) { this._q[1] = x; }
-
-	/**
-	 * Setter for this quaternion y component
-	 *
-	 * @param {Number} y - The new y value.
-	 */
-	set y(y) { this._q[2] = y; }
-
-	/**
-	 * Setter for this quaternion z component.
-	 *
-	 * @param {Number} z - The new z value.
-	 */
-	set z(z) { this._q[3] = z; }
-
-	/**
-	 * Sets the quaternion to identiy.
+	 * Sets the quaternion to identity.
 	 *
 	 * @return {module:math.Quaternion} - This quaternion.
 	 */
@@ -177,8 +123,9 @@ export default class Quaternion {
 	fromVecToVec(vec1, vec2) {
 		const cross = vec1.clone().cross(vec2);
 
-		// Multiply the lengths but only perform 1 square root
-		this._q[0] = vec1.dot(vec2) + Math.sqrt(vec1.length2() * vec2.length2());
+		this._q[0] = vec1.dot(vec2)
+		    // Multiply the magnitudes but only perform 1 square root
+		    + Math.sqrt(vec1.magnitude2() * vec2.magnitude2());
 		this._q[1] = cross.x;
 		this._q[2] = cross.y;
 		this._q[3] = cross.z;
@@ -206,7 +153,7 @@ export default class Quaternion {
 	 * @return {module:math.Quaternion} - The newly cloned quaternion.
 	 */
 	clone() {
-		return new Quaternion(this._q[0],this._q[1],this._q[2], this._q[3]);
+		return new Quaternion(this._q[0], this._q[1], this._q[2], this._q[3]);
 	}
 
 	/**
@@ -223,24 +170,23 @@ export default class Quaternion {
 	}
 
 	/**
-	 * Calculates the length (magnitude) of this quaternion.
+	 * Calculates the magnitude (magnitude) of this quaternion.
 	 *
-	 * @return {Number} - A scalar representing the length of this quaternion.
+	 * @return {Number} - A scalar representing the magnitude of this quaternion.
 	 */
-	length() {
-		return Math.sqrt(this._q[0]*this._q[0] + this._q[1]*this._q[1]
-				+ this._q[2]*this._q[2] + this._q[3]*this._q[3]);
+	magnitude() {
+		return Math.hypot(this._q[0], this._q[1], this._q[2], this._q[3]);
 	}
 
 	/**
-	 * Calculates the square of the length (magnitude) of this quaternion.
+	 * Calculates the square of the magnitude (magnitude) of this quaternion.
 	 *
-	 * @return {Number} - A scalar representing the square of the length of this
+	 * @return {Number} - A scalar representing the square of the magnitude of this
 	 * quaternion.
 	 */
-	length2() {
+	magnitude2() {
 		return this._q[0]*this._q[0] + this._q[1]*this._q[1]
-				+ this._q[2]*this._q[2] + this._q[3]*this._q[3];
+			+ this._q[2]*this._q[2] + this._q[3]*this._q[3];
 	}
 
 	/**
@@ -249,11 +195,11 @@ export default class Quaternion {
 	 * @return {module:math.Quaternion} - The normalized quaternion.
 	 */
 	normalize() {
-		const length = this.length();
-		if (Math.abs(length) < EPSILON32) {
+		const mag2 = this.magnitude2();
+		if (Math.abs(mag2) < EPSILON32) {
 			return this;
 		} else {
-			return this.scale(1.0 / length);
+			return this.scale(1.0 / Math.sqrt(mag2));
 		}
 	}
 
@@ -278,16 +224,12 @@ export default class Quaternion {
 	 * @return {module:math.Quaterion} - The inverted quaterion.
 	 */
 	invert() {
-		const length2 = this.length2();
-		if (Math.abs(length2) < EPSILON32) {
+		const mag2 = this.magnitude2();
+		if (Math.abs(mag2) < EPSILON32) {
 			return this;
 		}
 
-		this._q[1] = -this._q[1];
-		this._q[2] = -this._q[2];
-		this._q[3] = -this._q[3];
-
-		return this.scale(1.0 / length2);
+		return this.conjugate().scale(1.0 / Math.sqrt(mag2));
 	}
 
 	/**
@@ -363,6 +305,9 @@ export default class Quaternion {
 		return v;
 	}
 
+	[Symbol.iterator]() {
+		return this._v[Symbol.iterator];
+	}
 
 	/**
 	 * Returns a human readable string representing this quaternion.
@@ -371,7 +316,76 @@ export default class Quaternion {
 	 * @return {String} - A human readable String representing this quaternion.
 	 */
 	toString(precision = 16) {
-		return `[${this._q[0].toFixed(precision)}, ${this._q[1].toFixed(precision)}, ${this._q[2].toFixed(precision)}, ${this._q[3].toFixed(precision)}]`;
+		return `(${this._q[0].toFixed(precision)}, ${this._q[1].toFixed(precision)}, ${this._q[2].toFixed(precision)}, ${this._q[3].toFixed(precision)})`;
 	}
 }
+
+///
+/// Define getters and setters for the quaternion's values by different names,
+/// reusing the same functions.
+///
+
+const wProperty = {
+	get: function() { return this._q[0] },
+	set: function(val) { this._q[0] = val }
+};
+
+const xProperty = {
+	get: function() { return this._q[1] },
+	set: function(val) { this._q[1] = val }
+};
+
+const yProperty = {
+	get: function() { return this._q[2] },
+	set: function(val) { this._q[2] = val }
+};
+
+const zProperty = {
+	get: function() { return this._q[3] },
+	set: function(val) { this._q[3] = val }
+};
+
+Object.defineProperty(Quaternion.prototype, 'w', wProperty);
+Object.defineProperty(Quaternion.prototype, 'x', xProperty);
+Object.defineProperty(Quaternion.prototype, 'y', yProperty);
+Object.defineProperty(Quaternion.prototype, 'z', zProperty);
+
+Object.defineProperty(Quaternion.prototype, 0, wProperty);
+Object.defineProperty(Quaternion.prototype, 1, xProperty);
+Object.defineProperty(Quaternion.prototype, 2, yProperty);
+Object.defineProperty(Quaternion.prototype, 3, zProperty);
+
+// Some aliases
+Quaternion.prototype.norm = Quaternion.prototype.normal;
+Quaternion.prototype.mag = Quaternion.prototype.magnitude;
+Quaternion.prototype.mag2 = Quaternion.prototype.magnitude2;
+Quaternion.prototype.mul = Quaternion.prototype.multiply;
+
+/**
+ * Make Quaternions act like arrays
+ */
+Quaternion.prototype[Symbol.isConcatSpreadable] = true;
+Quaternion.prototype.length = 4;
+
+/**
+ * Class to create a Quaternion who's componenets are stored in a specified
+ * ArrayBuffer.
+ *
+ * @constructor
+ * @param {ArrayBuffer} buffer - The buffer to use.
+ * @param {Number} [byteOffset=0] - The byte offset in the buffer.
+ * @return {module:math.QuatView} - The newly created vector.
+ */
+export function QuatView(buffer, byteOffset = 0) {
+	this._q = new Float32Array(buffer, byteOffset, 4);
+}
+// Have to do inheritance like this because the other way requires calling
+// super() in the constructor.
+QuatView.prototype = Object.create(Quaternion.prototype);
+
+/**
+ * Some common vector constants.
+ * @see Vec3 for why caution should be used when using these.
+ */
+Quaternion.IDENTITY = Quaternion.identity();
 
