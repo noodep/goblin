@@ -448,7 +448,7 @@ export default class Vec4 {
 	}
 
 	[Symbol.iterator]() {
-		return this._v[Symbol.iterator];
+		return this._v[Symbol.iterator]();
 	}
 
 	/**
