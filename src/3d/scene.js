@@ -112,6 +112,8 @@ export default class Scene extends Object3D {
 				renderable.cleanShaderState(renderer);
 			};
 		});
+
+		renderer.useProgram(null);
 	}
 
 	/**

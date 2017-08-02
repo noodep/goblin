@@ -24,49 +24,20 @@ export default class Mat4 {
 	 */
 	constructor() {
 		this._m = new Float32Array(16);
-		this._m[0] = 0.0;
-		this._m[1] = 0.0;
-		this._m[2] = 0.0;
-		this._m[3] = 0.0;
-		this._m[4] = 0.0;
-		this._m[5] = 0.0;
-		this._m[6] = 0.0;
-		this._m[7] = 0.0;
-		this._m[8] = 0.0;
-		this._m[9] = 0.0;
-		this._m[10] = 0.0;
-		this._m[11] = 0.0;
-		this._m[12] = 0.0;
-		this._m[13] = 0.0;
-		this._m[14] = 0.0;
-		this._m[15] = 0.0;
+		// Elements are initialized to 0
 	}
 
 	/**
-	 * Creates a new matrix using the content of the specified array assuming  column major flatenning.
+	 * Creates a new matrix using the content of the specified array assuming
+	 * column major flatenning.
 	 *
+	 * @param {array} a - The array (or array-like) from which to copy the
+	 * values.
 	 * @return {module:math.Mat4} - The newly created matrix.
 	 */
-	static fromArray(a) {
+	static from(a) {
 		const m = new Mat4();
-		m._m[0] = a[0];
-		m._m[1] = a[1];
-		m._m[2] = a[2];
-		m._m[3] = a[3];
-		m._m[4] = a[4];
-		m._m[5] = a[5];
-		m._m[6] = a[6];
-		m._m[7] = a[7];
-		m._m[8] = a[8];
-		m._m[9] = a[9];
-		m._m[10] = a[10];
-		m._m[11] = a[11];
-		m._m[12] = a[12];
-		m._m[13] = a[13];
-		m._m[14] = a[14];
-		m._m[15] = a[15];
-
-		return m;
+		return m.from(a);
 	}
 
 	/**
@@ -76,21 +47,9 @@ export default class Mat4 {
 	 */
 	static identity() {
 		const m = new Mat4();
-		m._m[0] = 1.0;
-		m._m[1] = 0.0;
-		m._m[2] = 0.0;
-		m._m[3] = 0.0;
-		m._m[4] = 0.0;
-		m._m[5] = 1.0;
-		m._m[6] = 0.0;
-		m._m[7] = 0.0;
-		m._m[8] = 0.0;
-		m._m[9] = 0.0;
+		m._m[0]  = 1.0;
+		m._m[5]  = 1.0;
 		m._m[10] = 1.0;
-		m._m[11] = 0.0;
-		m._m[12] = 0.0;
-		m._m[13] = 0.0;
-		m._m[14] = 0.0;
 		m._m[15] = 1.0;
 
 		return m;
@@ -180,14 +139,15 @@ export default class Mat4 {
 		return this;
 	}
 
-
 	/**
-	 * Copies the values of the specified array into this matrix assuming column major flatenning.
+	 * Copies the values of the specified array into this matrix assuming column
+	 * major flatenning.
 	 *
-	 * @param {array} a - The array from which to copy the values.
+	 * @param {array} a - The array (or array-like) from which to copy the
+	 * values.
 	 * @return {module:math.Mat4} - This matrix with the new values.
 	 */
-	fromArray(a) {
+	from(a) {
 		this._m[0] = a[0];
 		this._m[1] = a[1];
 		this._m[2] = a[2];
@@ -215,23 +175,7 @@ export default class Mat4 {
 	 * @return {module:math.Mat4} - This matrix with the new values.
 	 */
 	copy(m) {
-		this._m[0] = m._m[0];
-		this._m[1] = m._m[1];
-		this._m[2] = m._m[2];
-		this._m[3] = m._m[3];
-		this._m[4] = m._m[4];
-		this._m[5] = m._m[5];
-		this._m[6] = m._m[6];
-		this._m[7] = m._m[7];
-		this._m[8] = m._m[8];
-		this._m[9] = m._m[9];
-		this._m[10] = m._m[10];
-		this._m[11] = m._m[11];
-		this._m[12] = m._m[12];
-		this._m[13] = m._m[13];
-		this._m[14] = m._m[14];
-		this._m[15] = m._m[15];
-
+		this._m.set(m._m);
 		return this;
 	}
 
@@ -242,24 +186,7 @@ export default class Mat4 {
 	 */
 	clone() {
 		const clone = new Mat4();
-		clone._m[0] = this._m[0];
-		clone._m[1] = this._m[1];
-		clone._m[2] = this._m[2];
-		clone._m[3] = this._m[3];
-		clone._m[4] = this._m[4];
-		clone._m[5] = this._m[5];
-		clone._m[6] = this._m[6];
-		clone._m[7] = this._m[7];
-		clone._m[8] = this._m[8];
-		clone._m[9] = this._m[9];
-		clone._m[10] = this._m[10];
-		clone._m[11] = this._m[11];
-		clone._m[12] = this._m[12];
-		clone._m[13] = this._m[13];
-		clone._m[14] = this._m[14];
-		clone._m[15] = this._m[15];
-
-		return clone;
+		return clone.copy(this);
 	}
 
 	/**
@@ -835,13 +762,90 @@ export default class Mat4 {
 	/**
 	 * Creates a human readable string of the matrix.
 	 *
+	 * @param {Number} [p=16] - The precision to use when printing element
+	 * values.
 	 * @return {String} - Human readable string of the matrix.
 	 */
-	toString() {
-		return `[${this._m[0].toFixed(16)}, ${this._m[4].toFixed(16)}, ${this._m[8].toFixed(16)}, ${this._m[12].toFixed(16)}\n` +
-			` ${this._m[1].toFixed(16)}, ${this._m[5].toFixed(16)}, ${this._m[9].toFixed(16)}, ${this._m[13].toFixed(16)}\n`+
-			` ${this._m[2].toFixed(16)}, ${this._m[6].toFixed(16)}, ${this._m[10].toFixed(16)}, ${this._m[14].toFixed(16)}\n`+
-			` ${this._m[3].toFixed(16)}, ${this._m[7].toFixed(16)}, ${this._m[11].toFixed(16)}, ${this._m[15].toFixed(16)}\n`;
+	toString(p = 16) {
+		return `[[${this._m[0].toFixed(p)}, ${this._m[4].toFixed(p)}, ${this._m[8].toFixed(p)}, ${this._m[12].toFixed(p)}],`
+			+  ` [${this._m[1].toFixed(p)}, ${this._m[5].toFixed(p)}, ${this._m[9].toFixed(p)}, ${this._m[13].toFixed(p)}],`
+			+  ` [${this._m[2].toFixed(p)}, ${this._m[6].toFixed(p)}, ${this._m[10].toFixed(p)}, ${this._m[14].toFixed(p)}],`
+			+  ` [${this._m[3].toFixed(p)}, ${this._m[7].toFixed(p)}, ${this._m[11].toFixed(p)}, ${this._m[15].toFixed(p)}]]`;
 	}
 }
+
+/**
+ * Accessors for the values so that the matrix can be treated more like an
+ * array.
+ */
+Object.defineProperties(Mat4.prototype, {
+	0: {
+		get: function() { return this._m[0] },
+		set: function(val) { this._m[0] = val }
+	},
+	1: {
+		get: function() { return this._m[1] },
+		set: function(val) { this._m[1] = val }
+	},
+	2: {
+		get: function() { return this._m[2] },
+		set: function(val) { this._m[2] = val }
+	},
+	3: {
+		get: function() { return this._m[3] },
+		set: function(val) { this._m[3] = val }
+	},
+	4: {
+		get: function() { return this._m[4] },
+		set: function(val) { this._m[4] = val }
+	},
+	5: {
+		get: function() { return this._m[5] },
+		set: function(val) { this._m[5] = val }
+	},
+	6: {
+		get: function() { return this._m[6] },
+		set: function(val) { this._m[6] = val }
+	},
+	7: {
+		get: function() { return this._m[7] },
+		set: function(val) { this._m[7] = val }
+	},
+	8: {
+		get: function() { return this._m[8] },
+		set: function(val) { this._m[8] = val }
+	},
+	9: {
+		get: function() { return this._m[9] },
+		set: function(val) { this._m[9] = val }
+	},
+	10: {
+		get: function() { return this._m[10] },
+		set: function(val) { this._m[10] = val }
+	},
+	11: {
+		get: function() { return this._m[11] },
+		set: function(val) { this._m[11] = val }
+	},
+	12: {
+		get: function() { return this._m[12] },
+		set: function(val) { this._m[12] = val }
+	},
+	13: {
+		get: function() { return this._m[13] },
+		set: function(val) { this._m[13] = val }
+	},
+	14: {
+		get: function() { return this._m[14] },
+		set: function(val) { this._m[14] = val }
+	},
+	15: {
+		get: function() { return this._m[15] },
+		set: function(val) { this._m[15] = val }
+	},
+});
+Mat4.prototype.length = 16;
+
+Mat4.NULL = new Mat4();
+Mat4.IDENTITY = Mat4.identity();
 
