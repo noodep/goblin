@@ -317,15 +317,15 @@ const xProperty = {
 };
 
 const yProperty = {
-	get: function() { return this.v_[1] },
+	get: function() { return this._v[1] },
 	set: function(val) { this._v[1] = val }
 };
 
 Object.defineProperty(Vec2.prototype, 'x', xProperty);
 Object.defineProperty(Vec2.prototype, 'y', yProperty);
 
-Object.defineProperty(Vec2.prototype, 'u', xProperty);
-Object.defineProperty(Vec2.prototype, 'v', yProperty);
+Object.defineProperty(Vec2.prototype, 's', xProperty);
+Object.defineProperty(Vec2.prototype, 't', yProperty);
 
 Object.defineProperty(Vec2.prototype, 0, xProperty);
 Object.defineProperty(Vec2.prototype, 1, yProperty);
