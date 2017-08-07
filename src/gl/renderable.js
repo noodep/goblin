@@ -12,6 +12,13 @@ import {dl, wl} from '../util/log.js';
 import {UUIDv4} from '../crypto/uuid.js';
 import Object3D from '../3d/object3d.js';
 
+/**
+ * A class to represent an Object3D that can be rendered on a screen (by a
+ * WebGLRenderer).
+ *
+ * Fires the following events (in addition to those of Object3D):
+ *	'destroy' - Directly after destroy() has been called
+ */
 export default class Renderable extends Object3D {
 
 	/**
@@ -93,6 +100,7 @@ export default class Renderable extends Object3D {
 	destroy(renderer) {
 		this._geometry.destroy(renderer);
 		renderer.deleteVertexArray(this._vao);
+		this.notify('destroy');
 	}
 }
 

@@ -45,13 +45,14 @@ export default class WebGLRendererTest {
 		console.log('\n');
 	}
 
-	static createWebGLContext() {
-		return WebGLRendererTest.createWebGL2TestInstance();
+	static createWebGLContext(id) {
+		return WebGLRendererTest.createWebGL2TestInstance(id);
 	}
 
-	static createWebGLTestInstance() {
+	static createWebGLTestInstance(id) {
 		const body = document.querySelector('body');
 		const canvas = document.createElement('canvas');
+		canvas.id = id;
 		canvas.width = body.clientWidth;
 		canvas.height = body.clientHeight;
 		body.appendChild(canvas);
@@ -60,9 +61,10 @@ export default class WebGLRendererTest {
 		return renderer;
 	}
 
-	static createWebGL2TestInstance() {
+	static createWebGL2TestInstance(id) {
 		const body = document.querySelector('body');
 		const canvas = document.createElement('canvas');
+		canvas.id = id;
 		body.appendChild(canvas);
 		canvas.width = canvas.clientWidth;
 		canvas.height = canvas.clientHeight;
@@ -78,7 +80,7 @@ export default class WebGLRendererTest {
 	}
 
 	static testScene() {
-		const r = WebGLRendererTest.createWebGLContext();
+		const r = WebGLRendererTest.createWebGLContext('testScene');
 		const simple_p = r.createProgram('simple', '/test/shaders/', SimpleProgram);
 		const scene = new Scene();
 
@@ -95,7 +97,7 @@ export default class WebGLRendererTest {
 		});
 		scene.addChild(cube);
 
-		scene.addUpdateListener((delta_t) => {
+		scene.addListener('update', (delta_t) => {
 			cube.rotateX(delta_t / 2000.0);
 			cube.rotateY(delta_t / 1000.0);
 		});
@@ -109,7 +111,7 @@ export default class WebGLRendererTest {
 	}
 
 	static testObjectRotation() {
-		const r = WebGLRendererTest.createWebGLContext();
+		const r = WebGLRendererTest.createWebGLContext('testObjectRotation');
 		const simple_p = r.createProgram('simple', '/test/shaders/', SimpleProgram);
 		const scene = new Scene();
 		const camera = new Camera({aspect_ratio: r.aspectRatio});
@@ -138,15 +140,13 @@ export default class WebGLRendererTest {
 			x_offset = -8.0;
 		}
 
-		scene.invalidateModel();
-
 		const AXIS = [new Vec3(1.0, 0.0, 0.0), new Vec3(0.0, 1.0, 0.0), new Vec3(0.0, 0.0, 1.0)];
 		const CUBE_ORIENTATIONS = [new Quat(), new Quat(), new Quat()];
 		const ROTATION_FUNC = ['X', 'Y', 'Z'];
 
 		let angle = 0;
 
-		scene.addUpdateListener((delta_t) => {
+		scene.addListener('update', (delta_t) => {
 			const SPEED = 1000.0;
 			angle += delta_t / SPEED;
 
@@ -190,7 +190,7 @@ export default class WebGLRendererTest {
 	}
 
 	static testCameraPose() {
-		const r = WebGLRendererTest.createWebGLContext();
+		const r = WebGLRendererTest.createWebGLContext('testCameraPose');
 		const simple_p = r.createProgram('simple', '/test/shaders/', SimpleProgram);
 		const scene = new Scene();
 		const camera = new Camera({aspect_ratio: r.aspectRatio});
@@ -210,7 +210,7 @@ export default class WebGLRendererTest {
 		const camera_orientation = new Quat();
 		let angle = 0;
 
-		scene.addUpdateListener((delta_t) => {
+		scene.addListener('update', (delta_t) => {
 			angle += delta_t / 10000;
 			camera_orientation.fromAxisRotation(angle, z_axis);
 			camera.setOrientation(camera_orientation);
@@ -227,7 +227,7 @@ export default class WebGLRendererTest {
 	}
 
 	static benchmarkMesh() {
-		const r = WebGLRendererTest.createWebGLContext();
+		const r = WebGLRendererTest.createWebGLContext('benchmarkMesh');
 		const simple_p = r.createProgram('simple', '/test/shaders/', SimpleProgram);
 		const scene = new Scene('main-scene');
 		const camera = new Camera({aspect_ratio: r.aspectRatio});
@@ -261,14 +261,14 @@ export default class WebGLRendererTest {
 			cube.translateZ(-1.0 + (iz + 1) * OFFSET);
 			cube.scale(SCALE_VECTOR);
 
-			scene.addUpdateListener((delta_t) => {
+			scene.addListener('update', (delta_t) => {
 				cube.rotateX(delta_t / 10000);
 				cube.rotateZ(delta_t / 10000);
 			});
 			scene.addChild(cube);
 		}
 
-		scene.addUpdateListener((delta_t) => {
+		scene.addListener('update', (delta_t) => {
 			scene.rotateX(delta_t / 20000);
 			scene.rotateZ(delta_t / 30000);
 		});
@@ -283,7 +283,7 @@ export default class WebGLRendererTest {
 	}
 
 	static benchmarkStaticMesh() {
-		const r = WebGLRendererTest.createWebGLContext();
+		const r = WebGLRendererTest.createWebGLContext('benchmarkStaticMesh');
 		const simple_p = r.createProgram('simple', '/test/shaders/', SimpleProgram);
 		const scene = new Scene();
 		const camera = new Camera({aspect_ratio: r.aspectRatio});
@@ -324,7 +324,7 @@ export default class WebGLRendererTest {
 		});
 
 		scene.addChild(cube);
-		scene.addUpdateListener((delta_t) => {
+		scene.addListener('update', (delta_t) => {
 			cube.rotateX(delta_t / 10000);
 			cube.rotateZ(delta_t / 10000);
 		});
@@ -339,7 +339,7 @@ export default class WebGLRendererTest {
 	}
 
 	static benchmarkStaticIndexedMesh() {
-		const r = WebGLRendererTest.createWebGLContext();
+		const r = WebGLRendererTest.createWebGLContext('benchmarkStaticIndexedMesh');
 		const simple_p = r.createProgram('simple', '/test/shaders/', SimpleProgram);
 		const scene = new Scene();
 		const camera = new Camera({aspect_ratio: r.aspectRatio});
@@ -395,7 +395,7 @@ export default class WebGLRendererTest {
 	}
 
 	static testIndexedColoredGeometryOutline() {
-		const r = WebGLRendererTest.createWebGLContext();
+		const r = WebGLRendererTest.createWebGLContext('testIndexedColoredGeometryOutline');
 		const light_p = r.createProgram('color', '/test/shaders/', SimpleProgram);
 		const scene = new Scene();
 		const camera = new Camera({aspect_ratio: r.aspectRatio});
@@ -431,7 +431,7 @@ export default class WebGLRendererTest {
 		});
 	}
 	static testIndexedGeometryWithNormals() {
-		const r = WebGLRendererTest.createWebGLContext();
+		const r = WebGLRendererTest.createWebGLContext('testIndexedGeometryWithNormals');
 		const light_p = r.createProgram('light', '/test/shaders/', SimpleProgram);
 		const scene = new Scene();
 		const camera = new Camera({aspect_ratio: r.aspectRatio});
@@ -479,7 +479,7 @@ export default class WebGLRendererTest {
 	}
 
 	static testIndexedColoredGeometryWithNormals() {
-		const r = WebGLRendererTest.createWebGLContext();
+		const r = WebGLRendererTest.createWebGLContext('testIndexedColoredGeometryWithNormals');
 		const light_p = r.createProgram('light', '/test/shaders/', SimpleProgram);
 		const scene = new Scene();
 		const camera = new Camera({aspect_ratio: r.aspectRatio});
@@ -516,7 +516,7 @@ export default class WebGLRendererTest {
 	}
 
 	static sceneModification() {
-		const r = WebGLRendererTest.createWebGLContext();
+		const r = WebGLRendererTest.createWebGLContext('sceneModification');
 		const simple_p = r.createProgram('color', '/test/shaders/', SimpleProgram);
 		const scene = new Scene('main-scene');
 		const camera = new Camera({aspect_ratio: r.aspectRatio});
@@ -536,7 +536,7 @@ export default class WebGLRendererTest {
 			}
 		});
 		scene.addChild(sun);
-		scene.addUpdateListener((delta_t) => {
+		scene.addListener('update', (delta_t) => {
 			sun.rotateZ(delta_t / 20000);
 		});
 
@@ -552,14 +552,15 @@ export default class WebGLRendererTest {
 			});
 
 			cube.translateX(Math.random() * dist - dist / 2.0);
-			scene.addUpdateListener((delta_t) => {
+			scene.addListener('update', (delta_t) => {
 				cube.rotateZ(delta_t / 5000 * dist);
 			});
 			parent.addChild(cube);
-			scene.initializeObject3D(r, cube);
 
 			if(create > 0.4)
 				createRandomBox(cube, dist/3, create / 2);
+
+			return cube;
 		}
 
 		r.enable(WebGLRenderingContext.DEPTH_TEST);
@@ -567,12 +568,17 @@ export default class WebGLRendererTest {
 
 		simple_p.ready().then((e) => {
 			r.addScene(scene);
-			setTimeout(() => { createRandomBox(sun, 1 + Math.random() * 3, Math.random()); }, Math.random() * 2000);
+
+			// Repeatedly add and then remove boxes orbiting the sun
+			setInterval(() => {
+				var random_box = createRandomBox(sun, 1 + Math.random() * 3, Math.random());
+				setTimeout(() => sun.removeChild(random_box), Math.random() * 4000);
+			}, Math.random() * 4000);
 		});
 	}
 
 	static textDisplay() {
-		const r = WebGLRendererTest.createWebGLContext();
+		const r = WebGLRendererTest.createWebGLContext('textDisplay')
 		const c = r._context;
 		const sampler = r.createProgram('sampler', '/test/shaders/', SamplerProgram, {sampler_unit: 0});
 

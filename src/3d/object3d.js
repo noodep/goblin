@@ -10,8 +10,24 @@ import {UUIDv4} from '../crypto/uuid.js';
 import Mat4 from '../math/mat4.js';
 import Quat from '../math/quat.js';
 import Vec3 from '../math/vec3.js';
+import Listenable from '../util/listenable.js';
 
-export default class Object3D {
+/**
+ * Object in a 3D environment.
+ *
+ * Fires the following event types:
+ * property:
+ *	'origin' - When the origin property updates; passes the new origin
+ *	'orientation' - When the orientation property updates; passed the new
+ *	orientation
+ *	'size' - When the size proprty updates; passes the new size
+ *	'model' - When the world model updates; passes the new matrix
+ *	'add' - When a child is added; passes this object and the added one
+ *	'remove' - When a child is removed; passes this object and the removed one
+ * Note that "updates" above does not necessarily imply "changes"; the events
+ * will be fired when the property has the possibility of changing.
+ */
+export default class Object3D extends Listenable {
 
 	/**
 	 * @constructor
@@ -25,9 +41,10 @@ export default class Object3D {
 	 * @return {module:3d.Object3d} - The newly created Object3d.
 	 */
 	constructor({ id = UUIDv4(), origin = new Vec3(), orientation = Quat.identity(), scale = Vec3.identity() } = {}) {
+		super();
 		this._id = id;
 		this._parent = undefined;
-		this._children = new Map();
+		this._children = new Set();
 		this._origin = origin;
 		this._orientation = orientation;
 		this._scale = scale;
@@ -77,16 +94,16 @@ export default class Object3D {
 	 */
 	set parent(parent) {
 		this._parent = parent;
-		this.invalidateModel();
+		this._invalidateModel();
 	}
 
 	/**
-	 * Getter for this Object3d children.
+	 * Getter for the number of children of this Object3D.
 	 *
-	 * @return {Iterator} - This Object3d children.
+	 * @return {Number} - The number of children of this Object3D.
 	 */
-	get children() {
-		return this._children.values();
+	get childCount() {
+		return this._children.size;
 	}
 
 	/**
@@ -105,7 +122,8 @@ export default class Object3D {
 	 */
 	set origin(v3) {
 		this._origin.copy(v3);
-		this.invalidateModel();
+		this._invalidateModel();
+		this.notify('origin', this._origin);
 	}
 
 	/**
@@ -124,7 +142,8 @@ export default class Object3D {
 	 */
 	set orientation(q) {
 		this._orientation.copy(q);
-		this.invalidateModel();
+		this._invalidateModel();
+		this.notify('orientation', this._orientation);
 	}
 
 	/**
@@ -143,9 +162,9 @@ export default class Object3D {
 	 */
 	set size(v3) {
 		this._scale.copy(v3);
-		this.invalidateModel();
+		this._invalidateModel();
+		this.notify('size', this._scale);
 	}
-
 
 	/**
 	 * Getter for this Object3d local model matrix.
@@ -157,30 +176,12 @@ export default class Object3D {
 	}
 
 	/**
-	 * Sets this Object3d local model matrix values to the values of the specified matrix.
-	 * Invalidate the model so it will be recomputed during the next update.
-	 */
-	set localModel(mat4) {
-		this._local_model.copy(mat4);
-		this.invalidateModel();
-	}
-
-	/**
 	 * Getter for this Object3d world model matrix.
 	 *
 	 * @return {module:math.Mat4} - This Object3d world model matrix.
 	 */
 	get worldModel() {
 		return this._world_model;
-	}
-
-	/**
-	 * Sets this Object3d world model matrix values to the values of the specified matrix.
-	 * Invalidate the model so it will be recomputed during the next update.
-	 */
-	set worldModel(mat4) {
-		this._world_model.copy(mat4);
-		this.invalidateModel();
 	}
 
 	/**
@@ -199,7 +200,7 @@ export default class Object3D {
 	 */
 	set _privateOrigin(v3) {
 		this._private_origin.copy(v3);
-		this.invalidateModel();
+		this._invalidateModel();
 	}
 
 	/**
@@ -218,7 +219,7 @@ export default class Object3D {
 	 */
 	set _privateOrientation(q) {
 		this._private_orientation.copy(q);
-		this.invalidateModel();
+		this._invalidateModel();
 	}
 
 	/**
@@ -237,7 +238,7 @@ export default class Object3D {
 	 */
 	set _privateScale(v3) {
 		this._private_scale.copy(v3);
-		this.invalidateModel();
+		this._invalidateModel();
 	}
 
 
@@ -250,23 +251,61 @@ export default class Object3D {
 		if(object.parent)
 			throw new Error('Unable to add the specified object to this node as it already has a parent.');
 
-		this._children.set(object.id, object);
+		if (this.hasChild(object)) {
+			wl(`Object ${object.id} is already a child of this object.`);
+			return;
+		}
+
+		this._children.add(object);
 		object.parent = this;
+
+		this.notify('add', this, object);
+	}
+
+	/**
+	 * Tests whether or not the specified object is a child of this object.
+	 *
+	 * @param {Object3D} object - The object to search for as a child.
+	 * @return {Boolean} - true if the object is a child of this object; false
+	 * otherwise.
+	 */
+	hasChild(object) {
+		return this._children.has(object);
+	}
+
+	/**
+	 * Returns an iterator over the children of this Object3D.
+	 */
+	getChildren() {
+		return this._children.values();
 	}
 
 	/**
 	 * Removes a child from this Object3d if possible.
 	 *
 	 * @param {module:3d.Object3d} object - The Object3d to be removed.
-	 * @return {Boolean} - true if the object was removed, false if the object was not a child of this Object3d.
+	 * @return {Boolean} - true if the object was removed, false if the object
+	 * was not a child of this Object3d.
 	 */
 	removeChild(object) {
-		if(!this._children.has(object.id) || object.parent !== this)
+		if(!object || !this.hasChild(object)) {
+			wl(`Object ${object} is not a child of this object.`);
 			return false;
+		}
 
-		this._children.delete(object.id);
+		this._children.delete(object);
 		object.parent = undefined;
+		this.notify('remove', this, object);
 		return true;
+	}
+
+	/**
+	 * Removes all children from this Object3D.
+	 */
+	clearChildren() {
+		for (let child of this._children) {
+			this.removeChild(child);
+		}
 	}
 
 	/**
@@ -276,16 +315,8 @@ export default class Object3D {
 		if(!this._is_model_valid)
 			this._revalidateModel();
 
-		for(let child of this.children)
+		for(let child of this._children)
 			child.update();
-	}
-
-	/**
-	 * Invalidates this object model matrix.
-	 * An invalid matrix will be recomputed during the next update.
-	 */
-	invalidateModel() {
-		this._is_model_valid = false;
 	}
 
 	/**
@@ -295,7 +326,8 @@ export default class Object3D {
 	 */
 	scale(v) {
 		this._scale.multiply(v);
-		this.invalidateModel();
+		this._invalidateModel();
+		this.notify('size', this._scale);
 	}
 
 	/**
@@ -305,7 +337,8 @@ export default class Object3D {
 	 */
 	translate(v) {
 		this._origin.add(v);
-		this.invalidateModel();
+		this._invalidateModel();
+		this.notify('origin', this._origin);
 	}
 
 	/**
@@ -315,7 +348,8 @@ export default class Object3D {
 	 */
 	translateX(delta_x) {
 		this._origin.translateX(delta_x);
-		this.invalidateModel();
+		this._invalidateModel();
+		this.notify('origin', this._origin);
 	}
 
 	/**
@@ -325,7 +359,8 @@ export default class Object3D {
 	 */
 	translateY(delta_y) {
 		this._origin.translateY(delta_y);
-		this.invalidateModel();
+		this._invalidateModel();
+		this.notify('origin', this._origin);
 	}
 
 	/**
@@ -335,7 +370,8 @@ export default class Object3D {
 	 */
 	translateZ(delta_z) {
 		this._origin.translateZ(delta_z);
-		this.invalidateModel();
+		this._invalidateModel();
+		this.notify('origin', this._origin);
 	}
 
 	/**
@@ -348,8 +384,8 @@ export default class Object3D {
 	rotate(theta, axis) {
 		this._tmp_quaternion.fromAxisRotation(theta, axis);
 		this._orientation.multiply(this._tmp_quaternion);
-		this.invalidateModel();
-		return this;
+		this._invalidateModel();
+		this.notify('orientation', this._orientation);
 	}
 
 	/**
@@ -360,7 +396,8 @@ export default class Object3D {
 	rotateX(theta) {
 		this._tmp_quaternion.fromAxisRotation(theta, Vec3.X_AXIS);
 		this._orientation.multiply(this._tmp_quaternion);
-		this.invalidateModel();
+		this._invalidateModel();
+		this.notify('orientation', this._orientation);
 	}
 
 	/**
@@ -371,7 +408,8 @@ export default class Object3D {
 	rotateY(theta) {
 		this._tmp_quaternion.fromAxisRotation(theta, Vec3.Y_AXIS);
 		this._orientation.multiply(this._tmp_quaternion);
-		this.invalidateModel();
+		this._invalidateModel();
+		return this;
 	}
 
 	/**
@@ -382,7 +420,16 @@ export default class Object3D {
 	rotateZ(theta) {
 		this._tmp_quaternion.fromAxisRotation(theta, Vec3.Z_AXIS);
 		this._orientation.multiply(this._tmp_quaternion);
-		this.invalidateModel();
+		this._invalidateModel();
+		return this;
+	}
+
+	/**
+	 * Invalidates this object model matrix.
+	 * An invalid matrix will be recomputed during the next update.
+	 */
+	_invalidateModel() {
+		this._is_model_valid = false;
 	}
 
 	/**
@@ -399,11 +446,12 @@ export default class Object3D {
 		this._local_model.scaleVec(this._private_scale);
 
 		this._computeWorldModel();
-
-		for(let child of this._children.values())
-			child.invalidateModel();
-
 		this._is_model_valid = true;
+
+		for(let child of this._children)
+			child._invalidateModel();
+
+		this.notify('model', this.worldModel);
 	}
 
 	/**
