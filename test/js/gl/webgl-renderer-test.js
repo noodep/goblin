@@ -572,7 +572,10 @@ export default class WebGLRendererTest {
 			// Repeatedly add and then remove boxes orbiting the sun
 			setInterval(() => {
 				var random_box = createRandomBox(sun, 1 + Math.random() * 3, Math.random());
-				setTimeout(() => sun.removeChild(random_box), Math.random() * 4000);
+				setTimeout(() => {
+					sun.removeChild(random_box);
+					random_box.destroy();
+				}, Math.random() * 4000);
 			}, Math.random() * 4000);
 		});
 	}

@@ -24,6 +24,7 @@ import Listenable from '../util/listenable.js';
  *	'model' - When the world model updates; passes the new matrix
  *	'add' - When a child is added; passes this object and the added one
  *	'remove' - When a child is removed; passes this object and the removed one
+ *	'destroy' - Directly after destroy() has been called
  * Note that "updates" above does not necessarily imply "changes"; the events
  * will be fired when the property has the possibility of changing.
  */
@@ -422,6 +423,24 @@ export default class Object3D extends Listenable {
 		this._orientation.multiply(this._tmp_quaternion);
 		this._invalidateModel();
 		return this;
+	}
+
+	/**
+	 * Removes this Object3D from the hierarchy and removes its event listeners.
+	 */
+	destroy() {
+		if (this.parent) {
+			this.parent.removeChild(this);
+		}
+
+		this.clearListeners();
+
+		for (let child of this._children) {
+			this.removeChild(child);
+			child.destroy();
+		}
+
+		this.notify('destroy');
 	}
 
 	/**
