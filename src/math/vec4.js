@@ -463,62 +463,79 @@ export default class Vec4 {
 	}
 }
 
-///
-/// Define getters and setters for the vector's values by different names,
-/// reusing the same functions.
-///
-
-const xProperty = {
-	get: function() { return this._v[0] },
-	set: function(val) { this._v[0] = val }
-};
-
-const yProperty = {
-	get: function() { return this._v[1] },
-	set: function(val) { this._v[1] = val }
-};
-
-const zProperty = {
-	get: function() { return this._v[2] },
-	set: function(val) { this._v[2] = val }
-};
-
-const wProperty = {
-	get: function() { return this._v[3] },
-	set: function(val) { this._v[3] = val }
-};
-
-Object.defineProperty(Vec4.prototype, 'x', xProperty);
-Object.defineProperty(Vec4.prototype, 'y', yProperty);
-Object.defineProperty(Vec4.prototype, 'z', zProperty);
-Object.defineProperty(Vec4.prototype, 'w', wProperty);
-
-Object.defineProperty(Vec4.prototype, 'r', xProperty);
-Object.defineProperty(Vec4.prototype, 'g', yProperty);
-Object.defineProperty(Vec4.prototype, 'b', zProperty);
-Object.defineProperty(Vec4.prototype, 'a', wProperty);
-
-Object.defineProperty(Vec4.prototype, 's', xProperty);
-Object.defineProperty(Vec4.prototype, 't', yProperty);
-Object.defineProperty(Vec4.prototype, 'p', zProperty);
-Object.defineProperty(Vec4.prototype, 'q', wProperty);
-
-Object.defineProperty(Vec4.prototype, 0, xProperty);
-Object.defineProperty(Vec4.prototype, 1, yProperty);
-Object.defineProperty(Vec4.prototype, 2, zProperty);
-Object.defineProperty(Vec4.prototype, 3, wProperty);
-
 // Some aliases
 Vec4.prototype.norm = Vec4.prototype.normalize;
 Vec4.prototype.mag = Vec4.prototype.magnitude;
 Vec4.prototype.mag2 = Vec4.prototype.magnitude2;
 Vec4.prototype.mul = Vec4.prototype.multiply;
 
+///
+/// Define getters and setters for the vector's values by different names,
+/// reusing the same functions.
+///
+
+const xProperty = {
+	//configurable: false,
+	//enumerable: false,
+	get: function() { return this._v[0] },
+	set: function(val) { this._v[0] = val }
+};
+
+const yProperty = {
+	//configurable: false,
+	//enumerable: false,
+	get: function() { return this._v[1] },
+	set: function(val) { this._v[1] = val }
+};
+
+const zProperty = {
+	//configurable: false,
+	//enumerable: false,
+	get: function() { return this._v[2] },
+	set: function(val) { this._v[2] = val }
+};
+
+const wProperty = {
+	//configurable: false,
+	//enumerable: false,
+	get: function() { return this._v[3] },
+	set: function(val) { this._v[3] = val }
+};
+
+Object.defineProperties(Vec4.prototype, {
+	x: xProperty,
+	y: yProperty,
+	z: zProperty,
+	w: wProperty,
+
+	r: xProperty,
+	g: yProperty,
+	b: zProperty,
+	a: wProperty,
+
+	s: xProperty,
+	t: yProperty,
+	p: zProperty,
+	q: wProperty,
+
+	0: xProperty,
+	1: yProperty,
+	2: zProperty,
+	3: wProperty,
+
+	length: {
+		//configurable: false,
+		//enumerable: false,
+		//writable: false,
+		value: 4,
+	},
+});
+
 /**
- * Make Vec4s act like arrays
+ * So Array.prototype.concat() can be used. Leave this as a normal property in
+ * case one wants to change it.
  */
 Vec4.prototype[Symbol.isConcatSpreadable] = true;
-Vec4.prototype.length = 4;
 
 /**
  * Class to create a Vec4 who's componenets are stored in a specified

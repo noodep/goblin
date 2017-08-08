@@ -482,42 +482,6 @@ export default class Vec3 {
 	}
 }
 
-///
-/// Define getters and setters for the vector's values by different names,
-/// reusing the same functions.
-///
-
-const xProperty = {
-	get: function() { return this._v[0] },
-	set: function(val) { this._v[0] = val }
-};
-
-const yProperty = {
-	get: function() { return this._v[1] },
-	set: function(val) { this._v[1] = val }
-};
-
-const zProperty = {
-	get: function() { return this._v[2] },
-	set: function(val) { this._v[2] = val }
-};
-
-Object.defineProperty(Vec3.prototype, 'x', xProperty);
-Object.defineProperty(Vec3.prototype, 'y', yProperty);
-Object.defineProperty(Vec3.prototype, 'z', zProperty);
-
-Object.defineProperty(Vec3.prototype, 'r', xProperty);
-Object.defineProperty(Vec3.prototype, 'g', yProperty);
-Object.defineProperty(Vec3.prototype, 'b', zProperty);
-
-Object.defineProperty(Vec3.prototype, 's', xProperty);
-Object.defineProperty(Vec3.prototype, 't', yProperty);
-Object.defineProperty(Vec3.prototype, 'p', zProperty);
-
-Object.defineProperty(Vec3.prototype, 0, xProperty);
-Object.defineProperty(Vec3.prototype, 1, yProperty);
-Object.defineProperty(Vec3.prototype, 2, zProperty);
-
 // Some aliases
 Vec3.prototype.dist = Vec3.prototype.distance
 Vec3.prototype.norm = Vec3.prototype.normal;
@@ -525,11 +489,63 @@ Vec3.prototype.mag = Vec3.prototype.magnitude;
 Vec3.prototype.mag2 = Vec3.prototype.magnitude2;
 Vec3.prototype.mul = Vec3.prototype.multiply;
 
+///
+/// Define getters and setters for the vector's values by different names,
+/// reusing the same functions.
+///
+
+const xProperty = {
+	//configurable: false,
+	//enumerable: false,
+	get: function() { return this._v[0] },
+	set: function(val) { this._v[0] = val }
+};
+
+const yProperty = {
+	//configurable: false,
+	//enumerable: false,
+	get: function() { return this._v[1] },
+	set: function(val) { this._v[1] = val }
+};
+
+const zProperty = {
+	//configurable: false,
+	//enumerable: false,
+	get: function() { return this._v[2] },
+	set: function(val) { this._v[2] = val }
+};
+
+Object.defineProperties(Vec3.prototype, {
+	x: xProperty,
+	y: yProperty,
+	z: zProperty,
+
+	r: xProperty,
+	g: yProperty,
+	b: zProperty,
+
+	s: xProperty,
+	t: yProperty,
+	p: zProperty,
+
+	0: xProperty,
+	1: yProperty,
+	2: zProperty,
+
+	length: {
+		//configurable: false,
+		//enumerable: false,
+		//writable: false,
+		value: 3,
+	},
+});
+
 /**
- * Make Vec3s act like arrays
+ * So Array.prototype.concat() can be used. Leave this as a normal property in
+ * case one wants to change it.
  */
 Vec3.prototype[Symbol.isConcatSpreadable] = true;
-Vec3.prototype.length = 3;
+
 
 /**
  * Class to create a Vec3 who's componenets are stored in a specified
