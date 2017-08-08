@@ -24,9 +24,9 @@ export class Logger {
 
 		this._logs.push(log);
 		if(level >= this._level) {
-			this._subscribers.forEach((subscriber) => {
+			for (let subscriber of this._subscribers) {
 				subscriber.notify(log);
-			});
+			}
 		}
 	}
 
@@ -40,6 +40,7 @@ export class Logger {
 }
 
 Logger.LEVELS = {
+	ALL   : -1,
 	DEBUG : 0,
 	INFO  : 1,
 	WARN  : 2,
@@ -53,6 +54,8 @@ export class Console {
 			console.warn(log.msg);
 		else if(log.level == Logger.LEVELS.ERROR)
 			console.error(log.msg);
+		else if(log.level == Logger.LEVELS.INFO)
+			console.info(log.msg);
 		else
 			console.log(log.msg);
 	}
@@ -62,6 +65,7 @@ export const DEFAULT_LOGGER = new Logger();
 DEFAULT_LOGGER.addSubscriber(new Console());
 
 export const dl = (msg) => DEFAULT_LOGGER.log(msg, Logger.LEVELS.DEBUG);
+export const il = (msg) => DEFAULT_LOGGER.log(msg, Logger.LEVELS.INFO);
 export const l = (msg) => DEFAULT_LOGGER.log(msg, Logger.LEVELS.INFO);
 export const wl = (msg) => DEFAULT_LOGGER.log(msg, Logger.LEVELS.WARN);
 export const el = (msg) => DEFAULT_LOGGER.log(msg, Logger.LEVELS.ERROR);

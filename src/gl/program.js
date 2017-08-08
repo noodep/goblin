@@ -99,7 +99,7 @@ export default class Program {
 				c.shaderSource(shader, body);
 				c.compileShader(shader);
 				if(!c.getShaderParameter(shader, WebGLRenderingContext.COMPILE_STATUS))
-					throw new Error("Error compiling shader: " + c.getShaderInfoLog(shader));
+					throw new Error(`Error compiling shader '${file}': ${c.getShaderInfoLog(shader)}`);
 				this._shaders.set(type, shader);
 				return shader;
 			});
