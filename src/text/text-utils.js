@@ -158,7 +158,7 @@ export default class TextUtils {
 }
 
 TextUtils.GLYPH_SETS = {
-	'basic': Array.from('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!№;%:?*()_+-=.,/|"\'@#$^&{}[] '),
+	'basic': Array.from('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!;%:?*()_+-=.,/|"\'@#$^&{}[] '),
 	'basic+digits': Array.from('!"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz ')
 };
 
