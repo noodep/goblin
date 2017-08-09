@@ -306,30 +306,6 @@ export default class Vec2 {
 	}
 }
 
-///
-/// Define getters and setters for the vector's values by different names,
-/// reusing the same functions.
-///
-
-const xProperty = {
-	get: function() { return this._v[0] },
-	set: function(val) { this._v[0] = val }
-};
-
-const yProperty = {
-	get: function() { return this._v[1] },
-	set: function(val) { this._v[1] = val }
-};
-
-Object.defineProperty(Vec2.prototype, 'x', xProperty);
-Object.defineProperty(Vec2.prototype, 'y', yProperty);
-
-Object.defineProperty(Vec2.prototype, 's', xProperty);
-Object.defineProperty(Vec2.prototype, 't', yProperty);
-
-Object.defineProperty(Vec2.prototype, 0, xProperty);
-Object.defineProperty(Vec2.prototype, 1, yProperty);
-
 // Some aliases
 Vec2.prototype.dist = Vec2.prototype.distance
 Vec2.prototype.norm = Vec2.prototype.normal;
@@ -337,11 +313,48 @@ Vec2.prototype.mag = Vec2.prototype.magnitude;
 Vec2.prototype.mag2 = Vec2.prototype.magnitude2;
 Vec2.prototype.mul = Vec2.prototype.multiply;
 
+///
+/// Define getters and setters for the vector's values by different names,
+/// reusing the same functions.
+///
+
+const xProperty = {
+	//configurable: false,
+	//enumerable: false,
+	get: function() { return this._v[0] },
+	set: function(val) { this._v[0] = val }
+};
+
+const yProperty = {
+	//configurable: false,
+	//enumerable: false,
+	get: function() { return this._v[1] },
+	set: function(val) { this._v[1] = val }
+};
+
+Object.defineProperties(Vec2.prototype, {
+	x: xProperty,
+	y: yProperty,
+
+	s: xProperty,
+	t: yProperty,
+
+	0: xProperty,
+	1: yProperty,
+
+	length: {
+		//configurable: false,
+		//enumerable: false,
+		//writable: false,
+		value: 2,
+	},
+});
+
 /**
- * Make Vec2s act like arrays
+ * So Array.prototype.concat() can be used. Leave this as a normal property in
+ * case one wants to change it.
  */
 Vec2.prototype[Symbol.isConcatSpreadable] = true;
-Vec2.prototype.length = 2;
 
 /**
  * Class to create a Vec2 who's componenets are stored in a specified

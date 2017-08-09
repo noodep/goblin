@@ -8,8 +8,22 @@
 
 'use strict';
 
-import {UUIDv4} from '../../crypto/uuid.js';
 import Geometry from './geometry.js';
+import {UUIDv4} from '../../crypto/uuid.js';
+
+/**
+ * Function to assign to the destroy property after the VBO and EBO are created.
+ */
+function _destroyBuffers(renderer) {
+	renderer.deleteBuffer(this._vbo);
+	renderer.deleteBuffer(this._ebo);
+	renderer.deleteVertexArray(this._vao);
+	this._vbo = null;
+	this._ebo = null;
+	this._vao = null;
+	this.destroy = Geometry.prototype.destroy; // Reset to empty function
+	this._initialized = false;
+}
 
 export default class IndexedGeometry extends Geometry {
 
@@ -28,8 +42,8 @@ export default class IndexedGeometry extends Geometry {
 		return this._index_type;
 	}
 
-	initializeContextBuffers(renderer) {
-		super.initializeContextBuffers(renderer);
+	initialize(renderer) {
+		super.initialize(renderer);
 
 		this._ebo = renderer.createBuffer(
 			this._indices.byteLength,
@@ -38,16 +52,12 @@ export default class IndexedGeometry extends Geometry {
 		);
 
 		renderer.updateBufferData(this._ebo, this._indices, 0, WebGLRenderingContext.ELEMENT_ARRAY_BUFFER);
-	}
 
-	initializeVertexArrayProcedure(renderer) {
-		const vao = super.initializeVertexArrayProcedure(renderer);
-
-		renderer.activateVertexArray(vao);
+		renderer.activateVertexArray(this._vao);
 		renderer.activateBuffer(this._ebo, WebGLRenderingContext.ELEMENT_ARRAY_BUFFER);
 		renderer.activateVertexArray(null);
 
-		return vao;
+		this.destroy = _destroyBuffers.bind(this, renderer);
 	}
 
 	render(renderer) {

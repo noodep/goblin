@@ -7,17 +7,33 @@
 
 'use strict';
 
+import {wl} from '../../util/log.js';
 import {UUIDv4} from '../../crypto/uuid.js';
+
+/**
+ * Function to assign to the destroy property after the VBO and VAO are created.
+ */
+function _destroyBuffers(renderer) {
+	renderer.deleteBuffer(this._vbo);
+	renderer.deleteVertexArray(this._vao);
+	this._vbo = null;
+	this._vao = null;
+	this.destroy = Geometry.prototype.destroy; // Reset to empty function
+	this._initialized = false;
+}
 
 export default class Geometry {
 
 	constructor(buffer, size, rendering_type = WebGLRenderingContext.TRIANGLES) {
 		this._attributes = new Map();
 		this._vbo = null;
+		this._vao = null;
 
 		this._buffer = buffer;
 		this._size = size;
 		this._rendering_type = rendering_type;
+
+		this._initialized = false;
 	}
 
 	get attributes() {
@@ -40,6 +56,10 @@ export default class Geometry {
 		return this._size;
 	}
 
+	get vao() {
+		return this._vao;
+	}
+
 	addAttribute(name, attribute) {
 		if(this._attributes.has(name))
 			throw new Error(`Attribute ${name} already exists in this geometry.`);
@@ -47,7 +67,12 @@ export default class Geometry {
 		this._attributes.set(name, attribute);
 	}
 
-	initializeContextBuffers(renderer) {
+	initialize(renderer) {
+		if (this._initialized) {
+			wl("Geometry already initialized.");
+			this.destroy();
+		}
+
 		this._vbo = renderer.createBuffer(
 			this._buffer.byteLength,
 			WebGLRenderingContext.ARRAY_BUFFER,
@@ -55,12 +80,10 @@ export default class Geometry {
 		);
 
 		renderer.updateBufferData(this._vbo, this._buffer, 0, WebGLRenderingContext.ARRAY_BUFFER);
-	}
 
-	initializeVertexArrayProcedure(renderer) {
-		const vao = renderer.createVertexArray();
+		this._vao = renderer.createVertexArray();
 
-		renderer.activateVertexArray(vao);
+		renderer.activateVertexArray(this._vao);
 		renderer.activateBuffer(this._vbo);
 
 		this._attributes.forEach((attribute, name) => {
@@ -70,7 +93,8 @@ export default class Geometry {
 		// Prevents procedure to get additional steps
 		renderer.activateVertexArray(null);
 
-		return vao;
+		this.destroy = _destroyBuffers.bind(renderer, this);
+		this._initialized = true;
 	}
 
 	render(renderer) {
@@ -78,10 +102,13 @@ export default class Geometry {
 	}
 
 	/**
-	 * Deletes the WebGL buffer objects of this geometr from GPU memory.
+	 * Deletes the WebGL buffer objects of this geometry from GPU memory. The
+	 * geometry can still be initiailzed later.
 	 */
-	destroy(renderer) {
-		renderer.deleteBuffer(this._vbo);
+	destroy() {
+		// This is empty because it cannot delete the buffers until they are
+		// created and must use the same renderer for deletion as for creation.
+		wl("Geometry destroyed before initialized.");
 	}
 }
 

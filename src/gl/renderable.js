@@ -12,6 +12,10 @@ import {dl, wl} from '../util/log.js';
 import {UUIDv4} from '../crypto/uuid.js';
 import Object3D from '../3d/object3d.js';
 
+/**
+ * A class to represent an Object3D that can be rendered on a screen (by a
+ * WebGLRenderer).
+ */
 export default class Renderable extends Object3D {
 
 	/**
@@ -26,7 +30,6 @@ export default class Renderable extends Object3D {
 	 */
 	constructor({ geometry, program, options } = {}) {
 		super(options);
-		this._vao = undefined;
 		this._geometry = geometry;
 		this._program = program;
 		this._model_uniform_location = undefined;
@@ -56,26 +59,18 @@ export default class Renderable extends Object3D {
 
 		this._model_uniform_location = program.getUniform('model');
 
-		this._initializeGeometry(renderer);
-	}
-
-	_initializeGeometry(renderer) {
-		this._geometry.initializeContextBuffers(renderer);
-		this._vao = this._geometry.initializeVertexArrayProcedure(renderer);
+		this._geometry.initialize(renderer);
 	}
 
 	setShaderState(renderer) {
 		if (this._new_geometry) {
-			// Destroy isn't final, we are just changing to a new geometry and
-			// vao.
-			this.destroy(renderer);
+			this._geometry.destroy(renderer);
 			this._geometry = this._new_geometry;
+			this._geometry.initialize(renderer);
 			this._new_geometry = null;
-
-			this._initializeGeometry(renderer);
 		}
 
-		renderer.activateVertexArray(this._vao);
+		renderer.activateVertexArray(this._geometry.vao);
 		renderer._context.uniformMatrix4fv(this._model_uniform_location, false, this.worldModel.matrix);
 	}
 
@@ -89,10 +84,11 @@ export default class Renderable extends Object3D {
 
 	/**
 	 * Deletes the geometry and the vertex array object used from GPU memory.
+	 * The Renderable can still be re-initialized later.
 	 */
-	destroy(renderer) {
-		this._geometry.destroy(renderer);
-		renderer.deleteVertexArray(this._vao);
+	destroy() {
+		this._geometry.destroy();
+		super.destroy();
 	}
 }
 
