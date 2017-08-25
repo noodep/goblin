@@ -46,7 +46,23 @@ export default class Camera {
 	}
 
 	/**
-	 * Set this camera position.
+	 * Sets this camera position and immediately updates the view.
+	 */
+	set position(v3) {
+		this._position.copy(v3);
+		this.updateView();
+	}
+
+	/**
+	 * Sets this camera orientation and immediately updates the view.
+	 */
+	set orientation(q) {
+		this._orientation.copy(q);
+		this.updateView();
+	}
+
+	/**
+	 * Sets this camera position.
 	 */
 	setPosition(v3, force_update=true) {
 		this._position.copy(v3);
@@ -55,7 +71,7 @@ export default class Camera {
 	}
 
 	/**
-	 * Set this camera orientation.
+	 * Sets this camera orientation.
 	 */
 	setOrientation(q, force_update=true) {
 		this._orientation.copy(q);
@@ -64,7 +80,7 @@ export default class Camera {
 	}
 
 	/**
-	 * Set this camera aspect ratio.
+	 * Sets this camera aspect ratio.
 	 */
 	setAspectRatio(aspect_ratio, force_update=true) {
 		this._aspect_ratio = aspect_ratio;
@@ -73,7 +89,7 @@ export default class Camera {
 	}
 
 	/**
-	 * Set this camera vertical field of view.
+	 * Sets this camera vertical field of view.
 	 */
 	setFovY(fov_y, force_update=true) {
 		this._fov_y = fov_y;
@@ -82,7 +98,7 @@ export default class Camera {
 	}
 
 	/**
-	 * Set this camera clipping planes.
+	 * Sets this camera clipping planes.
 	 */
 	setClippingPlanes(near, far, force_update=true) {
 		this._near_z = near;
@@ -92,7 +108,7 @@ export default class Camera {
 	}
 
 	/**
-	 * Set this camera near clipping plane.
+	 * Sets this camera near clipping plane.
 	 */
 	setNearClippingPlane(near, force_update=true) {
 		this._near_z = near;
@@ -101,7 +117,7 @@ export default class Camera {
 	}
 
 	/**
-	 * Set this camera far clipping plane.
+	 * Sets this camera far clipping plane.
 	 */
 	setFarClippingPlane(far, force_update=true) {
 		this._far_z = far;

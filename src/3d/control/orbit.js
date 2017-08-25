@@ -31,6 +31,124 @@ export default class OrbitControl {
 	}
 
 	/**
+	 * Computes orbit parameters from which one can look at the specified object3d from the specified direction.
+	 * If direction is unspecified only position parameters are computed and returned.
+	 *
+	 * @param {Object3D} object3d - The object to focus on.
+	 * @param {Vec3} [direction] - A vector describing the direction to look at.
+	 * @retrun {object} - The computed parameters (offset, radius, phi, theta).
+	 */
+	static lookAtParameters(object3d, direction) {
+		const parameters = {};
+
+		const unit_diagonal = new Vec4(OrbitControl.SQRT3, OrbitControl.SQRT3, OrbitControl.SQRT3, 0.0);
+		const zoom = unit_diagonal.transform(object3d.worldModel).xyz.magnitude();
+		parameters.offset = object3d.origin.clone().transform(object3d.worldModel);
+		parameters.radius = OrbitControl.FOCUS_DISTANCE * zoom;
+
+		if(direction) {
+			const xz_dir = new Vec3(direction.x, 0.0, direction.z);
+			parameters.phi = Vec3.NEG_Z_AXIS.angle(xz_dir);
+			parameters.theta = OrbitControl.HALFPI - xz_dir.angle(direction);
+		}
+
+		return parameters;
+	}
+
+	/**
+	 * Computes orbit pose from which one can look at the specified object3d from the specified direction.
+	 * If direction is unspecified default direction is used.
+	 *
+	 * @param {Object3D} object3d - The object to focus on.
+	 * @param {Vec3} [direction] - A vector describing the direction to look at.
+	 * @retrun {object} - The computed parameters (position as Vec3 and orientation as Quat).
+	 */
+	static lookAt(object3d, direction) {
+		const { offset, radius, phi = 0, theta = 0 } = OrbitControl.lookAtParameters(object3d, direction);
+
+		const position = OrbitControl.position(offset, radius, phi, theta);
+		const orientation = OrbitControl.orientation(phi, theta);
+
+		return {
+			position: position,
+			orientation: orientation
+		};
+	}
+
+	/**
+	 * Computes an orbital position in cartesian space, using the specified parameters.
+	 *
+	 * @param {Vec3} offset - The origin of the orbital sphere.
+	 * @param {Number} radius - The radius of the orbital sphere.
+	 * @param {Number} phi - The azimuth of the point to compute (from positive Z).
+	 * @param {Number} theta - The inclination of the point to compute (from positive Y).
+	 * @param {Vec3} [postition = new Vec3()] - The vector holding the result of the computation (also returned by this function).
+	 * @retrun {Vec3} - The computed postion.
+	 */
+	static position(offset, radius, phi, theta, position = new Vec3()) {
+		const sin_theta = Math.sin(theta);
+
+		position.x = offset.x + radius * sin_theta * Math.sin(phi);
+		position.y = offset.y + radius * Math.cos(theta);
+		position.z = offset.z + radius * sin_theta * Math.cos(phi);
+
+		return position;
+	}
+
+	/**
+	 * Computes an orbital orientation to look at the center of the sphere from the point described by the specified parameters.
+	 *
+	 * @param {Number} phi - The azimuth of the point from which to look at the center (from positive Z).
+	 * @param {Number} theta - The inclination of the point from which to look at the center (from positive Y).
+	 * @param {Quat} [orientation = new Quat()] - The quaternion holding the result of the computation (also returned by this function).
+	 * @param {Quat} [temp = new Quat()] - A temporary quaternion used by the computation (useful for avoiding the creation of a new object every time this function is called).
+	 * @retrun {Quat} - The computed orientation.
+	 */
+	static orientation(phi, theta, orientation = new Quat(), temp = new Quat()) {
+		temp.fromAxisRotation(theta - OrbitControl.HALFPI, Vec3.X_AXIS);
+		orientation.fromAxisRotation(phi, Vec3.Y_AXIS);
+		orientation.multiply(temp);
+
+		return orientation;
+	}
+
+	get offset() {
+		return this._offset;
+	}
+
+	set offset(offset) {
+		this._offset = offset;
+		this._updatePosition();
+	}
+
+	get radius() {
+		return this._radius;
+	}
+
+	set radius(radius) {
+		this._radius = radius;
+		this._updatePosition();
+	}
+
+	get phi() {
+		return this._phi;
+	}
+
+	set phi(phi) {
+		this._phi = phi;
+		this._updatePosition();
+	}
+
+	get theta() {
+		return this._theta;
+	}
+
+	set theta(theta) {
+		this._theta = theta;
+		this._updatePosition();
+	}
+
+	/**
 	 * Positions/orients the camera to look at a specified Object3D.
 	 *
 	 * @param {Object3D} object3d - The object to center on.
@@ -38,28 +156,7 @@ export default class OrbitControl {
 	 * the object. If unspecified, the current direction of the camera is used.
 	 */
 	centerOn(object3d, direction) {
-		// TODO Base the distance on the bounding box of the object3d ?
-
-		if (direction) {
-			// Vector in the x-z plane pointing in the same (for x and z)
-			// direction as direction.
-			const xz_dir = direction.clone();
-			xz_dir.y = 0.0;
-
-			this._phi = Vec3.NEG_Z_AXIS.angle(xz_dir);
-			this._theta = OrbitControl.HALFPI - xz_dir.angle(direction);
-		}
-
-		// Find the length of the unit direction vector at the corner of the
-		// bounding cube in world coordinates to guage the size of the object.
-		const scaled_size =
-			new Vec4(OrbitControl.SQRT3, OrbitControl.SQRT3, OrbitControl.SQRT3, 0.0)
-			.transform(object3d.worldModel)
-			.xyz.magnitude();
-		this._radius = OrbitControl.FOCUS_DISTANCE * scaled_size;
-
-		this._offset = object3d.origin.clone().transform(object3d.worldModel);
-
+		({offset: this._offset, radius: this._radius, phi: this._phi = this._phi, theta: this._theta = this._theta} = OrbitControl.lookAtParameters(object3d, direction));
 		this._updatePosition();
 	}
 
@@ -187,16 +284,9 @@ export default class OrbitControl {
 	 * Updates the target position and orientation in the cartesian coordinate system.
 	 */
 	_updatePosition() {
-		const sin_theta = Math.sin(this._theta);
+		OrbitControl.position(this._offset, this._radius, this._phi, this._theta, this._position);
+		OrbitControl.orientation(this._phi, this._theta, this._azimuth, this._inclination);
 
-		this._position.x = this._offset.x + this._radius * sin_theta * Math.sin(this._phi);
-		this._position.y = this._offset.y + this._radius * Math.cos(this._theta);
-		this._position.z = this._offset.z + this._radius * sin_theta * Math.cos(this._phi);
-
-		this._inclination.fromAxisRotation(this._theta - OrbitControl.HALFPI, Vec3.X_AXIS);
-		this._azimuth.fromAxisRotation(this._phi, Vec3.Y_AXIS);
-
-		this._azimuth.multiply(this._inclination);
 		this._target.setPosition(this._position);
 		this._target.setOrientation(this._azimuth);
 	}

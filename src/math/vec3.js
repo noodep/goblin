@@ -63,7 +63,7 @@ export default class Vec3 {
 	 * the difference v - u.
 	 */
 	static difference(u, v) {
-		return new uec3(v._v[0] - u._v[0], v._v[1] - u._v[1], v._v[2] - u._v[2]);
+		return new Vec3(v._v[0] - u._v[0], v._v[1] - u._v[1], v._v[2] - u._v[2]);
 	}
 
 	/**
