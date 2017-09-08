@@ -55,6 +55,15 @@ export default class OrbitControl {
 		return parameters;
 	}
 
+	static resetParameters() {
+		return {
+			offset: new Vec3(0.0, 0.0, 0.0),
+			theta: OrbitControl.HALFPI,
+			phi: 0.0,
+			radius: OrbitControl.DEFAULT_RADIUS,
+		};
+	}
+
 	/**
 	 * Computes orbit pose from which one can look at the specified object3d from the specified direction.
 	 * If direction is unspecified default direction is used.
