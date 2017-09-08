@@ -43,7 +43,7 @@ export default class OrbitControl {
 
 		const unit_diagonal = new Vec4(OrbitControl.SQRT3, OrbitControl.SQRT3, OrbitControl.SQRT3, 0.0);
 		const zoom = unit_diagonal.transform(object3d.worldModel).xyz.magnitude();
-		parameters.offset = object3d.origin.clone().transform(object3d.worldModel);
+		parameters.offset = new Vec3(0.0, 0.0, 0.0).transform(object3d.worldModel);
 		parameters.radius = OrbitControl.FOCUS_DISTANCE * zoom;
 
 		if(direction) {
@@ -53,6 +53,15 @@ export default class OrbitControl {
 		}
 
 		return parameters;
+	}
+
+	static resetParameters() {
+		return {
+			offset: new Vec3(0.0, 0.0, 0.0),
+			theta: OrbitControl.HALFPI,
+			phi: 0.0,
+			radius: OrbitControl.DEFAULT_RADIUS,
+		};
 	}
 
 	/**
