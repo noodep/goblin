@@ -1,11 +1,11 @@
 'use strict';
 
-import {Logger, DEFAULT_LOGGER, dl, wl, l, el} from 'src/util/log.js';
+import {Logger, DEFAULT_LOGGER, dl, wl, l, el} from '/src/util/log.js';
 
 export default class LogTest {
 
 	static runAll() {
-		console.log(`%c----- Testing src/log.js -----`,'color:blue;');
+		console.log(`%c----- Testing /src/util/log.js -----`,'color:blue;');
 		console.time('Perf');
 
 		DEFAULT_LOGGER.level = Logger.LEVELS.NONE;

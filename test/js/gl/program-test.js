@@ -1,12 +1,12 @@
 'use strict';
 
-import {Logger, DEFAULT_LOGGER as DL} from 'src/util/log.js';
-import Program from 'src/gl/program.js';
+import {Logger, DEFAULT_LOGGER as DL} from '/src/util/log.js';
+import Program from '/src/gl/program.js';
 
 export default class ProgramTest {
 
 	static runAll() {
-		console.log(`%c----- Testing src/math/program.js -----`,'color:blue;');
+		console.log(`%c----- Testing /src/math/program.js -----`,'color:blue;');
 		console.time('Perf');
 
 		DL.level = Logger.LEVELS.ERROR;

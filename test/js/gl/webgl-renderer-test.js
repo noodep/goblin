@@ -1,29 +1,29 @@
 'use strict';
 
-import {Logger, DEFAULT_LOGGER as DL} from 'src/util/log.js';
-import WebGLRenderer from 'src/gl/webgl-renderer.js';
-import SimpleProgram from 'src/gl/programs/simple.js';
-import SamplerProgram from 'src/gl/programs/sampler.js';
-import Geometry from 'src/gl/geometry/geometry.js';
-import IndexedGeometry from 'src/gl/geometry/indexed-geometry.js';
-import BufferAttribute from 'src/gl/buffer-attribute.js';
-import Vec3 from 'src/math/vec3.js';
-import Quat from 'src/math/quat.js';
-import Scene from 'src/3d/scene.js';
-import Renderable from 'src/gl/renderable.js';
-import Camera from 'src/3d/camera/camera.js';
-import OrbitControl from 'src/3d/control/orbit.js';
+import {Logger, DEFAULT_LOGGER as DL} from '/src/util/log.js';
+import WebGLRenderer from '/src/gl/webgl-renderer.js';
+import SimpleProgram from '/src/gl/programs/simple.js';
+import SamplerProgram from '/src/gl/programs/sampler.js';
+import Geometry from '/src/gl/geometry/geometry.js';
+import IndexedGeometry from '/src/gl/geometry/indexed-geometry.js';
+import BufferAttribute from '/src/gl/buffer-attribute.js';
+import Vec3 from '/src/math/vec3.js';
+import Quat from '/src/math/quat.js';
+import Scene from '/src/3d/scene.js';
+import Renderable from '/src/gl/renderable.js';
+import Camera from '/src/3d/camera/camera.js';
+import OrbitControl from '/src/3d/control/orbit.js';
 
 
-import Box from 'src/3d/geometry/box.js';
-import Plane from 'src/3d/geometry/plane.js';
-import TextUtils from 'src/text/text-utils.js';
+import Box from '/src/3d/geometry/box.js';
+import Plane from '/src/3d/geometry/plane.js';
+import TextUtils from '/src/text/text-utils.js';
 
 
 export default class WebGLRendererTest {
 
 	static runAll() {
-		console.log(`%c----- Testing src/gl/webgl-renderer.js -----`,'color:blue;');
+		console.log(`%c----- Testing /src/gl/webgl-renderer.js -----`,'color:blue;');
 		console.time('Perf');
 
 		DL.level = Logger.LEVELS.NONE;

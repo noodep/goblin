@@ -1,13 +1,13 @@
 'use strict';
 
-import {epsilon32Equals as ee, randomFloat32 as rf32} from 'test/js/test-utils.js';
-import Vec3 from 'src/math/vec3.js';
-import Vec2 from 'src/math/vec2.js';
+import {epsilon32Equals as ee, randomFloat32 as rf32} from '../test-utils.js';
+import Vec3 from '/src/math/vec3.js';
+import Vec2 from '/src/math/vec2.js';
 
 export default class Vec3Test {
 
 	static runAll() {
-		console.log(`%c----- Testing src/math/vec3.js -----`,'color:blue;');
+		console.log(`%c----- Testing /src/math/vec3.js -----`,'color:blue;');
 		console.time('Perf');
 
 		Vec3Test.testDefaultConstruction();
