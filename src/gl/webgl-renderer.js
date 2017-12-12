@@ -131,8 +131,9 @@ export default class WebGLRenderer {
 	 * Updates the dimensions of the canvas to its current visible area.
 	 */
 	updateCanvasDimensions() {
-		this._canvas.width = this._canvas.clientWidth;
-		this._canvas.height = this._canvas.clientHeight;
+		const scale = window.devicePixelRatio;
+		this._canvas.width = this._canvas.clientWidth * scale;
+		this._canvas.height = this._canvas.clientHeight * scale;
 		this._context.viewport(0, 0, this._canvas.width, this._canvas.height);
 	}
 
