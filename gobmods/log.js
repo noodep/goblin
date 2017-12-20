@@ -1,6 +1,7 @@
 (function(window, document, undefined){
 	
 	Logger.levels = {
+		ALL : -1,
 		DEBUG : 0,
 		INFO : 1,
 		ERROR : 2,
@@ -25,10 +26,14 @@
 		for (var i = this._subscribers.length - 1; i >= 0; i--) {
 			this._subscribers[i].notify(log);
 		};
-	},
-		
+	}
+
+	Logger.prototype.getLogs = function() {
+		return this._logs;
+	}
+
 	Logger.prototype.addSubscriber = function(subscriber) {
-			this._subscribers.push(subscriber);
+		this._subscribers.push(subscriber);
 	}
 
 	Goblin.extend('Logger', Logger);
