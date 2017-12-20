@@ -20,7 +20,8 @@
 		var url = options.url;
 		var method = options.method || 'GET';
 		var data = options.data;
-		var onsuccess = options.onsuccess;
+		var onsuccess = options.onsuccess || (() => null);
+		var onerror = options.onerror || (() => null);
 		var onprogress = options.onprogress;
 		var onreadystatechange = options.onreadystatechange;
 
@@ -29,8 +30,10 @@
 		req.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
 
 		req.onload = function() {
-			if(this.status == 200)
+			if(this.status === 200)
 				onsuccess(this.response);
+			else
+				onerror(this.response);
 		};
 
 		req.onprogress = onprogress;
