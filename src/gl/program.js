@@ -2,7 +2,7 @@
  * @fileOverview Class representing an OpenGL ES program.
  *
  * @author Noodep
- * @version 0.17
+ * @version 0.18
  */
 
 'use strict';
@@ -114,10 +114,6 @@ export default class Program {
 		c.linkProgram(this._program);
 		if(!c.getProgramParameter(this._program, WebGLRenderingContext.LINK_STATUS))
 			throw new Error(`Unable to link program "${this._name}"`);
-
-		c.validateProgram(this._program);
-		if(!c.getProgramParameter(this._program, WebGLRenderingContext.VALIDATE_STATUS))
-			throw new Error(`Unable to validate program "${this._name}"`);
 	}
 
 	qualifyAll() {
