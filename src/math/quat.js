@@ -2,7 +2,7 @@
  * @fileOverview quaternion manipulation.
  *
  * @author Noodep
- * @version 0.03
+ * @version 0.05
  */
 
 'use strict';
@@ -306,7 +306,7 @@ export default class Quaternion {
 	}
 
 	[Symbol.iterator]() {
-		return this._v[Symbol.iterator];
+		return this._q[Symbol.iterator]();
 	}
 
 	/**
