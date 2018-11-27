@@ -1,11 +1,10 @@
 /**
- * @fileOverview Scene.
- * @author Noodep
- * @version 0.04
+ * @file Scene.
+ *
+ * @author noodep
+ * @version 0.08
  */
-'use strict';
 
-import {dl} from '../util/log.js';
 import Mat4 from '../math/mat4.js';
 import Renderable from '../gl/renderable.js';
 import Object3D from './object3d.js';
@@ -173,7 +172,6 @@ export default class Scene extends Object3D {
 	 */
 	render(renderer) {
 		this._program_cache.forEach((renderables, program_name) => {
-			dl(`Rendering batch with program ${program_name}`);
 			this.applyProgramState(renderer, program_name);
 
 			for(let renderable of renderables) {
