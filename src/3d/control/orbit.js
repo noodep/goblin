@@ -1,7 +1,7 @@
 /**
  * @fileOverview Object manipulantion through orbit control.
  * @author Noodep
- * @version 0.23
+ * @version 0.27
  */
 'use strict';
 
@@ -185,7 +185,7 @@ export default class OrbitControl {
 		this._element.addEventListener('contextmenu', e => e.preventDefault());
 		this._element.addEventListener('mousedown', this._handleMouseDown.bind(this));
 		this._element.addEventListener('mouseup', this._handleMouseUp.bind(this));
-		this._element.addEventListener('mousewheel', this._handleMouseWheel.bind(this));
+		this._element.addEventListener('wheel', this._handleMouseWheel.bind(this));
 		this._mouseMoveHandler = this._handleMouseMove.bind(this);
 	}
 
@@ -249,7 +249,8 @@ export default class OrbitControl {
 	_handleMouseWheel(e) {
 		e.preventDefault();
 
-		const delta = this._sensitivityAdjustedDisplacement(e, e.deltaY);
+		const delta = this._sensitivityAdjustedDisplacement(e, Math.sign(e.deltaY) * OrbitControl.DEFAULT_ZOOM_SENSITIVITY);
+		console.log(delta);
 		this._zoom(delta);
 		this._updatePosition();
 	}
@@ -305,6 +306,7 @@ OrbitControl.HALFPI = Math.PI / 2.0;
 OrbitControl.TWOPI = 2.0 * Math.PI;
 OrbitControl.SQRT3 = Math.sqrt(3);
 OrbitControl.DEFAULT_SENSITIVITY = 0.005;
+OrbitControl.DEFAULT_ZOOM_SENSITIVITY = 10.0;
 OrbitControl.DEFAULT_SENSITIVITY_MODIFIER = 0.1;
 OrbitControl.DEFAULT_RADIUS = 1.0;
 OrbitControl.FOCUS_DISTANCE = 0.5;
