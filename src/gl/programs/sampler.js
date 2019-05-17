@@ -1,11 +1,9 @@
 /**
- * @fileOverview Class representing a simple OpenGL ES program with a sampler.
+ * @file Class representing a simple OpenGL ES program with a sampler.
  *
  * @author Noodep
- * @version 0.02
+ * @version 0.06
  */
-
-'use strict';
 
 import Mat4 from '../../math/mat4.js';
 import Program from '../program.js';
@@ -21,7 +19,7 @@ export default class SamplerProgram extends Program {
 	 * @return {module:gl.programs.SamplerProgram} - The newly created SamplerProgram.
 	 */
 	constructor(configuration, options) {
-		super(configuration)
+		super(configuration);
 		this._sampler_unit = options.sampler_unit;
 
 		// Buffer for multiplying the projection and view matrices to avoid
@@ -36,9 +34,9 @@ export default class SamplerProgram extends Program {
 		const c = renderer._context;
 
 		this._view_projection.copy(projection).multiply(view);
-		c.uniformMatrix4fv(this.getUniform('view_projection'),
-				false, this._view_projection.matrix);
+		c.uniformMatrix4fv(this.getUniform('view_projection'), false, this._view_projection.matrix);
 		c.uniform1i(this.getUniform('sampler'), this._sampler_unit);
 	}
+
 }
 

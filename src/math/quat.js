@@ -1,11 +1,9 @@
 /**
- * @fileOverview quaternion manipulation.
+ * @file Quaternion manipulation.
  *
  * @author Noodep
- * @version 0.05
+ * @version 0.2
  */
-
-'use strict';
 
 const EPSILON32 = Math.pow(2, -23);
 
@@ -22,7 +20,7 @@ export default class Quaternion {
 	 * @param {Number} [z=0] - z value.
 	 * @return {module:math.Quaternion} - The newly created quaternion.
 	 */
-	constructor(w = 0.0, x = 0.0, y = 0.0, z = 0.0) {
+	constructor(w = 1.0, x = 0.0, y = 0.0, z = 0.0) {
 		this._q = new Float32Array(4);
 		this._q[0] = w;
 		this._q[1] = x;
@@ -31,15 +29,16 @@ export default class Quaternion {
 	}
 
 	/**
-	 * Creates a new quaternion from a javascript Array with w as first value.
+	 * Creates a new quaternion from an Array-like (magnitude property and integer keys) object (Array, Vec2, Vec3, etc.).
+	 * w is the first component.
 	 *
-	 * @param {Array} - The array (of Array-like) containing the values with
-	 * which to initialize this quaternion.
-	 * @return {module:math.Quaternion} - The newly created quaternion set with
-	 * values from the specified Array.
+	 * @param {Array} - The array containing the values with which to initialize this quaternion.
+	 * @return {module:math.Vec3} - The newly created quaternion set with values from the specified Array.
 	 */
 	static from(array) {
-		return new Quaternion(array[0], array[1], array[2], array[3]);
+		if(array && array[Symbol.iterator])
+			return new Quaternion(array[0], array[1], array[2], array[3]);
+		return undefined;
 	}
 
 	/**
@@ -123,9 +122,8 @@ export default class Quaternion {
 	fromVecToVec(vec1, vec2) {
 		const cross = vec1.clone().cross(vec2);
 
-		this._q[0] = vec1.dot(vec2)
-		    // Multiply the magnitudes but only perform 1 square root
-		    + Math.sqrt(vec1.magnitude2() * vec2.magnitude2());
+		// Multiply the magnitudes but only perform 1 square root
+		this._q[0] = vec1.dot(vec2) + Math.sqrt(vec1.magnitude2() * vec2.magnitude2());
 		this._q[1] = cross.x;
 		this._q[2] = cross.y;
 		this._q[3] = cross.z;
@@ -318,6 +316,7 @@ export default class Quaternion {
 	toString(precision = 16) {
 		return `(${this._q[0].toFixed(precision)}, ${this._q[1].toFixed(precision)}, ${this._q[2].toFixed(precision)}, ${this._q[3].toFixed(precision)})`;
 	}
+
 }
 
 ///
@@ -326,23 +325,23 @@ export default class Quaternion {
 ///
 
 const wProperty = {
-	get: function() { return this._q[0] },
-	set: function(val) { this._q[0] = val }
+	get: function() { return this._q[0]; },
+	set: function(val) { this._q[0] = val; }
 };
 
 const xProperty = {
-	get: function() { return this._q[1] },
-	set: function(val) { this._q[1] = val }
+	get: function() { return this._q[1]; },
+	set: function(val) { this._q[1] = val; }
 };
 
 const yProperty = {
-	get: function() { return this._q[2] },
-	set: function(val) { this._q[2] = val }
+	get: function() { return this._q[2]; },
+	set: function(val) { this._q[2] = val; }
 };
 
 const zProperty = {
-	get: function() { return this._q[3] },
-	set: function(val) { this._q[3] = val }
+	get: function() { return this._q[3]; },
+	set: function(val) { this._q[3] = val; }
 };
 
 Object.defineProperty(Quaternion.prototype, 'w', wProperty);

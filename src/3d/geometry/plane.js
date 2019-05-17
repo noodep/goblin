@@ -1,11 +1,9 @@
 /**
- * @fileOverview Triangular plane geometry generation.
+ * @file Triangular plane geometry generation.
  *
  * @author Noodep
- * @version 0.01
+ * @version 0.07
  */
-
- 'use strict';
 
 import Vec3 from '../../math/vec3.js';
 import BufferAttribute from '../../gl/buffer-attribute.js';
@@ -13,6 +11,7 @@ import Geometry from '../../gl/geometry/geometry.js';
 import IndexedGeometry from '../../gl/geometry/indexed-geometry.js';
 
 export default class Plane {
+
 	static generatePlaneVertices(origin = new Vec3(), scale = Vec3.identity()) {
 		const i = 0.5;
 		return [
@@ -41,8 +40,8 @@ export default class Plane {
 
 	static generatePlaneMesh(origin = new Vec3(), scale = Vec3.identity(), vertex_typed_array = Float32Array) {
 		// 2 triangles * 3 vertices per triangle * 3 components by vertex
-		const indices = Box.generatePlaneIndices();
-		const vertices = Box.generatePlaneVertices(origin, scale);
+		const indices = Plane.generatePlaneIndices();
+		const vertices = Plane.generatePlaneVertices(origin, scale);
 		const data = new vertex_typed_array(2 * 3 * 3);
 		const stride = 3;
 		let offset = 0;
@@ -93,14 +92,13 @@ export default class Plane {
 			data.set(Array.prototype.concat(vertex, uv), element_stride * vertex_idx);
 		}
 
-		const geometry = new IndexedGeometry(indices, data, WebGLRenderingContext.TRIANGLES, WebGLRenderingContext.UNSIGNED_BYTE);
+		const geometry = new IndexedGeometry(indices, data, WebGLRenderingContext.TRIANGLES, index_type);
 		const stride = element_stride * Float32Array.BYTES_PER_ELEMENT;
 		geometry.addAttribute('position', new BufferAttribute(3, WebGLRenderingContext.FLOAT, 0, stride));
 		geometry.addAttribute('uv', new BufferAttribute(2, WebGLRenderingContext.FLOAT, 3 * Float32Array.BYTES_PER_ELEMENT, stride));
 
 		return geometry;
 	}
-
 
 	static createIndexedColoredPlaneGeometry(color = Vec3.identity(), origin = new Vec3(), scale = Vec3.identity(), vertex_typed_array = Float32Array, index_typed_array = Uint8Array, index_type = WebGLRenderingContext.UNSIGNED_BYTE, index_offset = 0) {
 		// 4 vertices * 6 components by vertex
@@ -147,5 +145,6 @@ export default class Plane {
 
 		return geometry;
 	}
+
 }
 

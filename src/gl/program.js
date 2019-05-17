@@ -1,13 +1,11 @@
 /**
- * @fileOverview Class representing an OpenGL ES program.
+ * @file Class representing an OpenGL ES program.
  *
  * @author Noodep
- * @version 0.18
+ * @version 0.23
  */
 
-'use strict';
-
-import {dl, l, el} from '../util/log.js';
+import { dl } from '../util/log.js';
 
 export default class Program {
 
@@ -117,8 +115,8 @@ export default class Program {
 	}
 
 	qualifyAll() {
-		this.qualify(WebGLRenderingContext.ACTIVE_UNIFORMS),
-		this.qualify(WebGLRenderingContext.ACTIVE_ATTRIBUTES)
+		this.qualify(WebGLRenderingContext.ACTIVE_UNIFORMS);
+		this.qualify(WebGLRenderingContext.ACTIVE_ATTRIBUTES);
 	}
 
 	qualify(parameter) {
@@ -154,10 +152,10 @@ export default class Program {
 Program.DEFAULT_SHADER_PATH = '/shaders/';
 
 Program.SHADER_EXTENSIONS = new Map();
-	Program.SHADER_EXTENSIONS.set(WebGLRenderingContext.VERTEX_SHADER, '.vert');
-	Program.SHADER_EXTENSIONS.set(WebGLRenderingContext.FRAGMENT_SHADER, '.frag');
+Program.SHADER_EXTENSIONS.set(WebGLRenderingContext.VERTEX_SHADER, '.vert');
+Program.SHADER_EXTENSIONS.set(WebGLRenderingContext.FRAGMENT_SHADER, '.frag');
 
 Program.QUALIFYING_FUNCTION = new Map();
-	Program.QUALIFYING_FUNCTION.set(WebGLRenderingContext.ACTIVE_UNIFORMS, 'Uniform');
-	Program.QUALIFYING_FUNCTION.set(WebGLRenderingContext.ACTIVE_ATTRIBUTES, 'Attrib');
+Program.QUALIFYING_FUNCTION.set(WebGLRenderingContext.ACTIVE_UNIFORMS, 'Uniform');
+Program.QUALIFYING_FUNCTION.set(WebGLRenderingContext.ACTIVE_ATTRIBUTES, 'Attrib');
 

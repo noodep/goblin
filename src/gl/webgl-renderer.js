@@ -1,15 +1,12 @@
 /**
- * Class representing a 3D renderer that uses a WebGLRenderingContext.
+ * @file Class representing a 3D renderer that uses a WebGLRenderingContext.
  *
  * @author Noodep
- * @version 0.07
+ * @version 0.17
  */
 
-'use strict';
-
-import {dl, wl} from '../util/log.js';
-import {UUIDv4} from '../crypto/uuid.js';
-import Program from  './program.js';
+import { dl, wl } from '../util/log.js';
+import Program from './program.js';
 
 export default class WebGLRenderer {
 
@@ -26,7 +23,7 @@ export default class WebGLRenderer {
 	 * @return {module:gl.WebGLRenderer} - The newly created renderer.
 	 */
 	constructor({ canvas, context_type, webgl_options } = {}) {
-		dl('Creating WebGlRenderer.')
+		dl('Creating WebGlRenderer.');
 		this._canvas = canvas;
 		this._scenes = new Map();
 
@@ -88,7 +85,7 @@ export default class WebGLRenderer {
 	addScene(scene) {
 		if(this._scenes.has(scene.id)) {
 			wl(`Scene with id ${scene.id} is already present. The specified scene will not be added.\n` +
-				`The existing scene needs to be removed before adding this one.`);
+				'The existing scene needs to be removed before adding this one.');
 			return false;
 		}
 
@@ -196,7 +193,7 @@ export default class WebGLRenderer {
 		}
 
 		if(this._active_program == name) {
-			wl(`Program already active. Try minimizing program switching.`);
+			wl('Program already active. Try minimizing program switching.');
 			return true;
 		}
 
@@ -219,7 +216,7 @@ export default class WebGLRenderer {
 	 */
 	get activeProgram() {
 		if(!this._active_program) {
-			wl(`There is no active program at the moment.`);
+			wl('There is no active program at the moment.');
 			return undefined;
 		}
 
@@ -353,6 +350,7 @@ export default class WebGLRenderer {
 		if(!this._context)
 			throw new Error('Unable to create webgl context.');
 	}
+
 }
 
 WebGLRenderer.DEFAULT_WEBGL_OPTIONS = {

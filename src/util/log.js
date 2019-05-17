@@ -1,13 +1,12 @@
 /**
- * @fileOverview General purpose Logger and associated utilities.
+ * @file General purpose Logger and associated utilities.
  *
  * @author Noodep
- * @version 0.14
+ * @version 0.25
  */
 
-'use strict';
-
 export class Logger {
+
 	constructor() {
 		this._level = Logger.LEVELS.INFO;
 		this._logs = new Array();
@@ -37,6 +36,7 @@ export class Logger {
 	set level(level) {
 		this._level = level;
 	}
+
 }
 
 Logger.LEVELS = {
@@ -49,20 +49,26 @@ Logger.LEVELS = {
 };
 
 export class Console {
+
+	constructor(console) {
+		this._console = console;
+	}
+
 	notify(log) {
 		if(log.level == Logger.LEVELS.WARN)
-			console.warn(log.msg);
+			this._console.warn(log.msg);
 		else if(log.level == Logger.LEVELS.ERROR)
-			console.error(log.msg);
+			this._console.error(log.msg);
 		else if(log.level == Logger.LEVELS.INFO)
-			console.info(log.msg);
+			this._console.info(log.msg);
 		else
-			console.log(log.msg);
+			this._console.log(log.msg);
 	}
+
 }
 
 export const DEFAULT_LOGGER = new Logger();
-DEFAULT_LOGGER.addSubscriber(new Console());
+DEFAULT_LOGGER.addSubscriber(new Console(console));
 
 export const dl = (msg) => DEFAULT_LOGGER.log(msg, Logger.LEVELS.DEBUG);
 export const il = (msg) => DEFAULT_LOGGER.log(msg, Logger.LEVELS.INFO);

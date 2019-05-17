@@ -1,13 +1,12 @@
 /**
- * @fileOverview Simple Polygon object.
+ * @file Simple Polygon object.
  *
  * @author Noodep
- * @version 0.04
+ * @version 0.06
  */
 
-'use strict';
-
 export default class Polygon {
+
 	constructor() {
 		this._vertices = new Array();
 	}
@@ -19,5 +18,6 @@ export default class Polygon {
 	addVertex(v) {
 		this._vertices.push(v);
 	}
+
 }
 

@@ -1,13 +1,11 @@
 /**
- * @fileOverview 3 components vector manipulation.
+ * @file 3 components vector manipulation.
  *
  * @author Noodep
- * @version 0.46
+ * @version 0.74
  */
 
-'use strict';
-
-import {Vec2View} from './vec2.js';
+import { Vec2View } from './vec2.js';
 
 const EPSILON32 = Math.pow(2, -23);
 
@@ -45,13 +43,15 @@ export default class Vec3 {
 	}
 
 	/**
-	 * Creates a new vector from a javascript Array.
+	 * Creates a new vector from an Array-like (magnitude property and integer keys) object (Array, Vec2, Vec3, etc.).
 	 *
 	 * @param {Array} - The array containing the values with which to initialize this vector.
 	 * @return {module:math.Vec3} - The newly created vector set with values from the specified Array.
 	 */
 	static from(array) {
-		return new Vec3(array[0], array[1], array[2]);
+		if(array && array[Symbol.iterator])
+			return new Vec3(array[0], array[1], array[2]);
+		return undefined;
 	}
 
 	/**
@@ -173,10 +173,7 @@ export default class Vec3 {
 	 * the other vector.
 	 */
 	distance(v3) {
-		return Math.hypot(
-				this._v[0] - v3._v[0],
-				this._v[1] - v3._v[1],
-				this._v[2] - v3._v[2]);
+		return Math.hypot(this._v[0] - v3._v[0], this._v[1] - v3._v[1], this._v[2] - v3._v[2]);
 	}
 
 	/**
@@ -480,10 +477,11 @@ export default class Vec3 {
 	toString(p = 16) {
 		return `<${this._v[0].toFixed(p)}, ${this._v[1].toFixed(p)}, ${this._v[2].toFixed(p)}>`;
 	}
+
 }
 
 // Some aliases
-Vec3.prototype.dist = Vec3.prototype.distance
+Vec3.prototype.dist = Vec3.prototype.distance;
 Vec3.prototype.norm = Vec3.prototype.normal;
 Vec3.prototype.mag = Vec3.prototype.magnitude;
 Vec3.prototype.mag2 = Vec3.prototype.magnitude2;
@@ -497,22 +495,22 @@ Vec3.prototype.mul = Vec3.prototype.multiply;
 const xProperty = {
 	//configurable: false,
 	//enumerable: false,
-	get: function() { return this._v[0] },
-	set: function(val) { this._v[0] = val }
+	get: function() { return this._v[0]; },
+	set: function(val) { this._v[0] = val; }
 };
 
 const yProperty = {
 	//configurable: false,
 	//enumerable: false,
-	get: function() { return this._v[1] },
-	set: function(val) { this._v[1] = val }
+	get: function() { return this._v[1]; },
+	set: function(val) { this._v[1] = val; }
 };
 
 const zProperty = {
 	//configurable: false,
 	//enumerable: false,
-	get: function() { return this._v[2] },
-	set: function(val) { this._v[2] = val }
+	get: function() { return this._v[2]; },
+	set: function(val) { this._v[2] = val; }
 };
 
 Object.defineProperties(Vec3.prototype, {
@@ -545,7 +543,6 @@ Object.defineProperties(Vec3.prototype, {
  * case one wants to change it.
  */
 Vec3.prototype[Symbol.isConcatSpreadable] = true;
-
 
 /**
  * Class to create a Vec3 who's componenets are stored in a specified

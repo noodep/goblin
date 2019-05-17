@@ -1,8 +1,9 @@
 /**
- * @fileOverview Some (non-secure) hash functions.
+ * @file Some (non-secure) hash functions.
  *
+ * @author Noodep
  * @author Zach Peltzer
- * @version 0.00
+ * @version 0.02
  */
 
 /**
@@ -15,7 +16,7 @@
  */
 export function strHash(str) {
 	if (typeof str === 'string' || str instanceof String) {
-		var hash = 0;
+		let hash = 0;
 		for (let i = 0; i < str.length; i++) {
 			// Truncate to an integer
 			hash = (Math.imul(hash, 31) + str.charCodeAt(i)) | 0;

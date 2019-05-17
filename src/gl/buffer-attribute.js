@@ -1,11 +1,9 @@
 /**
- * @fileOverview GL Attribute defines the caracteristics of a piece of rendering data.
+ * @file GL Attribute defines the caracteristics of a piece of rendering data.
  *
  * @author Noodep
- * @version 0.3
+ * @version 0.33
  */
-
-'use strict';
 
 export default class BufferAttribute {
 
@@ -31,5 +29,6 @@ export default class BufferAttribute {
 	get stride() {
 		return this._stride;
 	}
+
 }
 

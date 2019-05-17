@@ -1,16 +1,16 @@
 /**
- * @fileOverview Object3d class that represent a object that can be manipulated in a 3d environment.
+ * @file Object3d class that represent a object that can be manipulated in a 3d environment.
+ *
  * @author Noodep
- * @version 0.34
+ * @version 0.89
  */
 
-'use strict';
-
-import {UUIDv4} from '../crypto/uuid.js';
+import { UUIDv4 } from '../crypto/uuid.js';
 import Mat4 from '../math/mat4.js';
 import Quat from '../math/quat.js';
 import Vec3 from '../math/vec3.js';
 import Listenable from '../util/listenable.js';
+import { wl } from '../util/log.js';
 
 /**
  * Object in a 3D environment.
@@ -18,15 +18,14 @@ import Listenable from '../util/listenable.js';
  * Fires the following event types:
  * property:
  *	'origin' - When the origin property updates; passes the new origin
- *	'orientation' - When the orientation property updates; passed the new
- *	orientation
+ *	'orientation' - When the orientation property updates; passed the new orientation
  *	'size' - When the size proprty updates; passes the new size
  *	'model' - When the world model updates; passes the new matrix
  *	'add' - When a child is added; passes this object and the added one
  *	'remove' - When a child is removed; passes this object and the removed one
  *	'destroy' - Directly after destroy() has been called
- * Note that "updates" above does not necessarily imply "changes"; the events
- * will be fired when the property has the possibility of changing.
+ * Note that "updates" above does not necessarily imply "changes"
+ * Events will be fired when the property has the possibility of changing.
  */
 export default class Object3D extends Listenable {
 
@@ -35,36 +34,25 @@ export default class Object3D extends Listenable {
 	 * @memberOf module:3d
 	 * @alias Object3d
 	 *
-	 * @param {String} [id=uuidv4()] - this object id.
+	 * @param {String} [id=uuidv4()] - this object's id.
+	 * @param {String} [name=''] - this object's name.
 	 * @param {Array} [origin] - a 3 dimensional array containing this object origin.
 	 * @param {Array} [orientation] - a 3 dimensional array containing this object orientation. Euler angles in radians around XYZ.
 	 * @param {Array} [scale] - a 3 dimensional array containing this object scaling.
 	 * @return {module:3d.Object3d} - The newly created Object3d.
 	 */
-	constructor({ id = UUIDv4(), origin = new Vec3(), orientation = Quat.identity(), scale = Vec3.identity() } = {}) {
+	constructor(id = UUIDv4(), name = '', origin = Vec3.NULL, orientation = Quat.IDENTITY, scale = Vec3.IDENTITY) {
 		super();
 		this._id = id;
+		this._name = name;
 		this._parent = undefined;
 		this._children = new Set();
-		this._origin = origin;
-		this._orientation = orientation;
-		this._scale = scale;
+		this._origin = Vec3.from(origin);
+		this._orientation = Quat.from(orientation);
+		this._scale = Vec3.from(scale);
 		this._is_model_valid = false;
 		this._local_model = Mat4.identity();
 		this._world_model = Mat4.identity();
-
-		// Private transformations, applied before the public ones, which are
-		// not accessable (directly: they are incorporated into the local and
-		// world model matrices) from outside. These transformations are
-		// forewarded to children through this._world_model. TODO Create some
-		// function/intermediate matrix not containing the private
-		// transformations so that, for example, an outside object can get a
-		// matrix/transformed vector corresponding to the transformations it can
-		// see through the public getters (like Renderer.prototype.toWorldRoot()
-		// in the old version of Goblin).
-		this._private_origin = new Vec3();
-		this._private_orientation = Quat.identity();
-		this._private_scale = Vec3.identity();
 
 		// Temporary quaternion used for rotations. This avoids creating one each time.
 		this._tmp_quaternion = new Quat();
@@ -77,6 +65,24 @@ export default class Object3D extends Listenable {
 	 */
 	get id() {
 		return this._id;
+	}
+
+	/**
+	 * Getter for this Object3d display name.
+	 *
+	 * @return {String} - This Object3d display name.
+	 */
+	get name() {
+		return this._name;
+	}
+
+	/**
+	 * Setter for this Object3d display name.
+	 *
+	 * @param {module:3d.object3d} name - This Object3d new display name.
+	 */
+	set name(name) {
+		this._name = name;
 	}
 
 	/**
@@ -184,64 +190,6 @@ export default class Object3D extends Listenable {
 	get worldModel() {
 		return this._world_model;
 	}
-
-	/**
-	 * Getter for this Object3d private origin.
-	 *
-	 * @return {module:math.Vec3} - This Object3d private origin.
-	 */
-	get _privateOrigin() {
-		return this._private_origin;
-	}
-
-	/**
-	 * Setter for this Object3d private origin.
-	 *
-	 * @param {module:math.Vec3} v3 - This Object3d new private origin.
-	 */
-	set _privateOrigin(v3) {
-		this._private_origin.copy(v3);
-		this._invalidateModel();
-	}
-
-	/**
-	 * Getter for this Object3d private orientation.
-	 *
-	 * @return {module:math.Quat} - This Object3d private orientation.
-	 */
-	get _privateOrientation() {
-		return this._private_orientation;
-	}
-
-	/**
-	 * Setter for this Object3d private orientation.
-	 *
-	 * @param {module:math.Quat} q - This Object3d new private orientation.
-	 */
-	set _privateOrientation(q) {
-		this._private_orientation.copy(q);
-		this._invalidateModel();
-	}
-
-	/**
-	 * Getter for this Object3d private scaling.
-	 *
-	 * @return {module:math.Vec3} - This Object3d private scaling.
-	 */
-	get _privateScale() {
-		return this._private_scale;
-	}
-
-	/**
-	 * Setter for this Object3d private scaling.
-	 *
-	 * @param {module:math.Vec3} v3 - This Object3d new private scaling.
-	 */
-	set _privateScale(v3) {
-		this._private_scale.copy(v3);
-		this._invalidateModel();
-	}
-
 
 	/**
 	 * Adds a child to this Object3d
@@ -459,10 +407,6 @@ export default class Object3D extends Listenable {
 		this._local_model.translate(this._origin);
 		this._local_model.rotateQuat(this._orientation);
 		this._local_model.scaleVec(this._scale);
-
-		this._local_model.translate(this._private_origin);
-		this._local_model.rotateQuat(this._private_orientation);
-		this._local_model.scaleVec(this._private_scale);
 
 		this._computeWorldModel();
 		this._is_model_valid = true;

@@ -1,0 +1,47 @@
+{
+	"env": {
+		"browser": true,
+		"es6": true,
+		"node": true
+	},
+	"extends": "eslint:recommended",
+	"parserOptions": {
+		"ecmaVersion": 8,
+		"sourceType": "module"
+	},
+	"rules": {
+		"indent": [
+			"error",
+			"tab"
+		],
+		"linebreak-style": [
+			"error",
+			"unix"
+		],
+		"no-console": [
+			"error",
+			{"allow": ["time", "timeEnd"]}
+		],
+		"no-multiple-empty-lines": [
+			"error",
+			{"max": 1, "maxEOF": 1, "maxBOF": 0}
+		],
+		"no-trailing-spaces": "error",
+		"padded-blocks": [
+			"error",
+			{"classes": "always"}
+		],
+		"quotes": [
+			"error",
+			"single"
+		],
+		"semi": [
+			"error",
+			"always"
+		],
+		"strict": [
+			"error",
+			"global"
+		]
+	}
+}

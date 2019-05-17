@@ -2,10 +2,9 @@
  * @file Scene.
  *
  * @author noodep
- * @version 0.08
+ * @version 0.22
  */
 
-import Mat4 from '../math/mat4.js';
 import Renderable from '../gl/renderable.js';
 import Object3D from './object3d.js';
 
@@ -22,11 +21,11 @@ export default class Scene extends Object3D {
 	 * @memberOf module:3d
 	 * @alias Scene
 	 *
-	 * @param {String} [scene_id] - This scene id.
+	 * @param {String} [name] - This scene display name.
 	 * @return {module:3d.Scene} - The newly created Scene.
 	 */
-	constructor(scene_id) {
-		super({id: scene_id});
+	constructor(name) {
+		super(undefined, name);
 		this._lights = new Set();
 		this._cameras = new Array();
 
@@ -39,8 +38,8 @@ export default class Scene extends Object3D {
 		// Private instance symbols used to store the bound 'add' and 'remove'
 		// event handlers on each parent object so that the listeners can be
 		// removed when an object is removed from the scene.
-		this._add_handler_symbol = Symbol(this.id + " add");
-		this._remove_handler_symbol = Symbol(this.id + " remove");
+		this._add_handler_symbol = Symbol(`${this.id} add`);
+		this._remove_handler_symbol = Symbol(`${this.id} remove`);
 	}
 
 	/**
@@ -48,7 +47,7 @@ export default class Scene extends Object3D {
 	 * particular order.
 	 */
 	getRenderables() {
-		var renderables = [];
+		const renderables = [];
 		for (let cache of this._program_cache.values()) {
 			for (let renderable of cache) {
 				renderables.push(renderable);
@@ -90,8 +89,8 @@ export default class Scene extends Object3D {
 		// renderer and could be defined as an arrow function in the
 		// constructor, it is created with the add listener for conisistency and
 		// possible future changes).
-		var add_event_handler = this._addEventHandler.bind(this, renderer);
-		var remove_event_handler = this._removeEventHandler.bind(this);
+		const add_event_handler = this._addEventHandler.bind(this, renderer);
+		const remove_event_handler = this._removeEventHandler.bind(this);
 
 		object.addListener('add', add_event_handler);
 		object.addListener('remove', remove_event_handler);
@@ -100,7 +99,7 @@ export default class Scene extends Object3D {
 
 		for(let child_object of object.getChildren()) {
 			this.initializeObject3D(renderer, child_object);
-		};
+		}
 	}
 
 	/**
@@ -178,7 +177,7 @@ export default class Scene extends Object3D {
 				renderable.setShaderState(renderer);
 				renderable.render(renderer);
 				renderable.cleanShaderState(renderer);
-			};
+			}
 		});
 
 		renderer.useProgram(null);

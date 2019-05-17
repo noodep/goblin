@@ -1,24 +1,27 @@
 {
-  "name": "goblin",
-  "version": "1.0.0",
-  "description": "Javascript utility library",
-  "main": "goblin.js",
-  "directories": {
-    "test": "test"
-  },
-  "scripts": {
-    "start": "node lib/test-server.js . 31337"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Noodep/Goblin.git"
-  },
-  "author": "Noodep",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/Noodep/Goblin/issues"
-  },
-  "homepage": "https://github.com/Noodep/Goblin#readme",
-  "dependencies": {},
-  "devDependencies": {}
+	"name": "goblin",
+	"version": "1.0.0",
+	"description": "Javascript utility library",
+	"main": "goblin.js",
+	"directories": {
+		"test": "test"
+	},
+	"scripts": {
+		"start": "node lib/test-server.js . 31337",
+		"lint": "node node_modules/eslint/bin/eslint.js src"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Noodep/Goblin.git"
+	},
+	"author": "Noodep",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/Noodep/Goblin/issues"
+	},
+	"homepage": "https://github.com/Noodep/Goblin#readme",
+	"dependencies": {
+		"eslint": "^5.16.0"
+	},
+	"devDependencies": {}
 }

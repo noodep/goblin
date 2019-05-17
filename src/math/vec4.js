@@ -1,16 +1,14 @@
 /**
- * @fileOverview 4-component vector manipulation.
+ * @file 4-component vector manipulation.
  *
- * @author Zach Peltzer
- * @version 0.00
+ * @author Noodep
+ * @version 0.16
  */
-
-'use strict';
 
 const EPSILON32 = Math.pow(2, -23);
 
-import {Vec2View} from './vec2.js';
-import {Vec3View} from './vec3.js';
+import { Vec2View } from './vec2.js';
+import { Vec3View } from './vec3.js';
 
 /**
  * 4-component floating point vector.
@@ -57,13 +55,15 @@ export default class Vec4 {
 	}
 
 	/**
-	 * Creates a new vector from a javascript Array.
+	 * Creates a new vector from an Array-like (magnitude property and integer keys) object (Array, Vec2, Vec3, etc.).
 	 *
 	 * @param {Array} - The array containing the values with which to initialize this vector.
 	 * @return {module:math.Vec4} - The newly created vector set with values from the specified Array.
 	 */
 	static from(array) {
-		return new Vec4(array[0], array[1], array[2], array[3]);
+		if(array && array[Symbol.iterator])
+			return new Vec4(array[0], array[1], array[2], array[3]);
+		return undefined;
 	}
 
 	/**
@@ -75,8 +75,7 @@ export default class Vec4 {
 	 * the difference v - u.
 	 */
 	static difference(u, v) {
-		return new Vec4(v._v[0] - u._v[0], v._v[1] - u._v[1],
-				v._v[2] - u._v[2], v._[3] - u._v[3]);
+		return new Vec4(v._v[0] - u._v[0], v._v[1] - u._v[1], v._v[2] - u._v[2], v._[3] - u._v[3]);
 	}
 
 	/**
@@ -94,8 +93,7 @@ export default class Vec4 {
 	 * @return {module:math.Vec4} - The newly created vector set with random values between 0.0 and 1.0.
 	 */
 	static random() {
-		return new Vec4(
-				Math.random(), Math.random(), Math.random(), Math.random());
+		return new Vec4(Math.random(), Math.random(), Math.random(), Math.random());
 	}
 
 	/**
@@ -461,6 +459,7 @@ export default class Vec4 {
 	toString(p = 16) {
 		return `<${this._v[0].toFixed(p)}, ${this._v[1].toFixed(p)}, ${this._v[2].toFixed(p)}, ${this._v[3].toFixed(p)}>`;
 	}
+
 }
 
 // Some aliases
@@ -477,29 +476,29 @@ Vec4.prototype.mul = Vec4.prototype.multiply;
 const xProperty = {
 	//configurable: false,
 	//enumerable: false,
-	get: function() { return this._v[0] },
-	set: function(val) { this._v[0] = val }
+	get: function() { return this._v[0]; },
+	set: function(val) { this._v[0] = val; }
 };
 
 const yProperty = {
 	//configurable: false,
 	//enumerable: false,
-	get: function() { return this._v[1] },
-	set: function(val) { this._v[1] = val }
+	get: function() { return this._v[1]; },
+	set: function(val) { this._v[1] = val; }
 };
 
 const zProperty = {
 	//configurable: false,
 	//enumerable: false,
-	get: function() { return this._v[2] },
-	set: function(val) { this._v[2] = val }
+	get: function() { return this._v[2]; },
+	set: function(val) { this._v[2] = val; }
 };
 
 const wProperty = {
 	//configurable: false,
 	//enumerable: false,
-	get: function() { return this._v[3] },
-	set: function(val) { this._v[3] = val }
+	get: function() { return this._v[3]; },
+	set: function(val) { this._v[3] = val; }
 };
 
 Object.defineProperties(Vec4.prototype, {

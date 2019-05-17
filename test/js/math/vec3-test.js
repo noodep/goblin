@@ -1,4 +1,9 @@
-'use strict';
+/**
+ * @fileOverview 3 components vector manipulation.
+ *
+ * @author Noodep
+ * @version 0.57
+ */
 
 import {epsilon32Equals as ee, randomFloat32 as rf32} from '../test-utils.js';
 import Vec3 from '/src/math/vec3.js';
@@ -13,6 +18,7 @@ export default class Vec3Test {
 		Vec3Test.testDefaultConstruction();
 		Vec3Test.testIdentityConstruction();
 		Vec3Test.testArrayConstruction();
+		Vec3Test.testBadArrayConstruction();
 		Vec3Test.testZeroAssignement();
 		Vec3Test.testRandomAssignement();
 		Vec3Test.testSetters();
@@ -55,6 +61,14 @@ export default class Vec3Test {
 		const z = rf32();
 		const v = Vec3.from([x, y, z]);
 		console.assert(vectorEpsilonEquals(v, x, y, z), 'Assigned array construction failed.');
+	}
+
+	static testBadArrayConstruction() {
+		let v$undefined = Vec3.from(undefined);
+		console.assert(v$undefined === undefined, `Array construction from undefined failed should be ${undefined}, was ${v$undefined}`);
+
+		let v$number = Vec3.from(Math.random());
+		console.assert(v$number === undefined, `Array construction from undefined failed should be ${undefined}, was ${v$number}`);
 	}
 
 	static testZeroAssignement() {
@@ -227,6 +241,7 @@ export default class Vec3Test {
 		const z = rf32();
 		const v = new Vec3(x, y, z);
 		const arr = [x, y, z];
+
 		console.assert(arr.length == v.length, 'Vec3 length not the same as corresponding array.');
 
 		const v$from = Vec3.from(v);

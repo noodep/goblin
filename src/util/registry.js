@@ -1,12 +1,10 @@
 /**
- * @fileOverview Utility to globally register objects with IDs for easy
- * lookup/iteration.
+ * @file Utility to globally register objects with IDs for easy lookup/iteration.
  *
+ * @author Noodep
  * @author Zach Peltzer
- * @version 0.02
+ * @version 0.08
  */
-
-'use strict';
 
 /**
  * Use a file-scoped symbol to access the map for extra security.
@@ -83,7 +81,8 @@ export default class Registry {
 	entries() {
 		return this[REGISTRY_MAP].entries();
 	}
-};
+
+}
 
 /**
  * Aliases to a global registry and its functions.

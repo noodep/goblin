@@ -1,15 +1,12 @@
 /**
- * @fileOverview Geometry object containing data and its description.
+ * @file Geometry object containing data and its description.
  * This geometry is to be rendered with draw elements.
  *
  * @author Noodep
- * @version 0.3
+ * @version 0.34
  */
 
-'use strict';
-
 import Geometry from './geometry.js';
-import {UUIDv4} from '../../crypto/uuid.js';
 
 /**
  * Function to assign to the destroy property after the VBO and EBO are created.
@@ -63,5 +60,6 @@ export default class IndexedGeometry extends Geometry {
 	render(renderer) {
 		renderer._context.drawElements(this._rendering_type, this._size, this._index_type, 0);
 	}
+
 }
 

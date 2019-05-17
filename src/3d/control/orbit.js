@@ -1,9 +1,9 @@
 /**
- * @fileOverview Object manipulantion through orbit control.
+ * @file Object manipulantion through orbit control.
+ *
  * @author Noodep
- * @version 0.27
+ * @version 0.33
  */
-'use strict';
 
 import Quat from '../../math/quat.js';
 import Vec3 from '../../math/vec3.js';
@@ -192,14 +192,14 @@ export default class OrbitControl {
 	/**
 	 * Handles mouse down events.
 	 */
-	_handleMouseDown(e) {
+	_handleMouseDown() {
 		this._element.addEventListener('mousemove', this._mouseMoveHandler);
 	}
 
 	/**
 	 * Handles mouse up events.
 	 */
-	_handleMouseUp(e) {
+	_handleMouseUp() {
 		this._element.removeEventListener('mousemove', this._mouseMoveHandler);
 	}
 
@@ -250,7 +250,6 @@ export default class OrbitControl {
 		e.preventDefault();
 
 		const delta = this._sensitivityAdjustedDisplacement(e, Math.sign(e.deltaY) * OrbitControl.DEFAULT_ZOOM_SENSITIVITY);
-		console.log(delta);
 		this._zoom(delta);
 		this._updatePosition();
 	}
@@ -300,6 +299,7 @@ export default class OrbitControl {
 		this._target.setPosition(this._position);
 		this._target.setOrientation(this._azimuth);
 	}
+
 }
 
 OrbitControl.HALFPI = Math.PI / 2.0;

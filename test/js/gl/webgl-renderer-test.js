@@ -1,6 +1,11 @@
-'use strict';
+/**
+ * @file Test suite for webgl rendering.
+ *
+ * @author Noodep
+ * @version 0.35
+ */
 
-import {Logger, DEFAULT_LOGGER as DL} from '/src/util/log.js';
+import { Logger, DEFAULT_LOGGER as DL } from '/src/util/log.js';
 import WebGLRenderer from '/src/gl/webgl-renderer.js';
 import SimpleProgram from '/src/gl/programs/simple.js';
 import SamplerProgram from '/src/gl/programs/sampler.js';
@@ -14,16 +19,14 @@ import Renderable from '/src/gl/renderable.js';
 import Camera from '/src/3d/camera/camera.js';
 import OrbitControl from '/src/3d/control/orbit.js';
 
-
 import Box from '/src/3d/geometry/box.js';
 import Plane from '/src/3d/geometry/plane.js';
 import TextUtils from '/src/text/text-utils.js';
 
-
 export default class WebGLRendererTest {
 
 	static runAll() {
-		console.log(`%c----- Testing /src/gl/webgl-renderer.js -----`,'color:blue;');
+		console.log(`%c----- Testing /src/gl/webgl-renderer.js -----`,'color:teal;');
 		console.time('Perf');
 
 		DL.level = Logger.LEVELS.NONE;
@@ -41,7 +44,7 @@ export default class WebGLRendererTest {
 		WebGLRendererTest.textDisplay();
 
 		console.timeEnd('Perf');
-		console.log(`%c---------------------------------------`,'color:blue;');
+		console.log(`%c---------------------------------------`,'color:teal;');
 		console.log('\n');
 	}
 
@@ -88,12 +91,10 @@ export default class WebGLRendererTest {
 		camera.setPosition(new Vec3(0.0,0.0,3.0));
 		scene.addCamera(camera);
 
-		const cube = new Renderable({
+		const cube = Renderable.create({
+			id: name,
 			geometry: Box.createBoxGeometry(),
 			program: 'simple',
-			options: {
-				id: name
-			}
 		});
 		scene.addChild(cube);
 
@@ -124,13 +125,11 @@ export default class WebGLRendererTest {
 		for(let axis_idx = 0; axis_idx < 3; axis_idx++) {
 			cubes[axis_idx] = [];
 			for(let rotation_type_idx = 0; rotation_type_idx < 5; rotation_type_idx++) {
-				const cube = new Renderable({
+				const cube = Renderable.create({
+					id: `cube_${axis_idx}_${rotation_type_idx}`,
+					origin: Vec3.from([x_offset, y_offset, 0.0]),
 					geometry: Box.createBoxGeometry(),
 					program: 'simple',
-					options: {
-						id: `cube_${axis_idx}_${rotation_type_idx}`,
-						origin: new Vec3(x_offset, y_offset, 0.0)
-					}
 				});
 				cubes[axis_idx][rotation_type_idx] = cube;
 				scene.addChild(cube);
@@ -196,12 +195,10 @@ export default class WebGLRendererTest {
 		const camera = new Camera({aspect_ratio: r.aspectRatio});
 		scene.addCamera(camera);
 
-		const cube = new Renderable({
+		const cube = Renderable.create({
+			id: 'cube',
 			geometry: Box.createBoxGeometry(),
 			program: 'simple',
-			options: {
-				id: 'cube'
-			}
 		});
 		scene.addChild(cube);
 
@@ -244,12 +241,10 @@ export default class WebGLRendererTest {
 		const SCALE_VECTOR = new Vec3(SCALE, SCALE, SCALE);
 
 		for(let i = 0 ; i < NUM ; i++) {
-			const cube = new Renderable({
+			const cube = Renderable.create({
+				id: `cube${i}`,
 				geometry: Box.createBoxGeometry(),
 				program: 'simple',
-				options: {
-					id: `cube${i}`
-				}
 			});
 
 			const ix = (i%SIZE);
@@ -315,12 +310,10 @@ export default class WebGLRendererTest {
 		const geometry = new Geometry(buffer, buffer.length / 3, WebGLRenderingContext.TRIANGLES);
 		geometry.addAttribute('position', new BufferAttribute(3));
 
-		const cube = new Renderable({
+		const cube = Renderable.create({
+			id: 'cube',
 			geometry: geometry,
 			program: 'simple',
-			options: {
-				id: 'cube'
-			}
 		});
 
 		scene.addChild(cube);
@@ -375,12 +368,10 @@ export default class WebGLRendererTest {
 
 		const indexed_geometry = new IndexedGeometry(indices, vertices, WebGLRenderingContext.TRIANGLES, WebGLRenderingContext.UNSIGNED_INT);
 		indexed_geometry.addAttribute('position', new BufferAttribute(3));
-		const cubes = new Renderable({
+		const cubes = Renderable.create({
+			id: 'cubes',
 			geometry: indexed_geometry,
 			program: 'simple',
-			options: {
-				id: 'cubes'
-			}
 		});
 
 		scene.addChild(cubes);
@@ -409,14 +400,12 @@ export default class WebGLRendererTest {
 		const SCALE = Math.sqrt(SIZE);
 
 		for(let i = 0 ; i < NUM ; i++) {
-			const cube = new Renderable({
+			const cube = Renderable.create({
+				id: `cube_${i}`,
+				origin: Vec3.random().add(new Vec3(-0.5, -0.5, -0.5)).scale(SIZE),
+				scale: Vec3.random().scale(1 / SIZE),
 				geometry: Box.createIndexedColoredBoxOutlineGeometry(),
 				program: 'color',
-				options: {
-					id: `cube_${i}`,
-					origin: Vec3.random().add(new Vec3(-0.5, -0.5, -0.5)).scale(SIZE),
-					scale: Vec3.random().scale(1 / SIZE)
-				}
 			});
 
 			scene.addChild(cube);
@@ -445,24 +434,20 @@ export default class WebGLRendererTest {
 		const SCALE = Math.sqrt(SIZE);
 
 		for(let i = 0 ; i < NUM ; i++) {
-			const cube = new Renderable({
+			const cube = Renderable.create({
+				id: `cube_${i}`,
+				origin: Vec3.random().add(new Vec3(-1, -0.5, -0.5)).scale(SIZE),
+				scale: Vec3.random().scale(1 / SIZE),
 				geometry: Box.createIndexedBoxGeometryWithNormals(),
 				program: 'light',
-				options: {
-					id: `cube_${i}`,
-					origin: Vec3.random().add(new Vec3(-1, -0.5, -0.5)).scale(SIZE),
-					scale: Vec3.random().scale(1 / SIZE)
-				}
 			});
 
-			const plane = new Renderable({
+			const plane = Renderable.create({
+				id: `plane_${i}`,
+				origin: Vec3.random().add(new Vec3(0, -0.5, -0.5)).scale(SIZE),
+				scale: Vec3.random().scale(1 / SIZE),
 				geometry: Plane.createIndexedPlaneGeometryWithNormals(),
 				program: 'light',
-				options: {
-					id: `plane_${i}`,
-					origin: Vec3.random().add(new Vec3(0, -0.5, -0.5)).scale(SIZE),
-					scale: Vec3.random().scale(1 / SIZE)
-				}
 			});
 
 			scene.addChild(cube);
@@ -493,14 +478,12 @@ export default class WebGLRendererTest {
 		const SCALE = Math.sqrt(SIZE);
 
 		for(let i = 0 ; i < NUM ; i++) {
-			const cube = new Renderable({
+			const cube = Renderable.create({
+				id: `cube_${i}`,
+				origin: Vec3.random().add(new Vec3(-0.5, -0.5, -0.5)).scale(SIZE),
+				scale: Vec3.random().scale(1 / SIZE),
 				geometry: Box.createIndexedColoredBoxGeometryWithNormals(Vec3.random()),
 				program: 'light',
-				options: {
-					id: `cube_${i}`,
-					origin: Vec3.random().add(new Vec3(-0.5, -0.5, -0.5)).scale(SIZE),
-					scale: Vec3.random().scale(1 / SIZE)
-				}
 			});
 
 			scene.addChild(cube);
@@ -528,13 +511,12 @@ export default class WebGLRendererTest {
 		const SCALE_VECTOR = new Vec3(SCALE, SCALE, SCALE);
 		const BYTE_OFFSET = 6*2*3*3;
 
-		const sun = new Renderable({
+		const sun = Renderable.create({
+			id: 'sun',
 			geometry: Box.createIndexedColoredBoxGeometry(new Vec3(0.99, 0.72, 0.07), new Vec3(), SCALE_VECTOR),
 			program: 'color',
-			options: {
-				id: 'sun'
-			}
 		});
+
 		scene.addChild(sun);
 		scene.addListener('update', (delta_t) => {
 			sun.rotateZ(delta_t / 20000);
@@ -543,12 +525,10 @@ export default class WebGLRendererTest {
 		const createRandomBox = (parent, dist, create) => {
 			const color = Vec3.random();
 
-			const cube = new Renderable({
+			const cube = Renderable.create({
+				id: `cube${Math.random()}`,
 				geometry: Box.createIndexedColoredBoxGeometry(color, new Vec3(), SCALE_VECTOR),
 				program: 'color',
-				options: {
-					id: `cube${Math.random()}`
-				}
 			});
 
 			cube.translateX(Math.random() * dist - dist / 2.0);
@@ -608,14 +588,12 @@ export default class WebGLRendererTest {
 		const text_geometry = TextUtils.createTextGeometry(string, atlas);
 		const text_width = TextUtils.getTextWidth(string, atlas);
 
-		const hello_world = new Renderable({
+		const hello_world = Renderable.create({
+			id: 'hello-world',
+			origin: new Vec3(-text_width / 2.0, 0.0, 0.0),
+			orientation: Quat.fromAxisRotation(-Math.PI / 2.0, Vec3.X_AXIS),
 			geometry: text_geometry,
 			program: 'sampler',
-			options: {
-				id: 'hello-world',
-				origin: new Vec3(-text_width / 2.0, 0.0, 0.0),
-				orientation: Quat.fromAxisRotation(-Math.PI / 2.0, Vec3.X_AXIS)
-			}
 		});
 		scene.addChild(hello_world);
 

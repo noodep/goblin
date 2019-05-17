@@ -1,11 +1,9 @@
 /**
- * @fileOverview Polygon triangulation utility
+ * @file Polygon triangulation utility
  *
  * @author Noodep
- * @version 0.13
+ * @version 0.22
  */
-
-'use strict';
 
 import Vec2 from '../vec2.js';
 
@@ -61,7 +59,7 @@ export default class Triangulator {
 		let last_positive = true;
 		let start = p1;
 
-		while(true) {
+		for(;;) {
 			// Only three vertices remaining.
 			if(p1 == n1) {
 				// console.log('Only three vertices, last triangle !');
@@ -89,7 +87,7 @@ export default class Triangulator {
 				// Same angle, choose based on previous
 				if(Math.abs(dot_positive - dot_negative)) {
 					if(last_positive)
-						is_negative_ear = false
+						is_negative_ear = false;
 					else
 						is_positive_ear = false;
 				}
@@ -133,6 +131,7 @@ export default class Triangulator {
 
 				if(start == p1)
 				{
+					// eslint-disable-next-line no-console
 					console.warn('We went full circle without finding an ear. Cancelling!');
 					this._triangles = undefined;
 					this._triangle_count = 0;
@@ -143,7 +142,7 @@ export default class Triangulator {
 	}
 
 	_addTriangle($1, $2, $3) {
-		const t = [$1, $2, $3]
+		const t = [$1, $2, $3];
 		this._triangles[this._triangle_count++] = t;
 	}
 
@@ -183,7 +182,7 @@ export default class Triangulator {
 	}
 
 	_nextActive(index) {
-		while(true) {
+		for(;;) {
 			if(++index == this._p.length)
 				index = 0;
 
@@ -193,7 +192,7 @@ export default class Triangulator {
 	}
 
 	_prevActive(index) {
-		while(true) {
+		for(;;) {
 			if(--index == -1)
 				index = this._p.length - 1;
 
@@ -201,5 +200,6 @@ export default class Triangulator {
 				return index;
 		}
 	}
+
 }
 

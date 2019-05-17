@@ -1,15 +1,12 @@
 /**
- * @fileOverview Renderable class that represent a Object3D  thst can be rendered on screen.
+ * @file Renderable class that represent a Object3D  thst can be rendered on screen.
  * Such object has a shader program associated with it and a geometry of some kind.
  *
  * @author Noodep
- * @version 0.04
+ * @version 0.17
  */
 
-'use strict';
-
-import {dl, wl} from '../util/log.js';
-import {UUIDv4} from '../crypto/uuid.js';
+import { dl } from '../util/log.js';
 import Object3D from '../3d/object3d.js';
 
 /**
@@ -28,8 +25,8 @@ export default class Renderable extends Object3D {
 	 * @param {Object} options - Object3D options - id, origin, orientation, scale.
 	 * @return {module:3d.Renderable} - The newly created Renderable.
 	 */
-	constructor({ geometry, program, options } = {}) {
-		super(options);
+	constructor(id, name, origin, orientation, scale, geometry, program) {
+		super(id, name, origin, orientation, scale);
 		this._geometry = geometry;
 		this._program = program;
 		this._model_uniform_location = undefined;
@@ -37,6 +34,10 @@ export default class Renderable extends Object3D {
 		// Place to store a geometry between being set with the setter and being
 		// initialized later in setShaderState().
 		this._new_geometry = null;
+	}
+
+	static create({ id, name, origin, orientation, scale, geometry, program } = {}) {
+		return new Renderable(id, name, origin, orientation, scale, geometry, program);
 	}
 
 	get program() {
@@ -90,5 +91,6 @@ export default class Renderable extends Object3D {
 		this._geometry.destroy();
 		super.destroy();
 	}
+
 }
 

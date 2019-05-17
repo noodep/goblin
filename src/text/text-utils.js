@@ -1,11 +1,9 @@
 /**
- * @fileOverview Utility classes for 3d font manipulation.
+ * @file Utility classes for 3d font manipulation.
  *
  * @author Noodep
- * @version 0.05
+ * @version 0.1
  */
-
-'use strict';
 
 import Vec3 from '../math/vec3.js';
 import IndexedGeometry from '../gl/geometry/indexed-geometry.js';
@@ -14,6 +12,7 @@ import BufferAttribute from '../gl/buffer-attribute.js';
 import Plane from '../3d/geometry/plane.js';
 
 export default class TextUtils {
+
 	static createAtlas(glyphs, size, family, color = 'white') {
 		const canvas = document.createElement('canvas');
 		const context = canvas.getContext('2d');
@@ -39,7 +38,6 @@ export default class TextUtils {
 		context.font = `${size}px ${family}`;
 		context.fillStyle = `${color}`;
 		context.textBaseline = 'bottom';
-
 
 		let offset_x = 0;
 		let offset_y = size;
@@ -155,6 +153,7 @@ export default class TextUtils {
 	static _nearestPowerOfTwo(value) {
 		return Math.pow(2, Math.ceil(Math.log2(value)));
 	}
+
 }
 
 TextUtils.GLYPH_SETS = {

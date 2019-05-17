@@ -1,13 +1,11 @@
 /**
- * @fileOverview Base class to make an object generate events.
+ * @file Base class to make an object generate events.
  *
- * @author lePerdu
- * @version 0.00
+ * @author Noodep
+ * @version 0.05
  */
 
-import {el} from './log.js';
-
-'use strict';
+import { el } from './log.js';
 
 /**
  * Class to make an object notify a set of observers when changes occur for this
@@ -36,7 +34,7 @@ export default class Listenable {
 			return;
 		}
 
-		var type_listeners = this._listeners.get(type);
+		let type_listeners = this._listeners.get(type);
 		if (!type_listeners) {
 			type_listeners = new Set();
 			this._listeners.set(type, type_listeners);
@@ -52,7 +50,7 @@ export default class Listenable {
 	 * @param {Function} listener - The listener to remove.
 	 */
 	removeListener(type, listener) {
-		var type_listeners = this._listeners.get(type);
+		let type_listeners = this._listeners.get(type);
 		if (type_listeners) {
 			if (type_listeners.delete(listener) && type_listeners.size === 0) {
 				this._listeners.delete(type);
@@ -79,7 +77,7 @@ export default class Listenable {
 	 * type.
 	 */
 	getListeners(type) {
-		var type_listeners = this._listeners.get(type);
+		let type_listeners = this._listeners.get(type);
 		if (type_listeners) {
 			return type_listeners.values();
 		} else {
@@ -95,7 +93,7 @@ export default class Listenable {
 	 * @param {...} - The arguments to pass to the listener.
 	 */
 	notify(type) {
-		var type_listeners = this._listeners.get(type);
+		let type_listeners = this._listeners.get(type);
 		if (type_listeners) {
 			const args = Array.prototype.slice.call(arguments, 1);
 			for (let listener of type_listeners) {

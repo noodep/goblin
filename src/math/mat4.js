@@ -1,5 +1,5 @@
 /**
- * @fileOverview Matrix manipulation library for computer graphics assuming column major flatenning.
+ * @file Matrix manipulation library for computer graphics assuming column major flatenning.
  * We use matrix notation for elements, starting at 1. First is the row second is the column
  *
  * [00]:e11  [04]:e12  [08]:e13  [12]:e14
@@ -8,10 +8,8 @@
  * [03]:e41  [07]:e42  [11]:e43  [15]:e44
  *
  * @author Noodep
- * @version 0.48
+ * @version 0.6
  */
-
-'use strict';
 
 export default class Mat4 {
 
@@ -88,7 +86,7 @@ export default class Mat4 {
 		this._m[1] = xy2 + wz2;
 		this._m[2] = xz2 - wy2;
 
-		this._m[4] = xy2 - wz2
+		this._m[4] = xy2 - wz2;
 		this._m[5] = 1.0 - xx2 - zz2;
 		this._m[6] = yz2 + wx2;
 
@@ -235,7 +233,6 @@ export default class Mat4 {
 		return this;
 	}
 
-
 	/**
 	 * Sets this matrix to a rotation of theta around the specified axis.
 	 *
@@ -272,7 +269,6 @@ export default class Mat4 {
 
 		return this;
 	}
-
 
 	/**
 	 * Transposes the matrix.
@@ -719,7 +715,10 @@ export default class Mat4 {
 	 * @return {module:math.Mat4} - The scaled matrix.
 	 */
 	scaleVec(vec3) {
-		var x = vec3.x, y = vec3.y, z = vec3.z;
+		const x = vec3.x;
+		const y = vec3.y;
+		const z = vec3.z;
+
 		this._m[0]  *= x;
 		this._m[1]  *= x;
 		this._m[2]  *= x;
@@ -767,11 +766,12 @@ export default class Mat4 {
 	 * @return {String} - Human readable string of the matrix.
 	 */
 	toString(p = 16) {
-		return `[[${this._m[0].toFixed(p)}, ${this._m[4].toFixed(p)}, ${this._m[8].toFixed(p)}, ${this._m[12].toFixed(p)}],`
-			+  ` [${this._m[1].toFixed(p)}, ${this._m[5].toFixed(p)}, ${this._m[9].toFixed(p)}, ${this._m[13].toFixed(p)}],`
+		return `[[${this._m[0].toFixed(p)}, ${this._m[4].toFixed(p)}, ${this._m[8].toFixed(p)},  ${this._m[12].toFixed(p)}],`
+			+  ` [${this._m[1].toFixed(p)}, ${this._m[5].toFixed(p)}, ${this._m[9].toFixed(p)},  ${this._m[13].toFixed(p)}],`
 			+  ` [${this._m[2].toFixed(p)}, ${this._m[6].toFixed(p)}, ${this._m[10].toFixed(p)}, ${this._m[14].toFixed(p)}],`
 			+  ` [${this._m[3].toFixed(p)}, ${this._m[7].toFixed(p)}, ${this._m[11].toFixed(p)}, ${this._m[15].toFixed(p)}]]`;
 	}
+
 }
 
 /**
@@ -780,70 +780,71 @@ export default class Mat4 {
  */
 Object.defineProperties(Mat4.prototype, {
 	0: {
-		get: function() { return this._m[0] },
-		set: function(val) { this._m[0] = val }
+		get: function() { return this._m[0]; },
+		set: function(val) { this._m[0] = val; }
 	},
 	1: {
-		get: function() { return this._m[1] },
-		set: function(val) { this._m[1] = val }
+		get: function() { return this._m[1]; },
+		set: function(val) { this._m[1] = val; }
 	},
 	2: {
-		get: function() { return this._m[2] },
-		set: function(val) { this._m[2] = val }
+		get: function() { return this._m[2]; },
+		set: function(val) { this._m[2] = val; }
 	},
 	3: {
-		get: function() { return this._m[3] },
-		set: function(val) { this._m[3] = val }
+		get: function() { return this._m[3]; },
+		set: function(val) { this._m[3] = val; }
 	},
 	4: {
-		get: function() { return this._m[4] },
-		set: function(val) { this._m[4] = val }
+		get: function() { return this._m[4]; },
+		set: function(val) { this._m[4] = val; }
 	},
 	5: {
-		get: function() { return this._m[5] },
-		set: function(val) { this._m[5] = val }
+		get: function() { return this._m[5]; },
+		set: function(val) { this._m[5] = val; }
 	},
 	6: {
-		get: function() { return this._m[6] },
-		set: function(val) { this._m[6] = val }
+		get: function() { return this._m[6]; },
+		set: function(val) { this._m[6] = val; }
 	},
 	7: {
-		get: function() { return this._m[7] },
-		set: function(val) { this._m[7] = val }
+		get: function() { return this._m[7]; },
+		set: function(val) { this._m[7] = val; }
 	},
 	8: {
-		get: function() { return this._m[8] },
-		set: function(val) { this._m[8] = val }
+		get: function() { return this._m[8]; },
+		set: function(val) { this._m[8] = val; }
 	},
 	9: {
-		get: function() { return this._m[9] },
-		set: function(val) { this._m[9] = val }
+		get: function() { return this._m[9]; },
+		set: function(val) { this._m[9] = val; }
 	},
 	10: {
-		get: function() { return this._m[10] },
-		set: function(val) { this._m[10] = val }
+		get: function() { return this._m[10]; },
+		set: function(val) { this._m[10] = val; }
 	},
 	11: {
-		get: function() { return this._m[11] },
-		set: function(val) { this._m[11] = val }
+		get: function() { return this._m[11]; },
+		set: function(val) { this._m[11] = val; }
 	},
 	12: {
-		get: function() { return this._m[12] },
-		set: function(val) { this._m[12] = val }
+		get: function() { return this._m[12]; },
+		set: function(val) { this._m[12] = val; }
 	},
 	13: {
-		get: function() { return this._m[13] },
-		set: function(val) { this._m[13] = val }
+		get: function() { return this._m[13]; },
+		set: function(val) { this._m[13] = val; }
 	},
 	14: {
-		get: function() { return this._m[14] },
-		set: function(val) { this._m[14] = val }
+		get: function() { return this._m[14]; },
+		set: function(val) { this._m[14] = val; }
 	},
 	15: {
-		get: function() { return this._m[15] },
-		set: function(val) { this._m[15] = val }
+		get: function() { return this._m[15]; },
+		set: function(val) { this._m[15] = val; }
 	},
 });
+
 Mat4.prototype.length = 16;
 
 Mat4.NULL = new Mat4();

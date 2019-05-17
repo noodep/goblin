@@ -1,11 +1,9 @@
 /**
- * @fileOverview Triangular box geometry generation.
+ * @file Triangular box geometry generation.
  *
  * @author Noodep
- * @version 0.11
+ * @version 0.18
  */
-
- 'use strict';
 
 import Vec3 from '../../math/vec3.js';
 import BufferAttribute from '../../gl/buffer-attribute.js';
@@ -13,6 +11,7 @@ import Geometry from '../../gl/geometry/geometry.js';
 import IndexedGeometry from '../../gl/geometry/indexed-geometry.js';
 
 export default class Box {
+
 	static generateBoxVertices(origin = new Vec3(), scale = Vec3.identity()) {
 		const i = 0.5;
 		return [
@@ -79,7 +78,7 @@ export default class Box {
 		return geometry;
 	}
 
-	static createIndexedBoxOutlineGeometry(color = Vec3.identity(), origin = new Vec3(), scale = Vec3.identity(), vertex_typed_array = Float32Array, index_typed_array = Uint8Array, index_type = WebGLRenderingContext.UNSIGNED_BYTE, index_offset = 0) {
+	static createIndexedBoxOutlineGeometry(origin = new Vec3(), scale = Vec3.identity(), vertex_typed_array = Float32Array, index_typed_array = Uint8Array, index_type = WebGLRenderingContext.UNSIGNED_BYTE, index_offset = 0) {
 		// 8 vertices * 6 components by vertex
 		const indices = new index_typed_array(Box.generateOutlineBoxIndices(index_offset));
 		const vertices = Box.generateBoxVertices(origin, scale);
@@ -152,9 +151,9 @@ export default class Box {
 		let offset = 0;
 		Box.STRUCTURE.forEach(face => {
 			face.vertices.forEach(vertex => {
-				data.set(vertices[vertex], offset)
+				data.set(vertices[vertex], offset);
 				offset += 3;
-				data.set(face.normal, offset)
+				data.set(face.normal, offset);
 				offset += 3;
 			});
 		});
@@ -176,11 +175,11 @@ export default class Box {
 		let offset = 0;
 		Box.STRUCTURE.forEach(face => {
 			face.vertices.forEach(vertex => {
-				data.set(vertices[vertex], offset)
+				data.set(vertices[vertex], offset);
 				offset += 3;
-				data.set(color._v, offset)
+				data.set(color._v, offset);
 				offset += 3;
-				data.set(face.normal, offset)
+				data.set(face.normal, offset);
 				offset += 3;
 			});
 		});
@@ -193,6 +192,7 @@ export default class Box {
 
 		return geometry;
 	}
+
 }
 
 Box.INDICES = [

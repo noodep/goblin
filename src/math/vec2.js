@@ -1,11 +1,9 @@
 /**
- * @fileOverview 2 components vector manipulation.
+ * @file 2 components vector manipulation.
  *
  * @author Noodep
- * @version 0.12
+ * @version 0.27
  */
-
-'use strict';
 
 const EPSILON32 = Math.pow(2, -23);
 
@@ -37,16 +35,16 @@ export default class Vec2 {
 	}
 
 	/**
-	 * Creates a new vector from an Array-like (magnitude property and
-	 * integer keys) object (Array, Vec2, Vec3, etc.).
+	 * Creates a new vector from an Array-like (magnitude property and integer keys) object (Array, Vec2, Vec3, etc.).
 	 *
-	 * @param {Array} array - The array containing the values with which to
-	 * initialize this vector.
+	 * @param {Array} array - The array containing the values with which to initialize this vector.
 	 * @return {module:math.Vec2} - The newly created vector set with values
 	 * from the specified Array.
 	 */
 	static from(array) {
-		return new Vec2(array[0], array[1]);
+		if(array && array[Symbol.iterator])
+			return new Vec2(array[0], array[1]);
+		return undefined;
 	}
 
 	/**
@@ -304,10 +302,11 @@ export default class Vec2 {
 	toString(p = 16) {
 		return `<${this._v[0].toFixed(p)}, ${this._v[1].toFixed(p)}>`;
 	}
+
 }
 
 // Some aliases
-Vec2.prototype.dist = Vec2.prototype.distance
+Vec2.prototype.dist = Vec2.prototype.distance;
 Vec2.prototype.norm = Vec2.prototype.normal;
 Vec2.prototype.mag = Vec2.prototype.magnitude;
 Vec2.prototype.mag2 = Vec2.prototype.magnitude2;
@@ -321,15 +320,15 @@ Vec2.prototype.mul = Vec2.prototype.multiply;
 const xProperty = {
 	//configurable: false,
 	//enumerable: false,
-	get: function() { return this._v[0] },
-	set: function(val) { this._v[0] = val }
+	get: function() { return this._v[0]; },
+	set: function(val) { this._v[0] = val; }
 };
 
 const yProperty = {
 	//configurable: false,
 	//enumerable: false,
-	get: function() { return this._v[1] },
-	set: function(val) { this._v[1] = val }
+	get: function() { return this._v[1]; },
+	set: function(val) { this._v[1] = val; }
 };
 
 Object.defineProperties(Vec2.prototype, {

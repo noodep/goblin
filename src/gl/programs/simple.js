@@ -1,11 +1,9 @@
 /**
- * @fileOverview Class representing a simple OpenGL ES program.
+ * @file Class representing a simple OpenGL ES program.
  *
  * @author Noodep
- * @version 0.03
+ * @version 0.07
  */
-
-'use strict';
 
 import Mat4 from '../../math/mat4.js';
 import Program from '../program.js';
@@ -35,8 +33,8 @@ export default class SimpleProgram extends Program {
 		const c = renderer._context;
 
 		this._view_projection.copy(projection).multiply(view);
-		c.uniformMatrix4fv(this.getUniform('view_projection'),
-				false, this._view_projection.matrix);
+		c.uniformMatrix4fv(this.getUniform('view_projection'), false, this._view_projection.matrix);
 	}
+
 }
 

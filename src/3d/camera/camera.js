@@ -1,15 +1,16 @@
 /**
- * @fileOverview A simple camera state object.
+ * @file A simple camera state object.
+ *
  * @author Noodep
- * @version 0.4
+ * @version 0.44
  */
-'use strict';
 
 import Vec3 from '../../math/vec3.js';
 import Mat4 from '../../math/mat4.js';
 import Quat from '../../math/quat.js';
 
 export default class Camera {
+
 	constructor({aspect_ratio, fov_y = Camera.DEFAULT_FOV_Y, near_plane = Camera.DEFAULT_NEAR_PLANE_Z, far_plane = Camera.DEFAULT_FAR_PLANE_Z, position = new Vec3(), orientation = Quat.identity()}) {
 		// Perspective
 		this._aspect_ratio = aspect_ratio;
@@ -161,6 +162,7 @@ export default class Camera {
 	toString(precision = 16) {
 		return `{position:${this._position.toString(precision)}, orientation: ${this._orientation.toString(precision)}}`;
 	}
+
 }
 
 Camera.DEFAULT_FOV_Y = 45.0;

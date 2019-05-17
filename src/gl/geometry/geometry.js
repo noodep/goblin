@@ -1,14 +1,11 @@
 /**
- * @fileOverview Geometry object containing data and it description.
+ * @file Geometry object containing data and it description.
  *
  * @author Noodep
- * @version 0.3
+ * @version 0.36
  */
 
-'use strict';
-
-import {wl} from '../../util/log.js';
-import {UUIDv4} from '../../crypto/uuid.js';
+import { wl } from '../../util/log.js';
 
 /**
  * Function to assign to the destroy property after the VBO and VAO are created.
@@ -69,7 +66,7 @@ export default class Geometry {
 
 	initialize(renderer) {
 		if (this._initialized) {
-			wl("Geometry already initialized.");
+			wl('Geometry already initialized.');
 			this.destroy();
 		}
 
@@ -108,7 +105,8 @@ export default class Geometry {
 	destroy() {
 		// This is empty because it cannot delete the buffers until they are
 		// created and must use the same renderer for deletion as for creation.
-		wl("Geometry destroyed before initialized.");
+		wl('Geometry destroyed before initialized.');
 	}
+
 }
 
