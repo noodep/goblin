@@ -2,7 +2,7 @@
  * @file Test suite for webgl rendering.
  *
  * @author Noodep
- * @version 0.35
+ * @version 0.47
  */
 
 import { Logger, DEFAULT_LOGGER as DL } from '/src/util/log.js';
@@ -20,6 +20,7 @@ import Camera from '/src/3d/camera/camera.js';
 import OrbitControl from '/src/3d/control/orbit.js';
 
 import Box from '/src/3d/geometry/box.js';
+import Icosahedron from '/src/3d/geometry/icosahedron.js';
 import Plane from '/src/3d/geometry/plane.js';
 import TextUtils from '/src/text/text-utils.js';
 
@@ -42,6 +43,7 @@ export default class WebGLRendererTest {
 		WebGLRendererTest.testIndexedColoredGeometryWithNormals();
 		WebGLRendererTest.sceneModification();
 		WebGLRendererTest.textDisplay();
+		WebGLRendererTest.testIcosahedron();
 
 		console.timeEnd('Perf');
 		console.log(`%c---------------------------------------`,'color:teal;');
@@ -606,5 +608,36 @@ export default class WebGLRendererTest {
 			r.addScene(scene);
 		});
 	}
+
+	static testIcosahedron() {
+		const r = WebGLRendererTest.createWebGLContext('testIcosahedron');
+		const simple_p = r.createProgram('color', '/test/shaders/', SimpleProgram);
+		const scene = new Scene();
+
+		const camera = new Camera({aspect_ratio: r.aspectRatio});
+		camera.setPosition(new Vec3(0.0,0.0,3.0));
+		const control = new OrbitControl(camera, {element: r._canvas});
+		scene.addCamera(camera);
+
+		const icosahedron = Renderable.create({
+			id: name,
+			geometry: Icosahedron.createIndexedColoredIcosahedronOutlineGeometry(),
+			program: 'color',
+		});
+		scene.addChild(icosahedron);
+
+		scene.addListener('update', (delta_t) => {
+			icosahedron.rotateX(delta_t / 2000.0);
+			icosahedron.rotateY(delta_t / 1000.0);
+		});
+
+		r.enable(WebGLRenderingContext.DEPTH_TEST);
+		r.background = [0.1, 0.2, 0.3, 1.0];
+
+		simple_p.ready().then((e) => {
+			r.addScene(scene);
+		});
+	}
+
 }
 
