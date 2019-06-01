@@ -2,7 +2,7 @@
  * @file Object3d class that represent a object that can be manipulated in a 3d environment.
  *
  * @author Noodep
- * @version 0.89
+ * @version 0.9
  */
 
 import { UUIDv4 } from '../crypto/uuid.js';
@@ -260,12 +260,12 @@ export default class Object3D extends Listenable {
 	/**
 	 * Updates this object model matrix.
 	 */
-	update() {
+	update(delta_t) {
 		if(!this._is_model_valid)
 			this._revalidateModel();
 
 		for(let child of this._children)
-			child.update();
+			child.update(delta_t);
 	}
 
 	/**
