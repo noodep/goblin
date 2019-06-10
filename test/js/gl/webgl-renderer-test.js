@@ -2,7 +2,7 @@
  * @file Test suite for webgl rendering.
  *
  * @author Noodep
- * @version 0.47
+ * @version 0.68
  */
 
 import { Logger, DEFAULT_LOGGER as DL } from '/src/util/log.js';
@@ -609,9 +609,10 @@ export default class WebGLRendererTest {
 		});
 	}
 
-	static testIcosahedron() {
+	static async testIcosahedron() {
 		const r = WebGLRendererTest.createWebGLContext('testIcosahedron');
-		const simple_p = r.createProgram('color', '/test/shaders/', SimpleProgram);
+		const simple_p = r.createProgram('simple', '/test/shaders/', SimpleProgram);
+		const color_p = r.createProgram('color', '/test/shaders/', SimpleProgram);
 		const scene = new Scene();
 
 		const camera = new Camera({aspect_ratio: r.aspectRatio});
@@ -619,24 +620,41 @@ export default class WebGLRendererTest {
 		const control = new OrbitControl(camera, {element: r._canvas});
 		scene.addCamera(camera);
 
-		const icosahedron = Renderable.create({
-			id: name,
-			geometry: Icosahedron.createIndexedColoredIcosahedronOutlineGeometry(),
+		const uniform_icosahedron= Renderable.create({
+			id: 'uniform',
+			origin: new Vec3(-0.6, 0, 0),
+			geometry: Icosahedron.createIndexedIcosahedronOutlineGeometry(),
+			program: 'simple',
+		});
+
+		const colored_icosahedron= Renderable.create({
+			id: 'colored',
+			origin: new Vec3(0.6, 0, 0),
+			geometry: Icosahedron.createIndexedColoredIcosahedronOutlineGeometry(new Vec3(0.2, 0.4, 0.9)),
 			program: 'color',
 		});
-		scene.addChild(icosahedron);
+
+		scene.addChild(uniform_icosahedron);
+		scene.addChild(colored_icosahedron);
 
 		scene.addListener('update', (delta_t) => {
-			icosahedron.rotateX(delta_t / 2000.0);
-			icosahedron.rotateY(delta_t / 1000.0);
+			colored_icosahedron.rotateX(delta_t / (1000.0 + Math.random() * 8999));
+			colored_icosahedron.rotateY(delta_t / (1000.0 + Math.random() * 8999));
+			colored_icosahedron.rotateZ(delta_t / (1000.0 + Math.random() * 8999));
+			uniform_icosahedron.rotateX(delta_t / (1000.0 + Math.random() * 8999));
+			uniform_icosahedron.rotateY(delta_t / (1000.0 + Math.random() * 8999));
+			uniform_icosahedron.rotateZ(delta_t / (1000.0 + Math.random() * 8999));
 		});
 
 		r.enable(WebGLRenderingContext.DEPTH_TEST);
 		r.background = [0.1, 0.2, 0.3, 1.0];
 
-		simple_p.ready().then((e) => {
-			r.addScene(scene);
-		});
+		await Promise.all([
+			simple_p.ready(),
+			color_p.ready(),
+		]);
+
+		r.addScene(scene);
 	}
 
 }

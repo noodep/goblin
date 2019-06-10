@@ -2,7 +2,7 @@
  * @file Icosahedron geometry generation.
  *
  * @author Noodep
- * @version 0.58
+ * @version 0.67
  */
 
 import Vec3 from '../../math/vec3.js';
@@ -39,13 +39,33 @@ export default class Icosahedron {
 		return Icosahedron.OUTLINE_INDICES.map(index => index + index_offset);
 	}
 
-	static createIndexedColoredIcosahedronOutlineGeometry(color = Vec3.identity(), origin = new Vec3(), scale = Vec3.identity(), vertex_typed_array = Float32Array, index_typed_array = Uint8Array, index_type = WebGLRenderingContext.UNSIGNED_BYTE, index_offset = 0) {
-		// 12 vertices * 6 components by vertex
+	static createIndexedIcosahedronOutlineGeometry(origin = new Vec3(), scale = Vec3.identity(), vertex_typed_array = Float32Array, index_typed_array = Uint8Array, index_type = WebGLRenderingContext.UNSIGNED_BYTE, index_offset = 0) {
+		// 12 vertices * 3 components by vertex
+		const element_stride = 3;
 		const indices = new index_typed_array(Icosahedron.generateOutlineBoxIndices(index_offset));
 		const vertices = Icosahedron.generateBaseVertices(origin, scale);
-		const data = new vertex_typed_array(12 * 6);
+		const data = new vertex_typed_array(12 * element_stride);
 
+		let offset = 0;
+		vertices.forEach(vertex => {
+			data.set(vertex, element_stride * offset);
+			offset++;
+		});
+
+		const stride = element_stride * vertex_typed_array.BYTES_PER_ELEMENT;
+		const geometry = new IndexedGeometry(indices, data, WebGLRenderingContext.LINES, index_type);
+		geometry.addAttribute('position', new BufferAttribute(3, WebGLRenderingContext.FLOAT, 0, stride));
+
+		return geometry;
+	}
+
+	static createIndexedColoredIcosahedronOutlineGeometry(color = Vec3.identity(), origin = new Vec3(), scale = Vec3.identity(), vertex_typed_array = Float32Array, index_typed_array = Uint8Array, index_type = WebGLRenderingContext.UNSIGNED_BYTE, index_offset = 0) {
+		// 12 vertices * 6 components by vertex
 		const element_stride = 6;
+		const indices = new index_typed_array(Icosahedron.generateOutlineBoxIndices(index_offset));
+		const vertices = Icosahedron.generateBaseVertices(origin, scale);
+		const data = new vertex_typed_array(12 * element_stride);
+
 		let offset = 0;
 		vertices.forEach(vertex => {
 			data.set(vertex, element_stride * offset);
@@ -60,6 +80,7 @@ export default class Icosahedron {
 
 		return geometry;
 	}
+
 }
 
 Icosahedron.OUTLINE_INDICES = [
