@@ -8,7 +8,7 @@
  * [03]:e41  [07]:e42  [11]:e43  [15]:e44
  *
  * @author Noodep
- * @version 0.6
+ * @version 0.62
  */
 
 export default class Mat4 {
@@ -119,8 +119,6 @@ export default class Mat4 {
 		this._m[9] *= z;
 		this._m[10] *= z;
 		this._m[11] *= z;
-
-		return this;
 	}
 
 	/**
@@ -133,8 +131,6 @@ export default class Mat4 {
 		this._m[12] = v.x;
 		this._m[13] = v.y;
 		this._m[14] = v.z;
-
-		return this;
 	}
 
 	/**
