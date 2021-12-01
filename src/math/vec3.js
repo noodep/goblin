@@ -107,10 +107,10 @@ export default class Vec3 {
 	}
 
 	/**
-	 * Sets the same value for all componenets
+	 * Sets the same value for all components
 	 *
 	 * @param {number} value - The value to set.
-	 * @return {module:math.Vec3} - The vector with the componenets set.
+	 * @return {module:math.Vec3} - The vector with the components set.
 	 */
 	fill(value) {
 		this._v.fill(value);
@@ -245,7 +245,7 @@ export default class Vec3 {
 	/**
 	 * Inverts this vector.
 	 *
-	 * @return {module:math.Vec3} - The inversed vector.
+	 * @return {module:math.Vec3} - The inverse vector.
 	 */
 	invert() {
 		this._v[0] = 1.0 / this._v[0];
@@ -272,7 +272,7 @@ export default class Vec3 {
 	/**
 	 * Subtracts the specified vector from this vector.
 	 *
-	 * @param {module:math.Vec3} v3 - Vector to substract from this vector.
+	 * @param {module:math.Vec3} v3 - Vector to subtract from this vector.
 	 * @return {module:math.Vec3} - The translated vector.
 	 */
 	sub(v3) {
@@ -545,7 +545,7 @@ Object.defineProperties(Vec3.prototype, {
 Vec3.prototype[Symbol.isConcatSpreadable] = true;
 
 /**
- * Class to create a Vec3 who's componenets are stored in a specified
+ * Class to create a Vec3 who's components are stored in a specified
  * ArrayBuffer.
  *
  * @constructor

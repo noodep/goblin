@@ -79,10 +79,10 @@ export default class Vec2 {
 	}
 
 	/**
-	 * Sets the same value for all componenets
+	 * Sets the same value for all components
 	 *
 	 * @param {number} value - The value to set.
-	 * @return {module:math.Vec2} - The vector with the componenets set.
+	 * @return {module:math.Vec2} - The vector with the components set.
 	 */
 	fill(value) {
 		this._v.fill(value);
@@ -356,7 +356,7 @@ Object.defineProperties(Vec2.prototype, {
 Vec2.prototype[Symbol.isConcatSpreadable] = true;
 
 /**
- * Class to create a Vec2 who's componenets are stored in a specified
+ * Class to create a Vec2 who's components are stored in a specified
  * ArrayBuffer.
  *
  * @constructor

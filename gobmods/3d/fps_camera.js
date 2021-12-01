@@ -4,7 +4,7 @@
 	var DEFAULT_ACCELERATION = 0.0003;
 
 	function FPSCamera(camera, element) {
-		if(!(camera instanceof _.Camera)) throw new Error('You must pass a camera object to instanciate a FPS like camera');
+		if(!(camera instanceof _.Camera)) throw new Error('You must pass a camera object to instantiate a FPS like camera');
 		this._camera = camera;
 		var el = element || window;
 		this._acceleration = DEFAULT_ACCELERATION;

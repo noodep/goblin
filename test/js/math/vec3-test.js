@@ -19,8 +19,8 @@ export default class Vec3Test {
 		Vec3Test.testIdentityConstruction();
 		Vec3Test.testArrayConstruction();
 		Vec3Test.testBadArrayConstruction();
-		Vec3Test.testZeroAssignement();
-		Vec3Test.testRandomAssignement();
+		Vec3Test.testZeroAssignment();
+		Vec3Test.testRandomAssignment();
 		Vec3Test.testSetters();
 		Vec3Test.testEquals();
 		Vec3Test.testIdentity();
@@ -71,12 +71,12 @@ export default class Vec3Test {
 		console.assert(v$number === undefined, `Array construction from undefined failed should be ${undefined}, was ${v$number}`);
 	}
 
-	static testZeroAssignement() {
+	static testZeroAssignment() {
 		const v = new Vec3(0.0, 0.0, 0.0);
 		console.assert(vectorEquals(v, 0.0, 0.0, 0.0), 'Assigned construction (zeroes) failed.');
 	}
 
-	static testRandomAssignement() {
+	static testRandomAssignment() {
 		const x = rf32();
 		const y = rf32();
 		const z = rf32();

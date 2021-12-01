@@ -94,7 +94,7 @@
 		return this;
 	};
 
-	v4.prototype.substract = v4.prototype.sub = function(v) {
+	v4.prototype.subtract = v4.prototype.sub = function(v) {
 		if(v instanceof v4) return this.vadd(v.negateCopy());
 		else return this.nadd(-v);
 	};

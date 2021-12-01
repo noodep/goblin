@@ -160,7 +160,7 @@ export default class Triangulator {
 			return false;
 
 		const vertex_count = this._p.length;
-		// For each active vertex, checks if it lies inside the tirangle.
+		// For each active vertex, checks if it lies inside the triangle.
 		for(let idx = 0 ; idx < vertex_count ; idx++)
 		{
 			if(this._active[idx] && idx != $1 && idx != $2 && idx != $3) {

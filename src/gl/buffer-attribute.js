@@ -1,5 +1,5 @@
 /**
- * @file GL Attribute defines the caracteristics of a piece of rendering data.
+ * @file GL Attribute defines the characteristics of a piece of rendering data.
  *
  * @author Noodep
  * @version 0.33

@@ -29,7 +29,7 @@
 	/**
 	 * Creates an instance of a WEBGLContext.
 	 * @param {string} canvas_id The id of the canvas on which the context will be
-	 *     instanciated.
+	 *     instantiated.
 	 * @throws {Error} If canvas element with id canvas_id doesn't exist.
 	 * @return {module:graphics3d.WGLC}  The new WGLC object.
 	 */
@@ -52,7 +52,7 @@
 	 * @memberOf module:graphics3d
 	 * @alias WGLC
 	 * @param {DOMElement} canvas The canvas element on which the context will be
-	 *     instanciated.
+	 *     instantiated.
 	 * @param {object} options A javascript object containing the context
 	 *     parameters :
 	 * <ul>
@@ -66,7 +66,7 @@
 		this._camera = options.camera;
 
 		if(!this._canvas)
-			throw new Error('Unable to retreive the provided canvas element :' +
+			throw new Error('Unable to retrieve the provided canvas element :' +
 			canvas);
 
 		this.initContext();
@@ -289,7 +289,7 @@
 
 		this.c.validateProgram(p.program);
 		if (!this.c.getProgramParameter(p.program, this.c.VALIDATE_STATUS))
-			throw new Error('Unable to validate prgram');
+			throw new Error('Unable to validate program');
 
 		p.state = 'ready';
 
@@ -507,20 +507,20 @@
 		this._fbos[buffer_id] = fb;
 		this.makeFBOActive(buffer_id);
 
-		// Init color attachement
+		// Init color attachment
 		const tx_color = this.c.createTexture();
 		this.c.bindTexture(WebGLRenderingContext.TEXTURE_2D, tx_color);
 		this.c.texParameteri(WebGLRenderingContext.TEXTURE_2D, WebGLRenderingContext.TEXTURE_MAG_FILTER, WebGLRenderingContext.NEAREST);
 		this.c.texParameteri(WebGLRenderingContext.TEXTURE_2D, WebGLRenderingContext.TEXTURE_MIN_FILTER, WebGLRenderingContext.NEAREST);
 		this.c.texImage2D(WebGLRenderingContext.TEXTURE_2D, 0, WebGLRenderingContext.RGBA, this._canvas.width, this._canvas.height, 0, WebGLRenderingContext.RGBA, WebGLRenderingContext.UNSIGNED_BYTE, null);
 
-		// Init depth attachement
+		// Init depth attachment
 		const rb_depth = this.c.createRenderbuffer();
 		this._rbos[_.GUID()] = rb_depth;
 		this.c.bindRenderbuffer(WebGLRenderingContext.RENDERBUFFER, rb_depth);
 		this.c.renderbufferStorage(WebGLRenderingContext.RENDERBUFFER, WebGLRenderingContext.DEPTH_COMPONENT16, this._canvas.width, this._canvas.height);
 
-		// Binds attachements to the framebuffer
+		// Binds attachments to the framebuffer
 		this.c.framebufferTexture2D(WebGLRenderingContext.FRAMEBUFFER, WebGLRenderingContext.COLOR_ATTACHMENT0, WebGLRenderingContext.TEXTURE_2D, tx_color, 0);
 		this.c.framebufferRenderbuffer(WebGLRenderingContext.FRAMEBUFFER, WebGLRenderingContext.DEPTH_ATTACHMENT, WebGLRenderingContext.RENDERBUFFER, rb_depth);
 

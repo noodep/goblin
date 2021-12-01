@@ -147,7 +147,7 @@
 		// Create dragging force based on current velocity;
 		var v = this._velocity.clone().scale(this._friction);
 		this._velocity.add(this._acceleration);
-		this._velocity.substract(v); // remove dragging
+		this._velocity.subtract(v); // remove dragging
 
 		//Clamping velocity
 		if(Math.abs(this._velocity.x) < EPSILON) this._velocity.x = 0; 

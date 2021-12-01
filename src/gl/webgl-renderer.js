@@ -19,7 +19,7 @@ export default class WebGLRenderer {
 	 *
 	 * @param {HTMLCanvasElement} canvas - the canvas element to be used as context.
 	 * @param {String} context_type - type of the context backing this renderer (e.g. 'webgl', 'webgl2').
-	 * @param {Object} webgl_options - options that will be passed as argument when trying to instanciate the WebGLRenderingContext.
+	 * @param {Object} webgl_options - options that will be passed as argument when trying to instantiate the WebGLRenderingContext.
 	 * @return {module:gl.WebGLRenderer} - The newly created renderer.
 	 */
 	constructor({ canvas, context_type, webgl_options } = {}) {

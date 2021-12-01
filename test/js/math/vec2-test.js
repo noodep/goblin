@@ -12,8 +12,8 @@ export default class Vec2Test {
 		Vec2Test.testDefaultConstruction();
 		Vec2Test.testIdentityConstruction();
 		Vec2Test.testArrayConstruction();
-		Vec2Test.testZeroAssignement();
-		Vec2Test.testRandomAssignement();
+		Vec2Test.testZeroAssignment();
+		Vec2Test.testRandomAssignment();
 		Vec2Test.testSetters();
 		Vec2Test.testEquals();
 		Vec2Test.testIdentity();
@@ -53,12 +53,12 @@ export default class Vec2Test {
 		console.assert(vectorEpsilonEquals(v, x, y), 'Assigned array construction failed.');
 	}
 
-	static testZeroAssignement() {
+	static testZeroAssignment() {
 		const v = new Vec2(0.0, 0.0);
 		console.assert(vectorEquals(v, 0.0, 0.0), 'Assigned construction (zeroes) failed.');
 	}
 
-	static testRandomAssignement() {
+	static testRandomAssignment() {
 		const x = rf32();
 		const y = rf32();
 		const v = new Vec2(x,y);

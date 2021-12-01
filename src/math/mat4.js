@@ -1,5 +1,5 @@
 /**
- * @file Matrix manipulation library for computer graphics assuming column major flatenning.
+ * @file Matrix manipulation library for computer graphics assuming column major flattening.
  * We use matrix notation for elements, starting at 1. First is the row second is the column
  *
  * [00]:e11  [04]:e12  [08]:e13  [12]:e14
@@ -27,7 +27,7 @@ export default class Mat4 {
 
 	/**
 	 * Creates a new matrix using the content of the specified array assuming
-	 * column major flatenning.
+	 * column major flattening.
 	 *
 	 * @param {array} a - The array (or array-like) from which to copy the
 	 * values.
@@ -54,7 +54,7 @@ export default class Mat4 {
 	}
 
 	/**
-	 * Retruns this class underlying matrix.
+	 * Returns this class underlying matrix.
 	 */
 	get matrix() {
 		return this._m;
@@ -135,7 +135,7 @@ export default class Mat4 {
 
 	/**
 	 * Copies the values of the specified array into this matrix assuming column
-	 * major flatenning.
+	 * major flattening.
 	 *
 	 * @param {array} a - The array (or array-like) from which to copy the
 	 * values.
@@ -364,8 +364,8 @@ export default class Mat4 {
 	 *
 	 * @param {Number} fovy - Vertical field of view in radians.
 	 * @param {Number} ar - Aspect ratio defined by width / height
-	 * @param {Number} near - Z distance to the near cliping plane
-	 * @param {Number} far - Z distance to the far cliping plane
+	 * @param {Number} near - Z distance to the near clipping plane
+	 * @param {Number} far - Z distance to the far clipping plane
 	 * @return {module:math.Mat4} - This matrix set to the projection specified by the parameters above.
 	 */
 	perspective(fovy, ar, near, far) {
@@ -732,7 +732,7 @@ export default class Mat4 {
 	}
 
 	/**
-	 * Scales the matrix by the specified scalar uniformely along all three axis.
+	 * Scales the matrix by the specified scalar uniformly along all three axis.
 	 *
 	 * @param {Number} s - Scalar by which to scale the matrix along all axis.
 	 * @return {module:math.Mat4} - The scaled matrix.
