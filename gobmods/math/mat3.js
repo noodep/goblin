@@ -1,6 +1,6 @@
 /**
  * @fileOverview Matrix manipulation library for computer graphics assuming
- * column major flatenning.
+ * column major flattening.
  * @author Noodep
  * @version 0.3
  */

@@ -79,7 +79,7 @@ export default class Program {
 
 	/**
 	 * Creates a shader of the specified type.
-	 * This function tries to retreive a shader file at the URL _path/_name/_name.type-ext
+	 * This function tries to retrieve a shader file at the URL _path/_name/_name.type-ext
 	 * If successful, it then proceed to compile the shader.
 	 *
 	 * @param {Number} type - Must be WebGLRenderingContext.VERTEX_SHADER or WebGLRenderingContext.FRAGMENT_SHADER.

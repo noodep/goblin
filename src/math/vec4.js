@@ -12,7 +12,7 @@ import { Vec3View } from './vec3.js';
 
 /**
  * 4-component floating point vector.
- * The main use for this is to differentiare between points and directions in R3
+ * The main use for this is to differentiate between points and directions in R3
  * space; the w coordinate is 0 if the vector is a point and 1 otherwise.
  * Because there are 4-components, functions such as magnitude() or dot() may
  * not return the desired result. When performing operations on Vec4s, it may be
@@ -97,7 +97,7 @@ export default class Vec4 {
 	}
 
 	/**
-	 * A Vec2View using this Vec4's buffer. Other permutations of the comonents
+	 * A Vec2View using this Vec4's buffer. Other permutations of the components
 	 * like in GLSL are not supported.
 	 */
 	get xy() {
@@ -109,7 +109,7 @@ export default class Vec4 {
 	}
 
 	/**
-	 * A Vec3View using this Vec4's buffer. Other permutations of the comonents
+	 * A Vec3View using this Vec4's buffer. Other permutations of the components
 	 * like in GLSL are not supported.
 	 */
 	get xyz() {
@@ -121,10 +121,10 @@ export default class Vec4 {
 	}
 
 	/**
-	 * Sets the same value for all componenets
+	 * Sets the same value for all components
 	 *
 	 * @param {number} value - The value to set.
-	 * @return {module:math.Vec4} - The vector with the componenets set.
+	 * @return {module:math.Vec4} - The vector with the components set.
 	 */
 	fill(value) {
 		this._v.fill(value);
@@ -242,7 +242,7 @@ export default class Vec4 {
 	/**
 	 * Inverts (reciprocates all components) this vector.
 	 *
-	 * @return {module:math.Vec4} - The inversed vector.
+	 * @return {module:math.Vec4} - The inverse vector.
 	 */
 	invert() {
 		this._v[0] = 1.0 / this._v[0];
@@ -271,7 +271,7 @@ export default class Vec4 {
 	/**
 	 * Subtracts the specified vector from this vector.
 	 *
-	 * @param {module:math.Vec4} v4 - Vector to substract from this vector.
+	 * @param {module:math.Vec4} v4 - Vector to subtract from this vector.
 	 * @return {module:math.Vec4} - The translated vector.
 	 */
 	sub(v4) {
@@ -537,7 +537,7 @@ Object.defineProperties(Vec4.prototype, {
 Vec4.prototype[Symbol.isConcatSpreadable] = true;
 
 /**
- * Class to create a Vec4 who's componenets are stored in a specified
+ * Class to create a Vec4 who's components are stored in a specified
  * ArrayBuffer.
  *
  * @constructor

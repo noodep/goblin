@@ -1,5 +1,5 @@
 /**
- * @file Object manipulantion through orbit control.
+ * @file Object manipulation through orbit control.
  *
  * @author Noodep
  * @author jdiemert
@@ -92,8 +92,8 @@ export default class OrbitControl {
 	 * @param {Number} radius - The radius of the orbital sphere.
 	 * @param {Number} phi - The azimuth of the point to compute (from positive Z).
 	 * @param {Number} theta - The inclination of the point to compute (from positive Y).
-	 * @param {Vec3} [postition = new Vec3()] - The vector holding the result of the computation (also returned by this function).
-	 * @return {Vec3} - The computed postion.
+	 * @param {Vec3} [position = new Vec3()] - The vector holding the result of the computation (also returned by this function).
+	 * @return {Vec3} - The computed position.
 	 */
 	static position(offset, radius, phi, theta, position = new Vec3()) {
 		const sin_theta = Math.sin(theta);

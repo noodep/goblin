@@ -87,7 +87,7 @@ export default class Scene extends Object3D {
 		// to maintain references to them for removal in uninitializeObject3D().
 		// (Even though the remove listener does not have to bind to the
 		// renderer and could be defined as an arrow function in the
-		// constructor, it is created with the add listener for conisistency and
+		// constructor, it is created with the add listener for consistency and
 		// possible future changes).
 		const add_event_handler = this._addEventHandler.bind(this, renderer);
 		const remove_event_handler = this._removeEventHandler.bind(this);

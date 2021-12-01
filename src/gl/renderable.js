@@ -1,5 +1,5 @@
 /**
- * @file Renderable class that represent a Object3D  thst can be rendered on screen.
+ * @file Renderable class that represent a Object3D  that can be rendered on screen.
  * Such object has a shader program associated with it and a geometry of some kind.
  *
  * @author Noodep

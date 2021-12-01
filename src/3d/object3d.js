@@ -19,7 +19,7 @@ import { wl } from '../util/log.js';
  * property:
  *	'origin' - When the origin property updates; passes the new origin
  *	'orientation' - When the orientation property updates; passed the new orientation
- *	'size' - When the size proprty updates; passes the new size
+ *	'size' - When the size property updates; passes the new size
  *	'model' - When the world model updates; passes the new matrix
  *	'add' - When a child is added; passes this object and the added one
  *	'remove' - When a child is removed; passes this object and the removed one

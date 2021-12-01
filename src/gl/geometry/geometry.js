@@ -100,7 +100,7 @@ export default class Geometry {
 
 	/**
 	 * Deletes the WebGL buffer objects of this geometry from GPU memory. The
-	 * geometry can still be initiailzed later.
+	 * geometry can still be initialized later.
 	 */
 	destroy() {
 		// This is empty because it cannot delete the buffers until they are

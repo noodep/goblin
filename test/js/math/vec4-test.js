@@ -14,8 +14,8 @@ export default class Vec4Test {
 		Vec4Test.testDefaultConstruction();
 		Vec4Test.testIdentityConstruction();
 		Vec4Test.testArrayConstruction();
-		Vec4Test.testZeroAssignement();
-		Vec4Test.testRandomAssignement();
+		Vec4Test.testZeroAssignment();
+		Vec4Test.testRandomAssignment();
 		Vec4Test.testSetters();
 		Vec4Test.testEquals();
 		Vec4Test.testIdentity();
@@ -61,12 +61,12 @@ export default class Vec4Test {
 		console.assert(vectorEpsilonEquals(v, x, y, z, w), 'Assigned array construction failed.');
 	}
 
-	static testZeroAssignement() {
+	static testZeroAssignment() {
 		const v = new Vec4(0.0, 0.0, 0.0, 0.0);
 		console.assert(vectorEquals(v, 0.0, 0.0, 0.0, 0.0), 'Assigned construction (zeroes) failed.');
 	}
 
-	static testRandomAssignement() {
+	static testRandomAssignment() {
 		const x = rf32();
 		const y = rf32();
 		const z = rf32();
@@ -267,7 +267,7 @@ export default class Vec4Test {
 		try {
 			let count = 0;
 			for (let elem of v) { count++; }
-			console.assert(count == 4, 'Vec3 iterator yeilds wrong number of elements.');
+			console.assert(count == 4, 'Vec3 iterator yields wrong number of elements.');
 		} catch (e) {
 			console.error('Vec4 iteration failed.');
 		}

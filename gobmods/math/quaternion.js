@@ -36,9 +36,9 @@
 	}
 
 	/**
-	 * Creates a new quaternion from Eulerian angles (angles around x, y, and z axes).
+	 * Creates a new quaternion from Eutherian angles (angles around x, y, and z axes).
 	 * @pararm {module:math.v3} angles The angles around the x, y, and z axes, in that order
-	 * @return {module:math.quat} A new quaterion describing the compined rotation of the Eulerian angles
+	 * @return {module:math.quat} A new quaternion describing the compiled rotation of the Eutherian angles
 	 */
 	quat.fromEulerAngles = function(angles) {
 		var sx = Math.sin(angles.x / 2.0), sy = Math.sin(angles.y / 2.0), sz = Math.sin(angles.z / 2.0);
@@ -140,7 +140,7 @@
 	}
 
 	/**
-	 * The yaw (Euler angle for the y-axis) described by the quaterion.
+	 * The yaw (Euler angle for the y-axis) described by the quaternion.
 	 */
 	quat.prototype.getYaw = function() {
 		const x = this.v[0], y = this.v[1], z = this.v[2], w = this.v[3];
@@ -148,7 +148,7 @@
 	}
 
 	/**
-	 * The roll (Euler angle for the z-axis) described by the quaterion.
+	 * The roll (Euler angle for the z-axis) described by the quaternion.
 	 */
 	quat.prototype.getRoll = function() {
 		const x = this.v[0], y = this.v[1], z = this.v[2], w = this.v[3];
@@ -176,7 +176,7 @@
 	}
 
 	/**
-	 * Calculates the Euler angles described by the quaterion.
+	 * Calculates the Euler angles described by the quaternion.
 	 * The angles are applied in the order such that:
 	 *	q == quat.fromEulerAngles(q.toEulerAgles()).
 	 * @return {module:math.v3} A vector holding the Euler angles.
@@ -244,7 +244,7 @@
 
 	/**
 	 * Multiples this quaternion by another quaternion.
-	 * @param {modele:math.quat} q The quaternion to multiply by
+	 * @param {module:math.quat} q The quaternion to multiply by
 	 * @return {module:math.quat} The multiplied quaternion
 	 */
 	quat.prototype.mul = function(q) {

@@ -46,7 +46,7 @@ export default class Quaternion {
 	 * Axis will be normalized if necessary.
 	 *
 	 * @param {Number} theta - Angle by which to rotate around the specified axis.
-	 * @param {Vec3} axis - The vector representation of the axis arount which to rotate.
+	 * @param {Vec3} axis - The vector representation of the axis around which to rotate.
 	 *
 	 * @return {module:math.Quaternion} - The newly created quaternion representing the specified rotation.
 	 */
@@ -93,10 +93,10 @@ export default class Quaternion {
 
 	/**
 	 * Sets this quaternion values from an axis rotation specified by rotating by theta around the axis axis.
-	 * Axis will be normalized if necessarry.
+	 * Axis will be normalized if necessary.
 	 *
 	 * @param {Number} theta - Angle by which to rotate around the specified axis.
-	 * @param {Vec3} axis - The vector representation of the axis arount which to rotate.
+	 * @param {Vec3} axis - The vector representation of the axis around which to rotate.
 	 *
 	 * @return {module:math.Quaternion} - This quaternion representing the specified rotation.
 	 */
@@ -219,7 +219,7 @@ export default class Quaternion {
 	 * that q * q^-1 = 1 (the identity quaternion), and is equal to q* / |q|^2
 	 * (q* is the conjugate).
 	 *
-	 * @return {module:math.Quaterion} - The inverted quaterion.
+	 * @return {module:math.Quaternion} - The inverted quaternion.
 	 */
 	invert() {
 		const mag2 = this.magnitude2();
@@ -247,7 +247,7 @@ export default class Quaternion {
 
 	/**
 	 * Multiplies this quaternion by another quaternion.
-	 * This function does not allocate unecessary objects.
+	 * This function does not allocate unnecessary objects.
 	 *
 	 * @param {module:math.Quaternion} n - Quaternion by which to multiply this quaternion.
 	 * @return {module:math.Quaternion} - The resulting quaternion.
@@ -367,7 +367,7 @@ Quaternion.prototype[Symbol.isConcatSpreadable] = true;
 Quaternion.prototype.length = 4;
 
 /**
- * Class to create a Quaternion who's componenets are stored in a specified
+ * Class to create a Quaternion who's components are stored in a specified
  * ArrayBuffer.
  *
  * @constructor

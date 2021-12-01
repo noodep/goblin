@@ -39,7 +39,7 @@ export default class Registry {
 	}
 
 	/**
-	 * Unregisters an ID and the associated object. Returns the object
+	 * Unregister an ID and the associated object. Returns the object
 	 * registered with the ID, if any.
 	 */
 	unregister(id) {
