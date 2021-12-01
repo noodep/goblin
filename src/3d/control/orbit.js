@@ -2,7 +2,8 @@
  * @file Object manipulantion through orbit control.
  *
  * @author Noodep
- * @version 0.33
+ * @author jdiemert
+ * @version 0.40
  */
 
 import Quat from '../../math/quat.js';
@@ -11,17 +12,17 @@ import Vec4 from '../../math/vec4.js';
 
 export default class OrbitControl {
 
-	constructor(target, { element = document, radius = OrbitControl.DEFAULT_RADIUS, sensitivity = OrbitControl.DEFAULT_SENSITIVITY, sensitivity_modifier = OrbitControl.DEFAULT_SENSITIVITY_MODIFIER } = {}) {
+	constructor(target, { element = document, radius = OrbitControl.DEFAULT_RADIUS, phi = OrbitControl.DEFAULT_PHI, theta = OrbitControl.HALFPI, azimuth = new Quat(), inclination = new Quat(), sensitivity = OrbitControl.DEFAULT_SENSITIVITY, sensitivity_modifier = OrbitControl.DEFAULT_SENSITIVITY_MODIFIER } = {}) {
 		this._target = target;
 		this._element = element;
 		this._radius = radius;
-		this._theta = OrbitControl.HALFPI;
-		this._phi = 0.0;
+		this._theta = theta;
+		this._phi = phi;
 		this._offset = new Vec3();
 
 		this._position = new Vec3();
-		this._inclination = new Quat();
-		this._azimuth = new Quat();
+		this._inclination = inclination;
+		this._azimuth = azimuth;
 
 		this._sensitivity = sensitivity;
 		this._sensitivity_modifier = sensitivity_modifier;
@@ -36,7 +37,7 @@ export default class OrbitControl {
 	 *
 	 * @param {Object3D} object3d - The object to focus on.
 	 * @param {Vec3} [direction] - A vector describing the direction to look at.
-	 * @retrun {object} - The computed parameters (offset, radius, phi, theta).
+	 * @return {object} - The computed parameters (offset, radius, phi, theta).
 	 */
 	static lookAtParameters(object3d, direction) {
 		const parameters = {};
@@ -70,7 +71,7 @@ export default class OrbitControl {
 	 *
 	 * @param {Object3D} object3d - The object to focus on.
 	 * @param {Vec3} [direction] - A vector describing the direction to look at.
-	 * @retrun {object} - The computed parameters (position as Vec3 and orientation as Quat).
+	 * @return {object} - The computed parameters (position as Vec3 and orientation as Quat).
 	 */
 	static lookAt(object3d, direction) {
 		const { offset, radius, phi = 0, theta = 0 } = OrbitControl.lookAtParameters(object3d, direction);
@@ -92,7 +93,7 @@ export default class OrbitControl {
 	 * @param {Number} phi - The azimuth of the point to compute (from positive Z).
 	 * @param {Number} theta - The inclination of the point to compute (from positive Y).
 	 * @param {Vec3} [postition = new Vec3()] - The vector holding the result of the computation (also returned by this function).
-	 * @retrun {Vec3} - The computed postion.
+	 * @return {Vec3} - The computed postion.
 	 */
 	static position(offset, radius, phi, theta, position = new Vec3()) {
 		const sin_theta = Math.sin(theta);
@@ -111,7 +112,7 @@ export default class OrbitControl {
 	 * @param {Number} theta - The inclination of the point from which to look at the center (from positive Y).
 	 * @param {Quat} [orientation = new Quat()] - The quaternion holding the result of the computation (also returned by this function).
 	 * @param {Quat} [temp = new Quat()] - A temporary quaternion used by the computation (useful for avoiding the creation of a new object every time this function is called).
-	 * @retrun {Quat} - The computed orientation.
+	 * @return {Quat} - The computed orientation.
 	 */
 	static orientation(phi, theta, orientation = new Quat(), temp = new Quat()) {
 		temp.fromAxisRotation(theta - OrbitControl.HALFPI, Vec3.X_AXIS);
@@ -309,5 +310,5 @@ OrbitControl.DEFAULT_SENSITIVITY = 0.005;
 OrbitControl.DEFAULT_ZOOM_SENSITIVITY = 10.0;
 OrbitControl.DEFAULT_SENSITIVITY_MODIFIER = 0.1;
 OrbitControl.DEFAULT_RADIUS = 1.0;
+OrbitControl.DEFAULT_PHI = 0.0;
 OrbitControl.FOCUS_DISTANCE = 0.5;
-
