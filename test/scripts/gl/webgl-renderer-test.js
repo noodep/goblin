@@ -2,7 +2,7 @@
  * @file Test suite for webgl rendering.
  *
  * @author Noodep
- * @version 0.68
+ * @version 1.13
  */
 
 import { Logger, DEFAULT_LOGGER as DL } from '/src/util/log.js';
@@ -90,7 +90,7 @@ export default class WebGLRendererTest {
 		const scene = new Scene();
 
 		const camera = new Camera({aspect_ratio: r.aspectRatio});
-		camera.setPosition(new Vec3(0.0,0.0,3.0));
+		camera.origin = new Vec3(0.0,0.0,3.0);
 		scene.addCamera(camera);
 
 		const cube = Renderable.create({
@@ -118,7 +118,7 @@ export default class WebGLRendererTest {
 		const simple_p = r.createProgram('simple', '/test/shaders/', SimpleProgram);
 		const scene = new Scene();
 		const camera = new Camera({aspect_ratio: r.aspectRatio});
-		camera.setPosition(new Vec3(0.0,0.0,20.0));
+		camera.origin = new Vec3(0.0,0.0,20.0);
 		scene.addCamera(camera);
 
 		const cubes = [];
@@ -195,6 +195,7 @@ export default class WebGLRendererTest {
 		const simple_p = r.createProgram('simple', '/test/shaders/', SimpleProgram);
 		const scene = new Scene();
 		const camera = new Camera({aspect_ratio: r.aspectRatio});
+		camera.origin = new Vec3(0.0, 0.0, 3.0);
 		scene.addCamera(camera);
 
 		const cube = Renderable.create({
@@ -212,8 +213,7 @@ export default class WebGLRendererTest {
 		scene.addListener('update', (delta_t) => {
 			angle += delta_t / 10000;
 			camera_orientation.fromAxisRotation(angle, z_axis);
-			camera.setOrientation(camera_orientation);
-			camera.setPosition(new Vec3(0.0, 0.0, 3.0));
+			camera.orientation = camera_orientation;
 		});
 
 		r.enable(WebGLRenderingContext.DEPTH_TEST);
@@ -230,7 +230,7 @@ export default class WebGLRendererTest {
 		const simple_p = r.createProgram('simple', '/test/shaders/', SimpleProgram);
 		const scene = new Scene('main-scene');
 		const camera = new Camera({aspect_ratio: r.aspectRatio});
-		camera.setPosition(new Vec3(0.0, 0.0, 6.0));
+		camera.origin = new Vec3(0.0, 0.0, 6.0);
 		scene.addCamera(camera);
 
 		const control = new OrbitControl(camera, {element: r._canvas});
@@ -284,7 +284,7 @@ export default class WebGLRendererTest {
 		const simple_p = r.createProgram('simple', '/test/shaders/', SimpleProgram);
 		const scene = new Scene();
 		const camera = new Camera({aspect_ratio: r.aspectRatio});
-		camera.setPosition(new Vec3(0.0,0.0,3.0));
+		camera.origin = new Vec3(0.0,0.0,3.0);
 		scene.addCamera(camera);
 		const control = new OrbitControl(camera, {element: r._canvas});
 
@@ -338,9 +338,9 @@ export default class WebGLRendererTest {
 		const simple_p = r.createProgram('simple', '/test/shaders/', SimpleProgram);
 		const scene = new Scene();
 		const camera = new Camera({aspect_ratio: r.aspectRatio});
-		camera.setPosition(new Vec3(0.0,0.0,3.0));
 		scene.addCamera(camera);
 		const control = new OrbitControl(camera, {element: r._canvas});
+		control.radius = 5.0;
 
 		const NUM = Math.pow(16, 3);
 		const WIDTH = 2.0;
@@ -394,8 +394,7 @@ export default class WebGLRendererTest {
 		const camera = new Camera({aspect_ratio: r.aspectRatio});
 		scene.addCamera(camera);
 		const control = new OrbitControl(camera, {element: r._canvas});
-		camera.setPosition(new Vec3(0.0, 0.0, 2.0));
-
+		control.raduis = 2.0;
 
 		const NUM = Math.pow(4, 3);
 		const SIZE = 5.0;
@@ -428,8 +427,7 @@ export default class WebGLRendererTest {
 		const camera = new Camera({aspect_ratio: r.aspectRatio});
 		scene.addCamera(camera);
 		const control = new OrbitControl(camera, {element: r._canvas});
-		camera.setPosition(new Vec3(0.0, 0.0, 2.0));
-
+		control.radius = 2.0;
 
 		const NUM = Math.pow(4, 3);
 		const SIZE = 5.0;
@@ -472,8 +470,7 @@ export default class WebGLRendererTest {
 		const camera = new Camera({aspect_ratio: r.aspectRatio});
 		scene.addCamera(camera);
 		const control = new OrbitControl(camera, {element: r._canvas});
-		camera.setPosition(new Vec3(0.0, 0.0, 2.0));
-
+		control.radius = 2.0;
 
 		const NUM = Math.pow(4, 3);
 		const SIZE = 5.0;
@@ -505,9 +502,9 @@ export default class WebGLRendererTest {
 		const simple_p = r.createProgram('color', '/test/shaders/', SimpleProgram);
 		const scene = new Scene('main-scene');
 		const camera = new Camera({aspect_ratio: r.aspectRatio});
-		camera.setPosition(new Vec3(0.0, 0.0, 6.0));
 		scene.addCamera(camera);
 		const control = new OrbitControl(camera, {element: r._canvas});
+		control.radius = 6.0;
 
 		const SCALE = 0.01;
 		const SCALE_VECTOR = new Vec3(SCALE, SCALE, SCALE);
@@ -573,7 +570,7 @@ export default class WebGLRendererTest {
 		scene.addCamera(camera);
 
 		const control = new OrbitControl(camera, {element: r._canvas});
-		camera.setPosition(new Vec3(0.0, 0.0, 2.0));
+		control.radius = 27.0;
 
 		const atlas = TextUtils.createAtlas(TextUtils.GLYPH_SETS['basic+digits'], 64, 'monospace');
 
@@ -613,12 +610,14 @@ export default class WebGLRendererTest {
 		const r = WebGLRendererTest.createWebGLContext('testIcosahedron');
 		const simple_p = r.createProgram('simple', '/test/shaders/', SimpleProgram);
 		const color_p = r.createProgram('color', '/test/shaders/', SimpleProgram);
+
 		const scene = new Scene();
 
 		const camera = new Camera({aspect_ratio: r.aspectRatio});
-		camera.setPosition(new Vec3(0.0,0.0,3.0));
-		const control = new OrbitControl(camera, {element: r._canvas});
 		scene.addCamera(camera);
+
+		const control = new OrbitControl(camera, {element: r._canvas});
+		control.radius = 2;
 
 		const uniform_icosahedron= Renderable.create({
 			id: 'uniform',

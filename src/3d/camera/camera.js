@@ -2,7 +2,7 @@
  * @file A simple camera state object.
  *
  * @author Noodep
- * @version 0.44
+ * @version 0.66
  */
 
 import Vec3 from '../../math/vec3.js';
@@ -11,16 +11,18 @@ import Quat from '../../math/quat.js';
 
 export default class Camera {
 
-	constructor({aspect_ratio, fov_y = Camera.DEFAULT_FOV_Y, near_plane = Camera.DEFAULT_NEAR_PLANE_Z, far_plane = Camera.DEFAULT_FAR_PLANE_Z, position = new Vec3(), orientation = Quat.identity()}) {
-		// Perspective
-		this._aspect_ratio = aspect_ratio;
-		this._near_z = near_plane;
-		this._far_z = far_plane;
-		this._fov_y = fov_y;
+	constructor(options) {
+		({
+			// Perspective
+			aspect_ratio: this._aspect_ratio,
+			vertical_fov: this._vertical_fov = Camera.DEFAULT_VERTICAL_FOV,
+			near_clipping_plane: this._near_clipping_plane = Camera.DEFAULT_NEAR_CLIPPING_PLANE,
+			far_clipping_plane: this._far_clipping_plane = Camera.DEFAULT_FAR_CLIPPING_PLANE,
+			// Pose
+			origin: this._origin = new Vec3(),
+			orientation: this._orientation = new Quat(),
+		} = options);
 
-		// Pose
-		this._position = position;
-		this._orientation = orientation;
 		this._inverse_position = new Vec3();
 		this._inverse_orientation = new Quat();
 
@@ -49,95 +51,81 @@ export default class Camera {
 	/**
 	 * Sets this camera position and immediately updates the view.
 	 */
-	set position(v3) {
-		this._position.copy(v3);
+	set origin(origin) {
+		this._origin.copy(origin);
 		this.updateView();
 	}
 
 	/**
 	 * Sets this camera orientation and immediately updates the view.
 	 */
-	set orientation(q) {
-		this._orientation.copy(q);
+	set orientation(orientation) {
+		this._orientation.copy(orientation);
 		this.updateView();
 	}
 
 	/**
-	 * Sets this camera position.
+	 * Sets this camera vertical field of view and immediately updates the projection.
 	 */
-	setPosition(v3, force_update=true) {
-		this._position.copy(v3);
-		if(force_update)
-			this.updateView();
+	set verticalFov(vertical_fov) {
+		this._vertical_fov = vertical_fov;
+		this.updateProjection();
 	}
 
 	/**
-	 * Sets this camera orientation.
+	 * Sets this camera aspect ratio and immediately updates the projection.
 	 */
-	setOrientation(q, force_update=true) {
-		this._orientation.copy(q);
-		if(force_update)
-			this.updateView();
-	}
-
-	/**
-	 * Sets this camera aspect ratio.
-	 */
-	setAspectRatio(aspect_ratio, force_update=true) {
+	set aspectRatio(aspect_ratio) {
 		this._aspect_ratio = aspect_ratio;
-		if(force_update)
-			this.updateProjection();
+		this.updateProjection();
 	}
 
 	/**
-	 * Sets this camera vertical field of view.
+	 * Sets this camera near clipping plane and immediately updates the projection.
 	 */
-	setFovY(fov_y, force_update=true) {
-		this._fov_y = fov_y;
-		if(force_update)
-			this.updateProjection();
-	}
-
-	/**
-	 * Sets this camera clipping planes.
-	 */
-	setClippingPlanes(near, far, force_update=true) {
+	set nearClippingPlane(near_clipping_plane) {
 		this._near_z = near;
-		this._far_z = far;
-		if(force_update)
-			this.updateProjection();
+		this.updateProjection();
 	}
 
 	/**
-	 * Sets this camera near clipping plane.
+	 * Sets this camera far clipping plane and immediately updates the projection.
 	 */
-	setNearClippingPlane(near, force_update=true) {
-		this._near_z = near;
-		if(force_update)
-			this.updateProjection();
+	set farClippingPlane(far_clipping_plane) {
+		this._far_clipping_plane = far_clipping_plane;
+		this.updateProjection();
 	}
 
 	/**
-	 * Sets this camera far clipping plane.
+	 * Sets this camera origin and drientation and immediately updates the view.
 	 */
-	setFarClippingPlane(far, force_update=true) {
-		this._far_z = far;
-		if(force_update)
-			this.updateProjection();
+	setPose(origin, orientation) {
+		this._origin.copy(origin);
+		this._orientation.copy(orientation);
+		this.updateView();
+	}
+
+	/**
+	 * Sets this camera clipping planes and immediately updates the projection.
+	 */
+	setClippingPlanes(near_clipping_plane, far_clipping_plane) {
+		this._near_clipping_plane = near_clipping_plane;
+		this._far_clipping_plane = far_clipping_plane;
+		this.updateProjection();
 	}
 
 	/**
 	 * Returns the distance between the camera and the specified point.
 	 */
 	distanceTo(v3) {
-		return this._position.distance(v3);
+		return this._origin.distance(v3);
 	}
 
 	/**
 	 * Updates the projection matrix with this object values.
 	 */
 	updateProjection() {
-		this._projection.perspective(this._fov_y, this._aspect_ratio, this._near_z, this._far_z);
+		this._projection.perspective(this._vertical_fov, this._aspect_ratio, this._near_clipping_plane, this._far_clipping_plane);
 	}
 
 	/**
@@ -147,7 +135,7 @@ export default class Camera {
 	updateView() {
 		// Inverting a rotation and transposing is the same.
 		this._inverse_orientation.copy(this._orientation).invert();
-		this._inverse_position.copy(this._position);
+		this._inverse_position.copy(this._origin);
 		this._inverse_orientation.rotate(this._inverse_position).negate();
 		this._view.setRotationFromQuaternion(this._inverse_orientation);
 		this._view.translation = this._inverse_position;
@@ -160,12 +148,11 @@ export default class Camera {
 	 * @return {String} - A human readable String representing this camera pose.
 	 */
 	toString(precision = 16) {
-		return `{position:${this._position.toString(precision)}, orientation: ${this._orientation.toString(precision)}}`;
+		return `{position:${this._origin.toString(precision)}, orientation: ${this._orientation.toString(precision)}}`;
 	}
 
 }
 
-Camera.DEFAULT_FOV_Y = 45.0;
-Camera.DEFAULT_NEAR_PLANE_Z = 0.1;
-Camera.DEFAULT_FAR_PLANE_Z = 100.0;
-
+Camera.DEFAULT_VERTICAL_FOV = 45.0;
+Camera.DEFAULT_NEAR_CLIPPING_PLANE = 0.1;
+Camera.DEFAULT_FAR_CLIPPING_PLANE = 100.0;

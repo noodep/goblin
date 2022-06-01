@@ -1,4 +1,11 @@
-'use strict';
+/**
+ * @file goblin's tests
+ *
+ * runs all tests on page load
+ *
+ * @author noodep
+ * @version 0.05
+ */
 
 import LogTest from './util/log-test.js';
 import Vec2Test from './math/vec2-test.js';
@@ -8,6 +15,7 @@ import Mat4Test from './math/mat4-test.js';
 import ProgramTest from './gl/program-test.js';
 import WebGLRendererTest from './gl/webgl-renderer-test.js';
 import Object3DTest from './3d/object3d-test.js';
+import OrbitControlTest from './3d/control/orbit-test.js';
 
 document.addEventListener('DOMContentLoaded', (e) => {
 	LogTest.runAll();
@@ -18,5 +26,6 @@ document.addEventListener('DOMContentLoaded', (e) => {
 	ProgramTest.runAll();
 	WebGLRendererTest.runAll();
 	Object3DTest.runAll();
+	OrbitControlTest.runAll();
 });
 

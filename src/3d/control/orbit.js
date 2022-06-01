@@ -2,7 +2,7 @@
  * @file Object manipulantion through orbit control.
  *
  * @author Noodep
- * @version 0.33
+ * @version 0.5
  */
 
 import Quat from '../../math/quat.js';
@@ -126,7 +126,7 @@ export default class OrbitControl {
 	}
 
 	set offset(offset) {
-		this._offset = offset;
+		this._offset.copy(offset);
 		this._updatePosition();
 	}
 
@@ -169,6 +169,31 @@ export default class OrbitControl {
 		this._updatePosition();
 	}
 
+	/**
+	 * offsets the center of the virtual sphere from the perspective of the camera.
+	 */
+	offsetOrigin(horizontal_delta, vertical_delta) {
+		const sin_phi = Math.sin(this._phi);
+		const cos_phi = Math.cos(this._phi);
+
+		const delta_proj = -Math.cos(this._theta) * vertical_delta;
+
+		this._offset.x += sin_phi * delta_proj - cos_phi * horizontal_delta;
+		this._offset.z += cos_phi * delta_proj + sin_phi * horizontal_delta;
+		this._offset.y += Math.sin(this._theta) * vertical_delta;
+
+		this._updatePosition();
+	}
+
+	/**
+	 * Moves the camera on the virtual sphere.
+	 */
+	moveOnSphere(horizontal_delta, vertical_delta) {
+		this._moveHorizontally(-horizontal_delta);
+		this._moveVertically(-vertical_delta);
+		this._updatePosition();
+	}
+
 	reset() {
 		this._offset.fill(0.0);
 		this._theta = OrbitControl.HALFPI;
@@ -207,40 +232,13 @@ export default class OrbitControl {
 	 * Handles dragging of the target.
 	 */
 	_handleMouseMove(e) {
+		const horizontal_delta = this._sensitivityAdjustedDisplacement(e, e.movementX);
+		const vertical_delta = this._sensitivityAdjustedDisplacement(e, e.movementY);
+
 		if(e.shiftKey)
-			this._offsetOrigin(e);
+			this.offsetOrigin(horizontal_delta, vertical_delta);
 		else
-			this._moveOnSphere(e);
-	}
-
-	/**
-	 * Offset the center of the virtual sphere.
-	 */
-	_offsetOrigin(e) {
-		const horizontal_delta = this._sensitivityAdjustedDisplacement(e, e.movementX);
-		const vertical_delta = this._sensitivityAdjustedDisplacement(e, e.movementY);
-		const sin_phi = Math.sin(this._phi);
-		const cos_phi = Math.cos(this._phi);
-
-		const delta_proj = -Math.cos(this._theta) * vertical_delta;
-
-		this._offset.x += sin_phi * delta_proj - cos_phi * horizontal_delta;
-		this._offset.z += cos_phi * delta_proj + sin_phi * horizontal_delta;
-		this._offset.y += Math.sin(this._theta) * vertical_delta;
-
-		this._updatePosition();
-	}
-
-	/**
-	 * Move the camera on the virtual sphere.
-	 */
-	_moveOnSphere(e) {
-		const horizontal_delta = this._sensitivityAdjustedDisplacement(e, e.movementX);
-		const vertical_delta = this._sensitivityAdjustedDisplacement(e, e.movementY);
-
-		this._moveHorizontally(-horizontal_delta);
-		this._moveVertically(-vertical_delta);
-		this._updatePosition();
+			this.moveOnSphere(horizontal_delta, vertical_delta);
 	}
 
 	/**
@@ -296,8 +294,7 @@ export default class OrbitControl {
 		OrbitControl.position(this._offset, this._radius, this._phi, this._theta, this._position);
 		OrbitControl.orientation(this._phi, this._theta, this._azimuth, this._inclination);
 
-		this._target.setPosition(this._position);
-		this._target.setOrientation(this._azimuth);
+		this._target.setPose(this._position, this._azimuth);
 	}
 
 }
