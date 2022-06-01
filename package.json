@@ -21,7 +21,6 @@
 	},
 	"homepage": "https://github.com/Noodep/Goblin#readme",
 	"dependencies": {
-		"eslint": "^5.16.0"
-	},
-	"devDependencies": {}
+		"eslint": "^8.0.0"
+	}
 }

@@ -2,12 +2,11 @@
  * @file Icosahedron geometry generation.
  *
  * @author Noodep
- * @version 0.67
+ * @version 0.68
  */
 
 import Vec3 from '../../math/vec3.js';
 import BufferAttribute from '../../gl/buffer-attribute.js';
-import Geometry from '../../gl/geometry/geometry.js';
 import IndexedGeometry from '../../gl/geometry/indexed-geometry.js';
 
 export default class Icosahedron {
