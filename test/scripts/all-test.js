@@ -4,7 +4,7 @@
  * runs all tests on page load
  *
  * @author noodep
- * @version 0.05
+ * @version 0.07
  */
 
 import LogTest from './util/log-test.js';
@@ -17,7 +17,7 @@ import WebGLRendererTest from './gl/webgl-renderer-test.js';
 import Object3DTest from './3d/object3d-test.js';
 import OrbitControlTest from './3d/control/orbit-test.js';
 
-document.addEventListener('DOMContentLoaded', (e) => {
+document.addEventListener('DOMContentLoaded', () => {
 	LogTest.runAll();
 	Vec2Test.runAll();
 	Vec3Test.runAll();
@@ -28,4 +28,3 @@ document.addEventListener('DOMContentLoaded', (e) => {
 	Object3DTest.runAll();
 	OrbitControlTest.runAll();
 });
-

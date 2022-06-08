@@ -1,4 +1,9 @@
-'use strict';
+/**
+ * @file vec4 tests
+ *
+ * @author noodep
+ * @version 0.69
+ */
 
 import {epsilon32Equals as ee, randomFloat32 as rf32} from '../test-utils.js';
 import Vec2 from '/src/math/vec2.js';
@@ -8,7 +13,7 @@ import Vec4 from '/src/math/vec4.js';
 export default class Vec4Test {
 
 	static runAll() {
-		console.log(`%c----- Testing /src/math/vec4.js -----`,'color:blue;');
+		console.log('%c----- Testing /src/math/vec4.js -----','color:blue;');
 		console.time('Perf');
 
 		Vec4Test.testDefaultConstruction();
@@ -38,7 +43,7 @@ export default class Vec4Test {
 		Vec4Test.testVec3View();
 
 		console.timeEnd('Perf');
-		console.log(`%c------------------------------------`,'color:blue;');
+		console.log('%c------------------------------------','color:blue;');
 		console.log('\n');
 	}
 
@@ -266,7 +271,11 @@ export default class Vec4Test {
 
 		try {
 			let count = 0;
-			for (let elem of v) { count++; }
+			const it = v[Symbol.iterator]();
+
+			while(!it.next().done)
+				count++;
+
 			console.assert(count == 4, 'Vec3 iterator yeilds wrong number of elements.');
 		} catch (e) {
 			console.error('Vec4 iteration failed.');
@@ -306,6 +315,7 @@ export default class Vec4Test {
 		v4.z = rf32();
 		console.assert(v3.x == v4.x && v3.y == v4.y && v3.z == v4.z, 'Vec4 setters do not set Vec3 view components.');
 	}
+
 }
 
 function vectorEpsilonEquals(v, x, y, z, w) {

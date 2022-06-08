@@ -2,7 +2,7 @@
  * @file orbit control tests
  *
  * @author noodep
- * @version 0.58
+ * @version 0.59
  */
 
 import Vec3 from '/src/math/vec3.js';
@@ -42,4 +42,3 @@ export default class OrbitControlTest {
 	}
 
 }
-

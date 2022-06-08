@@ -1,11 +1,16 @@
-'use strict';
+/**
+ * @file logging tests
+ *
+ * @author noodep
+ * @version 0.03
+ */
 
-import {Logger, DEFAULT_LOGGER, dl, wl, l, el} from '/src/util/log.js';
+import { Logger, DEFAULT_LOGGER, dl, wl, l, el } from '/src/util/log.js';
 
 export default class LogTest {
 
 	static runAll() {
-		console.log(`%c----- Testing /src/util/log.js -----`,'color:blue;');
+		console.log('%c----- Testing /src/util/log.js -----','color:blue;');
 		console.time('Perf');
 
 		DEFAULT_LOGGER.level = Logger.LEVELS.NONE;
@@ -39,8 +44,8 @@ export default class LogTest {
 		el('You should see this error.');
 
 		console.timeEnd('Perf');
-		console.log(`%c------------------------------`,'color:blue;');
+		console.log('%c------------------------------','color:blue;');
 		console.log('\n');
 	}
-}
 
+}

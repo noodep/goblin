@@ -12,4 +12,3 @@ export function UUIDv4() {
 		return v.toString(16);
 	});
 }
-

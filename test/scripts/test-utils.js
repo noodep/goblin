@@ -1,5 +1,3 @@
-'use strict';
-
 const EPSILON32 = Math.pow(2, -23);
 
 export function epsilonEquals(a, b) {

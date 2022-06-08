@@ -1,13 +1,18 @@
-'use strict';
+/**
+ * @file mat4 tests
+ *
+ * @author noodep
+ * @version 0.05
+ */
 
-import {epsilon32Equals as ee, randomFloat32 as rf32} from '../test-utils.js';
+import { epsilon32Equals as ee, randomFloat32 as rf32 } from '../test-utils.js';
 import Mat4 from '/src/math/mat4.js';
 import Vec3 from '/src/math/vec3.js';
 
 export default class Mat4Test {
 
 	static runAll() {
-		console.log(`%c----- Testing /src/math/mat4.js -----`,'color:blue;');
+		console.log('%c----- Testing /src/math/mat4.js -----','color:blue;');
 		console.time('Perf');
 
 		Mat4Test.testDefaultConstruction();
@@ -18,7 +23,7 @@ export default class Mat4Test {
 		Mat4Test.testTranslateZ();
 
 		console.timeEnd('Perf');
-		console.log(`%c------------------------------------`,'color:blue;');
+		console.log('%c------------------------------------','color:blue;');
 		console.log('\n');
 	}
 
@@ -110,6 +115,7 @@ export default class Mat4Test {
 			'Translation along Z axis failed.'
 		);
 	}
+
 }
 
 function matrixEquals(m, e11, e12, e13, e14, e21, e22, e23, e24, e31, e32, e33, e34, e41, e42, e43, e44) {
@@ -118,4 +124,3 @@ function matrixEquals(m, e11, e12, e13, e14, e21, e22, e23, e24, e31, e32, e33, 
 		ee(m._m[2], e31) && ee(m._m[6], e32) && ee(m._m[10], e33) && ee(m._m[14], e34) &&
 		ee(m._m[3], e41) && ee(m._m[7], e42) && ee(m._m[11], e43) && ee(m._m[15], e44);
 }
-

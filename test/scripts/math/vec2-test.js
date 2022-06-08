@@ -1,12 +1,17 @@
-'use strict';
+/**
+ * @file vec2 tests
+ *
+ * @author noodep
+ * @version 0.12
+ */
 
-import {epsilon32Equals as ee, randomFloat32 as rf32} from '../test-utils.js';
+import { epsilon32Equals as ee, randomFloat32 as rf32 } from '../test-utils.js';
 import Vec2 from '/src/math/vec2.js';
 
 export default class Vec2Test {
 
 	static runAll() {
-		console.log(`%c----- Testing /src/math/vec2.js -----`,'color:blue;');
+		console.log('%c----- Testing /src/math/vec2.js -----','color:blue;');
 		console.time('Perf');
 
 		Vec2Test.testDefaultConstruction();
@@ -32,7 +37,7 @@ export default class Vec2Test {
 		Vec2Test.testArrayPolymorphism();
 
 		console.timeEnd('Perf');
-		console.log(`%c------------------------------------`,'color:blue;');
+		console.log('%c------------------------------------','color:blue;');
 		console.log('\n');
 	}
 
@@ -90,7 +95,6 @@ export default class Vec2Test {
 	static testEquals() {
 		const x = rf32();
 		const y = rf32();
-		const z = rf32();
 		const v$1 = new Vec2(x, y);
 		const v$2 = new Vec2(x, y);
 		console.assert(v$1.equals(v$1), 'Equality test is not reflexive.');
@@ -204,7 +208,11 @@ export default class Vec2Test {
 
 		try {
 			let count = 0;
-			for (let elem of v) { count++; }
+			const it = v[Symbol.iterator]();
+
+			while(!it.next().done)
+				count++;
+
 			console.assert(count == 2, 'Vec2 iterator yeilds wrong number of elements.');
 		} catch (e) {
 			console.error('Vec2 iteration failed.');
@@ -220,4 +228,3 @@ function vectorEpsilonEquals(v, x, y) {
 function vectorEquals(v, x, y) {
 	return v._v[0] == x && v._v[1] == y;
 }
-

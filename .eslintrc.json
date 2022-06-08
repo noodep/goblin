@@ -19,8 +19,7 @@
 			"unix"
 		],
 		"no-console": [
-			"error",
-			{"allow": ["time", "timeEnd"]}
+			"error"
 		],
 		"no-multiple-empty-lines": [
 			"error",

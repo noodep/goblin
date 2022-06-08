@@ -1,8 +1,8 @@
 /**
- * @fileOverview 3 components vector manipulation.
+ * @file vec3 tests
  *
- * @author Noodep
- * @version 0.57
+ * @author noodep
+ * @version 0.63
  */
 
 import {epsilon32Equals as ee, randomFloat32 as rf32} from '../test-utils.js';
@@ -12,7 +12,7 @@ import Vec2 from '/src/math/vec2.js';
 export default class Vec3Test {
 
 	static runAll() {
-		console.log(`%c----- Testing /src/math/vec3.js -----`,'color:blue;');
+		console.log('%c----- Testing /src/math/vec3.js -----','color:blue;');
 		console.time('Perf');
 
 		Vec3Test.testDefaultConstruction();
@@ -41,7 +41,7 @@ export default class Vec3Test {
 		Vec3Test.testVec2View();
 
 		console.timeEnd('Perf');
-		console.log(`%c------------------------------------`,'color:blue;');
+		console.log('%c------------------------------------','color:blue;');
 		console.log('\n');
 	}
 
@@ -251,7 +251,11 @@ export default class Vec3Test {
 
 		try {
 			let count = 0;
-			for (let elem of v) { count++; }
+			const it = v[Symbol.iterator]();
+
+			while(!it.next().done)
+				count++;
+
 			console.assert(count == 3, 'Vec3 iterator yeilds wrong number of elements.');
 		} catch (e) {
 			console.error('Vec3 iteration failed.');
@@ -269,6 +273,7 @@ export default class Vec3Test {
 		v2.y = rf32();
 		console.assert(v2.x == v3.x && v2.y == v3.y, 'Vec2 view setters do not set Vec3 components.');
 	}
+
 }
 
 function vectorEpsilonEquals(v, x, y, z) {
@@ -278,4 +283,3 @@ function vectorEpsilonEquals(v, x, y, z) {
 function vectorEquals(v, x, y, z) {
 	return v._v[0] == x && v._v[1] == y && v._v[2] == z;
 }
-
