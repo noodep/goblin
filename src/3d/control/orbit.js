@@ -2,7 +2,7 @@
  * @file object manipulation through orbit control
  *
  * @author noodep
- * @version 1.68
+ * @version 1.77
  */
 
 import Quat from '../../math/quat.js';
@@ -156,6 +156,13 @@ export default class OrbitControl {
 	moveOnSphere(horizontal_delta, vertical_delta) {
 		this._azimuth = (this._azimuth + horizontal_delta) % OrbitControl.TWOPI;
 		this._inclination = Math.max(Math.min(this._inclination + vertical_delta, Math.PI), 0);
+		this._updatePosition();
+	}
+
+	setOnSphere(azimuth, inclination) {
+		this._azimuth = azimuth;
+		this._inclination = inclination;
+
 		this._updatePosition();
 	}
 
