@@ -2,7 +2,7 @@
  * @file Test suite for webgl rendering.
  *
  * @author Noodep
- * @version 1.13
+ * @version 1.85
  */
 
 import { Logger, DEFAULT_LOGGER as DL } from '/src/util/log.js';
@@ -27,7 +27,7 @@ import TextUtils from '/src/text/text-utils.js';
 export default class WebGLRendererTest {
 
 	static runAll() {
-		console.log(`%c----- Testing /src/gl/webgl-renderer.js -----`,'color:teal;');
+		console.log('%c----- Testing /src/gl/webgl-renderer.js -----','color:teal;');
 		console.time('Perf');
 
 		DL.level = Logger.LEVELS.NONE;
@@ -38,15 +38,15 @@ export default class WebGLRendererTest {
 		WebGLRendererTest.benchmarkMesh();
 		WebGLRendererTest.benchmarkStaticMesh();
 		WebGLRendererTest.benchmarkStaticIndexedMesh();
-		WebGLRendererTest.testIndexedGeometryWithNormals();
 		WebGLRendererTest.testIndexedColoredGeometryOutline();
+		WebGLRendererTest.testIndexedGeometryWithNormals();
 		WebGLRendererTest.testIndexedColoredGeometryWithNormals();
 		WebGLRendererTest.sceneModification();
 		WebGLRendererTest.textDisplay();
 		WebGLRendererTest.testIcosahedron();
 
 		console.timeEnd('Perf');
-		console.log(`%c---------------------------------------`,'color:teal;');
+		console.log('%c---------------------------------------','color:teal;');
 		console.log('\n');
 	}
 
@@ -90,7 +90,7 @@ export default class WebGLRendererTest {
 		const scene = new Scene();
 
 		const camera = new Camera({aspect_ratio: r.aspectRatio});
-		camera.origin = new Vec3(0.0,0.0,3.0);
+		camera.position = new Vec3(3.0, 0.0, 0.0);
 		scene.addCamera(camera);
 
 		const cube = Renderable.create({
@@ -108,7 +108,7 @@ export default class WebGLRendererTest {
 		r.enable(WebGLRenderingContext.DEPTH_TEST);
 		r.background = [0.1, 0.2, 0.3, 1.0];
 
-		simple_p.ready().then((e) => {
+		simple_p.ready().then(() => {
 			r.addScene(scene);
 		});
 	}
@@ -118,27 +118,27 @@ export default class WebGLRendererTest {
 		const simple_p = r.createProgram('simple', '/test/shaders/', SimpleProgram);
 		const scene = new Scene();
 		const camera = new Camera({aspect_ratio: r.aspectRatio});
-		camera.origin = new Vec3(0.0,0.0,20.0);
+		camera.position = new Vec3(20.0, 0.0, 0.0);
 		scene.addCamera(camera);
 
 		const cubes = [];
-		let y_offset = 4.0;
-		let x_offset = -8.0;
+		let z_offset = 4.0;
+		let y_offset = -8.0;
 		for(let axis_idx = 0; axis_idx < 3; axis_idx++) {
 			cubes[axis_idx] = [];
 			for(let rotation_type_idx = 0; rotation_type_idx < 5; rotation_type_idx++) {
 				const cube = Renderable.create({
 					id: `cube_${axis_idx}_${rotation_type_idx}`,
-					origin: Vec3.from([x_offset, y_offset, 0.0]),
+					origin: Vec3.from([0.0, y_offset, z_offset]),
 					geometry: Box.createBoxGeometry(),
 					program: 'simple',
 				});
 				cubes[axis_idx][rotation_type_idx] = cube;
 				scene.addChild(cube);
-				x_offset += 4.0;
+				y_offset += 4.0;
 			}
-			y_offset -= 4.0;
-			x_offset = -8.0;
+			z_offset -= 4.0;
+			y_offset = -8.0;
 		}
 
 		const AXIS = [new Vec3(1.0, 0.0, 0.0), new Vec3(0.0, 1.0, 0.0), new Vec3(0.0, 0.0, 1.0)];
@@ -156,27 +156,27 @@ export default class WebGLRendererTest {
 				CUBE_ORIENTATIONS[axis_idx].fromAxisRotation(angle, AXIS[axis_idx]);
 
 				// First rotation type
-				cube = cubes[axis_idx][0]
+				cube = cubes[axis_idx][0];
 				cube.orientation = CUBE_ORIENTATIONS[axis_idx];
 
 				// Second rotation type
-				cube = cubes[axis_idx][1]
+				cube = cubes[axis_idx][1];
 				cube.localModel[`setRotation${ROTATION_FUNC[axis_idx]}`](angle);
 				cube.localModel.translation = cube.origin;
 				cube._computeWorldModel();
 
 				// Third rotation type
-				cube = cubes[axis_idx][2]
+				cube = cubes[axis_idx][2];
 				cube.localModel.setFromAxisRotation(angle, AXIS[axis_idx]);
 				cube.localModel.translation = cube.origin;
 				cube._computeWorldModel();
 
 				// Fourth rotation type
-				cube = cubes[axis_idx][3]
+				cube = cubes[axis_idx][3];
 				cube.rotate(delta_t / SPEED, AXIS[axis_idx]);
 
 				// Fourth rotation type
-				cube = cubes[axis_idx][4]
+				cube = cubes[axis_idx][4];
 				cube[`rotate${ROTATION_FUNC[axis_idx]}`](delta_t / SPEED);
 			}
 		});
@@ -185,7 +185,7 @@ export default class WebGLRendererTest {
 		r.background = [0.1, 0.2, 0.3, 1.0];
 		r.clear(WebGLRenderingContext.COLOR_BUFFER_BIT);
 
-		simple_p.ready().then((e) => {
+		simple_p.ready().then(() => {
 			r.addScene(scene);
 		});
 	}
@@ -195,7 +195,7 @@ export default class WebGLRendererTest {
 		const simple_p = r.createProgram('simple', '/test/shaders/', SimpleProgram);
 		const scene = new Scene();
 		const camera = new Camera({aspect_ratio: r.aspectRatio});
-		camera.origin = new Vec3(0.0, 0.0, 3.0);
+		camera.position = new Vec3(2.0, 0.0, 0.0);
 		scene.addCamera(camera);
 
 		const cube = Renderable.create({
@@ -206,13 +206,13 @@ export default class WebGLRendererTest {
 		scene.addChild(cube);
 
 		// Camera pose update
-		const z_axis = new Vec3(0.0, 0.0, 1.0);
+		const x_axis = new Vec3(1.0, 0.0, 0.0);
 		const camera_orientation = new Quat();
 		let angle = 0;
 
 		scene.addListener('update', (delta_t) => {
 			angle += delta_t / 10000;
-			camera_orientation.fromAxisRotation(angle, z_axis);
+			camera_orientation.fromAxisRotation(angle, x_axis);
 			camera.orientation = camera_orientation;
 		});
 
@@ -220,7 +220,7 @@ export default class WebGLRendererTest {
 		r.background = [0.1, 0.2, 0.3, 1.0];
 		r.clear(WebGLRenderingContext.COLOR_BUFFER_BIT);
 
-		simple_p.ready().then((e) => {
+		simple_p.ready().then(() => {
 			r.addScene(scene);
 		});
 	}
@@ -230,10 +230,8 @@ export default class WebGLRendererTest {
 		const simple_p = r.createProgram('simple', '/test/shaders/', SimpleProgram);
 		const scene = new Scene('main-scene');
 		const camera = new Camera({aspect_ratio: r.aspectRatio});
-		camera.origin = new Vec3(0.0, 0.0, 6.0);
+		camera.position = new Vec3(2.5, 0.0, 0.0);
 		scene.addCamera(camera);
-
-		const control = new OrbitControl(camera, {element: r._canvas});
 
 		const NUM = Math.pow(8, 3);
 		const WIDTH = 2.0;
@@ -259,22 +257,24 @@ export default class WebGLRendererTest {
 			cube.scale(SCALE_VECTOR);
 
 			scene.addListener('update', (delta_t) => {
-				cube.rotateX(delta_t / 10000);
-				cube.rotateZ(delta_t / 10000);
+				cube.rotateX(-delta_t / 2000);
+				cube.rotateY(-delta_t / 3000);
+				cube.rotateZ(-delta_t / 4000);
 			});
 			scene.addChild(cube);
 		}
 
 		scene.addListener('update', (delta_t) => {
-			scene.rotateX(delta_t / 20000);
-			scene.rotateZ(delta_t / 30000);
+			scene.rotateX(delta_t / 40000);
+			scene.rotateY(delta_t / 30000);
+			scene.rotateZ(delta_t / 20000);
 		});
 
 		r.enable(WebGLRenderingContext.DEPTH_TEST);
 		r.background = [0.1, 0.2, 0.3, 1.0];
 		r.clear(WebGLRenderingContext.COLOR_BUFFER_BIT);
 
-		simple_p.ready().then((e) => {
+		simple_p.ready().then(() => {
 			r.addScene(scene);
 		});
 	}
@@ -284,11 +284,10 @@ export default class WebGLRendererTest {
 		const simple_p = r.createProgram('simple', '/test/shaders/', SimpleProgram);
 		const scene = new Scene();
 		const camera = new Camera({aspect_ratio: r.aspectRatio});
-		camera.origin = new Vec3(0.0,0.0,3.0);
+		camera.position = new Vec3(2.5, 0.0, 0.0);
 		scene.addCamera(camera);
-		const control = new OrbitControl(camera, {element: r._canvas});
 
-		const NUM = Math.pow(16, 3);
+		const NUM = Math.pow(32, 3);
 		const WIDTH = 2.0;
 		const SIZE = Math.floor(Math.cbrt(NUM));
 		const OFFSET = WIDTH / (SIZE + 1);
@@ -321,6 +320,7 @@ export default class WebGLRendererTest {
 		scene.addChild(cube);
 		scene.addListener('update', (delta_t) => {
 			cube.rotateX(delta_t / 10000);
+			cube.rotateY(delta_t / 10000);
 			cube.rotateZ(delta_t / 10000);
 		});
 
@@ -328,7 +328,7 @@ export default class WebGLRendererTest {
 		r.background = [0.1, 0.2, 0.3, 1.0];
 		r.clear(WebGLRenderingContext.COLOR_BUFFER_BIT);
 
-		simple_p.ready().then((e) => {
+		simple_p.ready().then(() => {
 			r.addScene(scene);
 		});
 	}
@@ -338,11 +338,10 @@ export default class WebGLRendererTest {
 		const simple_p = r.createProgram('simple', '/test/shaders/', SimpleProgram);
 		const scene = new Scene();
 		const camera = new Camera({aspect_ratio: r.aspectRatio});
+		camera.position = new Vec3(2.5, 0.0, 0.0);
 		scene.addCamera(camera);
-		const control = new OrbitControl(camera, {element: r._canvas});
-		control.radius = 5.0;
 
-		const NUM = Math.pow(16, 3);
+		const NUM = Math.pow(32, 3);
 		const WIDTH = 2.0;
 		const SIZE = Math.floor(Math.cbrt(NUM));
 		const OFFSET = WIDTH / (SIZE + 1);
@@ -377,12 +376,17 @@ export default class WebGLRendererTest {
 		});
 
 		scene.addChild(cubes);
+		scene.addListener('update', (delta_t) => {
+			cubes.rotateX(delta_t / 10000);
+			cubes.rotateY(delta_t / 10000);
+			cubes.rotateZ(delta_t / 10000);
+		});
 
 		r.enable(WebGLRenderingContext.DEPTH_TEST);
 		r.background = [0.1, 0.2, 0.3, 1.0];
 		r.clear(WebGLRenderingContext.COLOR_BUFFER_BIT);
 
-		simple_p.ready().then((e) => {
+		simple_p.ready().then(() => {
 			r.addScene(scene);
 		});
 	}
@@ -394,11 +398,10 @@ export default class WebGLRendererTest {
 		const camera = new Camera({aspect_ratio: r.aspectRatio});
 		scene.addCamera(camera);
 		const control = new OrbitControl(camera, {element: r._canvas});
-		control.raduis = 2.0;
+		control.radius = 2.5;
 
 		const NUM = Math.pow(4, 3);
 		const SIZE = 5.0;
-		const SCALE = Math.sqrt(SIZE);
 
 		for(let i = 0 ; i < NUM ; i++) {
 			const cube = Renderable.create({
@@ -416,22 +419,23 @@ export default class WebGLRendererTest {
 		r.background = [0.1, 0.2, 0.3, 1.0];
 		r.clear(WebGLRenderingContext.COLOR_BUFFER_BIT);
 
-		light_p.ready().then((e) => {
+		light_p.ready().then(() => {
 			r.addScene(scene);
 		});
 	}
+
 	static testIndexedGeometryWithNormals() {
 		const r = WebGLRendererTest.createWebGLContext('testIndexedGeometryWithNormals');
 		const light_p = r.createProgram('light', '/test/shaders/', SimpleProgram);
 		const scene = new Scene();
 		const camera = new Camera({aspect_ratio: r.aspectRatio});
 		scene.addCamera(camera);
+
 		const control = new OrbitControl(camera, {element: r._canvas});
 		control.radius = 2.0;
 
 		const NUM = Math.pow(4, 3);
 		const SIZE = 5.0;
-		const SCALE = Math.sqrt(SIZE);
 
 		for(let i = 0 ; i < NUM ; i++) {
 			const cube = Renderable.create({
@@ -458,7 +462,7 @@ export default class WebGLRendererTest {
 		r.background = [0.1, 0.2, 0.3, 1.0];
 		r.clear(WebGLRenderingContext.COLOR_BUFFER_BIT);
 
-		light_p.ready().then((e) => {
+		light_p.ready().then(() => {
 			r.addScene(scene);
 		});
 	}
@@ -474,7 +478,6 @@ export default class WebGLRendererTest {
 
 		const NUM = Math.pow(4, 3);
 		const SIZE = 5.0;
-		const SCALE = Math.sqrt(SIZE);
 
 		for(let i = 0 ; i < NUM ; i++) {
 			const cube = Renderable.create({
@@ -492,7 +495,7 @@ export default class WebGLRendererTest {
 		r.background = [0.1, 0.2, 0.3, 1.0];
 		r.clear(WebGLRenderingContext.COLOR_BUFFER_BIT);
 
-		light_p.ready().then((e) => {
+		light_p.ready().then(() => {
 			r.addScene(scene);
 		});
 	}
@@ -508,7 +511,6 @@ export default class WebGLRendererTest {
 
 		const SCALE = 0.01;
 		const SCALE_VECTOR = new Vec3(SCALE, SCALE, SCALE);
-		const BYTE_OFFSET = 6*2*3*3;
 
 		const sun = Renderable.create({
 			id: 'sun',
@@ -540,12 +542,12 @@ export default class WebGLRendererTest {
 				createRandomBox(cube, dist/3, create / 2);
 
 			return cube;
-		}
+		};
 
 		r.enable(WebGLRenderingContext.DEPTH_TEST);
 		r.background = [0.1, 0.2, 0.3, 1.0];
 
-		simple_p.ready().then((e) => {
+		simple_p.ready().then(() => {
 			r.addScene(scene);
 
 			// Repeatedly add and then remove boxes orbiting the sun
@@ -560,7 +562,7 @@ export default class WebGLRendererTest {
 	}
 
 	static textDisplay() {
-		const r = WebGLRendererTest.createWebGLContext('textDisplay')
+		const r = WebGLRendererTest.createWebGLContext('textDisplay');
 		const c = r._context;
 		const sampler = r.createProgram('sampler', '/test/shaders/', SamplerProgram, {sampler_unit: 0});
 
@@ -570,6 +572,7 @@ export default class WebGLRendererTest {
 		scene.addCamera(camera);
 
 		const control = new OrbitControl(camera, {element: r._canvas});
+		control.azimuth = -Math.PI/2.0;
 		control.radius = 27.0;
 
 		const atlas = TextUtils.createAtlas(TextUtils.GLYPH_SETS['basic+digits'], 64, 'monospace');
@@ -590,7 +593,6 @@ export default class WebGLRendererTest {
 		const hello_world = Renderable.create({
 			id: 'hello-world',
 			origin: new Vec3(-text_width / 2.0, 0.0, 0.0),
-			orientation: Quat.fromAxisRotation(-Math.PI / 2.0, Vec3.X_AXIS),
 			geometry: text_geometry,
 			program: 'sampler',
 		});
@@ -601,7 +603,7 @@ export default class WebGLRendererTest {
 		c.blendFunc(WebGLRenderingContext.SRC_ALPHA, WebGLRenderingContext.ONE_MINUS_SRC_ALPHA);
 		r.background = [0.1, 0.2, 0.3, 1.0];
 
-		sampler.ready().then((e) => {
+		sampler.ready().then(() => {
 			r.addScene(scene);
 		});
 	}

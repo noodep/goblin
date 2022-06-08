@@ -1,8 +1,8 @@
 /**
  * @file A simple camera state object.
  *
- * @author Noodep
- * @version 0.66
+ * @author noodep
+ * @version 0.7
  */
 
 import Vec3 from '../../math/vec3.js';
@@ -19,7 +19,7 @@ export default class Camera {
 			near_clipping_plane: this._near_clipping_plane = Camera.DEFAULT_NEAR_CLIPPING_PLANE,
 			far_clipping_plane: this._far_clipping_plane = Camera.DEFAULT_FAR_CLIPPING_PLANE,
 			// Pose
-			origin: this._origin = new Vec3(),
+			position: this._position = new Vec3(),
 			orientation: this._orientation = new Quat(),
 		} = options);
 
@@ -51,8 +51,8 @@ export default class Camera {
 	/**
 	 * Sets this camera position and immediately updates the view.
 	 */
-	set origin(origin) {
-		this._origin.copy(origin);
+	set position(position) {
+		this._position.copy(position);
 		this.updateView();
 	}
 
@@ -84,7 +84,7 @@ export default class Camera {
 	 * Sets this camera near clipping plane and immediately updates the projection.
 	 */
 	set nearClippingPlane(near_clipping_plane) {
-		this._near_z = near;
+		this._near_clipping_plane = near_clipping_plane;
 		this.updateProjection();
 	}
 
@@ -97,10 +97,10 @@ export default class Camera {
 	}
 
 	/**
-	 * Sets this camera origin and drientation and immediately updates the view.
+	 * Sets this camera position and drientation and immediately updates the view.
 	 */
-	setPose(origin, orientation) {
-		this._origin.copy(origin);
+	setPose(position, orientation) {
+		this._position.copy(position);
 		this._orientation.copy(orientation);
 		this.updateView();
 	}
@@ -118,7 +118,7 @@ export default class Camera {
 	 * Returns the distance between the camera and the specified point.
 	 */
 	distanceTo(v3) {
-		return this._origin.distance(v3);
+		return this._position.distance(v3);
 	}
 
 	/**
@@ -135,7 +135,7 @@ export default class Camera {
 	updateView() {
 		// Inverting a rotation and transposing is the same.
 		this._inverse_orientation.copy(this._orientation).invert();
-		this._inverse_position.copy(this._origin);
+		this._inverse_position.copy(this._position);
 		this._inverse_orientation.rotate(this._inverse_position).negate();
 		this._view.setRotationFromQuaternion(this._inverse_orientation);
 		this._view.translation = this._inverse_position;
@@ -148,7 +148,7 @@ export default class Camera {
 	 * @return {String} - A human readable String representing this camera pose.
 	 */
 	toString(precision = 16) {
-		return `{position:${this._origin.toString(precision)}, orientation: ${this._orientation.toString(precision)}}`;
+		return `{position:${this._position.toString(precision)}, orientation: ${this._orientation.toString(precision)}}`;
 	}
 
 }

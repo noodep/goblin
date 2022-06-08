@@ -8,7 +8,7 @@
  * [03]:e41  [07]:e42  [11]:e43  [15]:e44
  *
  * @author Noodep
- * @version 0.62
+ * @version 0.83
  */
 
 export default class Mat4 {
@@ -360,33 +360,38 @@ export default class Mat4 {
 	}
 
 	/**
-	 * Generates a perspective projection matrix.
+	 * generates a perspective projection matrix for a right handed world frame with x axis pointing towards the viewer and z up (ISO 80000-2:2019)
+	 * to an opengl normalized device coordinates where x, y and z ∈ [-1,1] with the z axis pointing towards the viewer and y up.
 	 *
-	 * @param {Number} fovy - Vertical field of view in radians.
-	 * @param {Number} ar - Aspect ratio defined by width / height
-	 * @param {Number} near - Z distance to the near cliping plane
-	 * @param {Number} far - Z distance to the far cliping plane
-	 * @return {module:math.Mat4} - This matrix set to the projection specified by the parameters above.
+	 * @param {Number} vertical_fov        - vertical field of view in radians
+	 * @param {Number} aspect_ratio       - aspect ratio defined by width / height
+	 * @param {Number} near_clipping_plane - distance to the near cliping plane along -x
+	 * @param {Number} far_clipping_plane  - distance to the far cliping plane along -x
+	 *
+	 * @return {module:math.Mat4} - this matrix set to the projection specified by the parameters above
 	 */
-	perspective(fovy, ar, near, far) {
-		const depth = (far - near);
-		const scale = 1.0 / Math.tan(fovy * 0.5);
+	perspective(vertical_fov, aspect_ratio, near_clipping_plane, far_clipping_plane) {
+		const depth = (far_clipping_plane - near_clipping_plane);
+		const focal_length = 1.0 / Math.tan(vertical_fov * 0.5);
 
-		this._m[0] = scale / ar;
+		this._m[0] = 0.0;
 		this._m[1] = 0.0;
-		this._m[2] = 0.0;
-		this._m[3] = 0.0;
-		this._m[4] = 0.0;
-		this._m[5] = scale;
+		this._m[2] = -(far_clipping_plane + near_clipping_plane) / depth;
+		this._m[3] = -1.0;
+
+		this._m[4] = focal_length / aspect_ratio;
+		this._m[5] = 0.0;
 		this._m[6] = 0.0;
 		this._m[7] = 0.0;
+
 		this._m[8] = 0.0;
-		this._m[9] = 0.0;
-		this._m[10] = -(far + near) / depth;
-		this._m[11] = -1;
+		this._m[9] = focal_length;
+		this._m[10] = 0.0;
+		this._m[11] = 0.0;
+
 		this._m[12] = 0.0;
 		this._m[13] = 0.0;
-		this._m[14] = -(2.0 * far * near) / depth;
+		this._m[14] = -(2.0 * far_clipping_plane * near_clipping_plane) / depth;
 		this._m[15] = 0.0;
 
 		return this;

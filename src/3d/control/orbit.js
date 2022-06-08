@@ -1,122 +1,81 @@
 /**
- * @file Object manipulantion through orbit control.
+ * @file object manipulation through orbit control
  *
- * @author Noodep
- * @version 0.5
+ * @author noodep
+ * @version 1.68
  */
 
 import Quat from '../../math/quat.js';
 import Vec3 from '../../math/vec3.js';
-import Vec4 from '../../math/vec4.js';
 
 export default class OrbitControl {
 
-	constructor(target, { element = document, radius = OrbitControl.DEFAULT_RADIUS, sensitivity = OrbitControl.DEFAULT_SENSITIVITY, sensitivity_modifier = OrbitControl.DEFAULT_SENSITIVITY_MODIFIER } = {}) {
+	constructor(target, options = {}) {
 		this._target = target;
-		this._element = element;
-		this._radius = radius;
-		this._theta = OrbitControl.HALFPI;
-		this._phi = 0.0;
+
+		({
+			element: this._element = document,
+			radius: this._radius = OrbitControl.DEFAULT_RADIUS,
+			sensitivity: this._sensitivity = OrbitControl.DEFAULT_SENSITIVITY,
+			sensitivity_modifier: this._sensitivity_modifier = OrbitControl.DEFAULT_SENSITIVITY_MODIFIER
+		} = options);
+
+		this._azimuth = 0.0;
+		this._inclination = OrbitControl.HALFPI;
 		this._offset = new Vec3();
 
 		this._position = new Vec3();
-		this._inclination = new Quat();
-		this._azimuth = new Quat();
-
-		this._sensitivity = sensitivity;
-		this._sensitivity_modifier = sensitivity_modifier;
+		this._orientation = new Quat();
+		this._inclination_orientation = new Quat();
 
 		this._initUserInputs();
 		this._updatePosition();
 	}
 
 	/**
-	 * Computes orbit parameters from which one can look at the specified object3d from the specified direction.
-	 * If direction is unspecified only position parameters are computed and returned.
-	 *
-	 * @param {Object3D} object3d - The object to focus on.
-	 * @param {Vec3} [direction] - A vector describing the direction to look at.
-	 * @retrun {object} - The computed parameters (offset, radius, phi, theta).
-	 */
-	static lookAtParameters(object3d, direction) {
-		const parameters = {};
-
-		const unit_diagonal = new Vec4(OrbitControl.SQRT3, OrbitControl.SQRT3, OrbitControl.SQRT3, 0.0);
-		const zoom = unit_diagonal.transform(object3d.worldModel).xyz.magnitude();
-		parameters.offset = new Vec3(0.0, 0.0, 0.0).transform(object3d.worldModel);
-		parameters.radius = OrbitControl.FOCUS_DISTANCE * zoom;
-
-		if(direction) {
-			const xz_dir = new Vec3(direction.x, 0.0, direction.z);
-			parameters.phi = Vec3.NEG_Z_AXIS.angle(xz_dir);
-			parameters.theta = OrbitControl.HALFPI - xz_dir.angle(direction);
-		}
-
-		return parameters;
-	}
-
-	static resetParameters() {
-		return {
-			offset: new Vec3(0.0, 0.0, 0.0),
-			theta: OrbitControl.HALFPI,
-			phi: 0.0,
-			radius: OrbitControl.DEFAULT_RADIUS,
-		};
-	}
-
-	/**
-	 * Computes orbit pose from which one can look at the specified object3d from the specified direction.
-	 * If direction is unspecified default direction is used.
-	 *
-	 * @param {Object3D} object3d - The object to focus on.
-	 * @param {Vec3} [direction] - A vector describing the direction to look at.
-	 * @retrun {object} - The computed parameters (position as Vec3 and orientation as Quat).
-	 */
-	static lookAt(object3d, direction) {
-		const { offset, radius, phi = 0, theta = 0 } = OrbitControl.lookAtParameters(object3d, direction);
-
-		const position = OrbitControl.position(offset, radius, phi, theta);
-		const orientation = OrbitControl.orientation(phi, theta);
-
-		return {
-			position: position,
-			orientation: orientation
-		};
-	}
-
-	/**
 	 * Computes an orbital position in cartesian space, using the specified parameters.
 	 *
-	 * @param {Vec3} offset - The origin of the orbital sphere.
-	 * @param {Number} radius - The radius of the orbital sphere.
-	 * @param {Number} phi - The azimuth of the point to compute (from positive Z).
-	 * @param {Number} theta - The inclination of the point to compute (from positive Y).
-	 * @param {Vec3} [postition = new Vec3()] - The vector holding the result of the computation (also returned by this function).
-	 * @retrun {Vec3} - The computed postion.
+	 * @param {Vec3}   offset                   - origin of the orbital sphere.
+	 * @param {Number} radius                   - radius of the orbital sphere.
+	 * @param {Number} azimuth                  - azimuth of the point to compute (from positive x).
+	 * @param {Number} inclination              - inclination of the point to compute (from positive z).
+	 * @param {Vec3}   [postition = new Vec3()] - vector holding the result of the computation (also returned by this function).
+	 *
+	 * @retrun {Vec3} - computed postion.
 	 */
-	static position(offset, radius, phi, theta, position = new Vec3()) {
-		const sin_theta = Math.sin(theta);
+	static position(offset, radius, azimuth, inclination, position = new Vec3()) {
 
-		position.x = offset.x + radius * sin_theta * Math.sin(phi);
-		position.y = offset.y + radius * Math.cos(theta);
-		position.z = offset.z + radius * sin_theta * Math.cos(phi);
+		const xy_projection_inclination_magnitude = Math.sin(inclination) * radius;
+
+		position.x = offset.x + Math.cos(azimuth) * xy_projection_inclination_magnitude;
+		position.y = offset.y + Math.sin(azimuth) * xy_projection_inclination_magnitude;
+		position.z = offset.z + Math.cos(inclination) * radius;
 
 		return position;
 	}
 
 	/**
-	 * Computes an orbital orientation to look at the center of the sphere from the point described by the specified parameters.
+	 * computes an orbital orientation to look at the center of the sphere from the point described by the specified parameters
 	 *
-	 * @param {Number} phi - The azimuth of the point from which to look at the center (from positive Z).
-	 * @param {Number} theta - The inclination of the point from which to look at the center (from positive Y).
-	 * @param {Quat} [orientation = new Quat()] - The quaternion holding the result of the computation (also returned by this function).
-	 * @param {Quat} [temp = new Quat()] - A temporary quaternion used by the computation (useful for avoiding the creation of a new object every time this function is called).
-	 * @retrun {Quat} - The computed orientation.
+	 * @param {Number} azimuth                            - azimuth of the point from which to look at the center (counter clockwise from positive x)
+	 * @param {Number} inclination                        - inclination of the point from which to look at the center (from positive z)
+	 * @param {Quat}   [orientation = new Quat()]         - quaternion holding the result of the computation (also returned by this function)
+	 * @param {Quat}   [azimuth_orientation = new Quat()] - quaternion holding the azimuthal orientation (useful for avoiding the creation of a new quaternion every time this function is called)
+	 *
+	 * @retrun {Quat} - the computed orientation
 	 */
-	static orientation(phi, theta, orientation = new Quat(), temp = new Quat()) {
-		temp.fromAxisRotation(theta - OrbitControl.HALFPI, Vec3.X_AXIS);
-		orientation.fromAxisRotation(phi, Vec3.Y_AXIS);
-		orientation.multiply(temp);
+	static orientation(azimuth, inclination, orientation = new Quat(), inclination_orientation = new Quat()) {
+		// substracting PI/2 gives the orientation to which the camera should point
+		// it effectively mirrors along the inclination normal plane
+		// in a xyz right handed coordinate system, if the camera is in the positive octant, it should look towards the negative octant
+		// computes the inclination
+		inclination_orientation.fromAxisRotation(inclination - OrbitControl.HALFPI, Vec3.Y_AXIS);
+
+		// comuputes the azimuthal rotation
+		orientation.fromAxisRotation(azimuth, Vec3.Z_AXIS);
+
+		// rotates the azimuth by the inclination
+		orientation.multiply(inclination_orientation);
 
 		return orientation;
 	}
@@ -139,21 +98,21 @@ export default class OrbitControl {
 		this._updatePosition();
 	}
 
-	get phi() {
-		return this._phi;
+	get azimuth() {
+		return this._azimuth;
 	}
 
-	set phi(phi) {
-		this._phi = phi;
+	set azimuth(azimuth) {
+		this._azimuth = azimuth;
 		this._updatePosition();
 	}
 
-	get theta() {
-		return this._theta;
+	get inclination() {
+		return this._inclination;
 	}
 
-	set theta(theta) {
-		this._theta = theta;
+	set inclination(inclination) {
+		this._inclination = inclination;
 		this._updatePosition();
 	}
 
@@ -165,7 +124,13 @@ export default class OrbitControl {
 	 * the object. If unspecified, the current direction of the camera is used.
 	 */
 	centerOn(object3d, direction) {
-		({offset: this._offset, radius: this._radius, phi: this._phi = this._phi, theta: this._theta = this._theta} = OrbitControl.lookAtParameters(object3d, direction));
+		({
+			offset: this._offset,
+			radius: this._radius,
+			azimuth: this._azimuth = this._azimuth,
+			inclination: this._inclination = this._inclination
+		} = OrbitControl.lookAtParameters(object3d, direction));
+
 		this._updatePosition();
 	}
 
@@ -173,14 +138,14 @@ export default class OrbitControl {
 	 * offsets the center of the virtual sphere from the perspective of the camera.
 	 */
 	offsetOrigin(horizontal_delta, vertical_delta) {
-		const sin_phi = Math.sin(this._phi);
-		const cos_phi = Math.cos(this._phi);
+		const sin_azimuth = Math.sin(this._azimuth);
+		const cos_azimuth = Math.cos(this._azimuth);
 
-		const delta_proj = -Math.cos(this._theta) * vertical_delta;
+		const delta_proj = -Math.cos(this._inclination) * vertical_delta;
 
-		this._offset.x += sin_phi * delta_proj - cos_phi * horizontal_delta;
-		this._offset.z += cos_phi * delta_proj + sin_phi * horizontal_delta;
-		this._offset.y += Math.sin(this._theta) * vertical_delta;
+		this._offset.x += cos_azimuth * delta_proj + sin_azimuth * horizontal_delta;
+		this._offset.y += sin_azimuth * delta_proj - cos_azimuth * horizontal_delta;
+		this._offset.z += Math.sin(this._inclination) * vertical_delta;
 
 		this._updatePosition();
 	}
@@ -189,8 +154,8 @@ export default class OrbitControl {
 	 * Moves the camera on the virtual sphere.
 	 */
 	moveOnSphere(horizontal_delta, vertical_delta) {
-		this._moveHorizontally(-horizontal_delta);
-		this._moveVertically(-vertical_delta);
+		this._azimuth = (this._azimuth + horizontal_delta) % OrbitControl.TWOPI;
+		this._inclination = Math.max(Math.min(this._inclination + vertical_delta, Math.PI), 0);
 		this._updatePosition();
 	}
 
@@ -238,7 +203,8 @@ export default class OrbitControl {
 		if(e.shiftKey)
 			this.offsetOrigin(horizontal_delta, vertical_delta);
 		else
-			this.moveOnSphere(horizontal_delta, vertical_delta);
+			// draging the visual sphere means moving the camera in the opposite direction, hence the negation
+			this.moveOnSphere(-horizontal_delta, -vertical_delta);
 	}
 
 	/**
@@ -248,30 +214,8 @@ export default class OrbitControl {
 		e.preventDefault();
 
 		const delta = this._sensitivityAdjustedDisplacement(e, Math.sign(e.deltaY) * OrbitControl.DEFAULT_ZOOM_SENSITIVITY);
-		this._zoom(delta);
-		this._updatePosition();
-	}
-
-	/**
-	 * Moves the target horizontally along the virtual sphere.
-	 */
-	_moveHorizontally(delta) {
-		this._phi = this._phi + delta % OrbitControl.TWOPI;
-
-	}
-
-	/**
-	 * Moves the target vertically along the virtual sphere.
-	 */
-	_moveVertically(delta) {
-		this._theta = Math.max(Math.min(this._theta + delta, Math.PI), 0);
-	}
-
-	/**
-	 * Moves the target vertically along the virtual sphere.
-	 */
-	_zoom(delta) {
 		this._radius = Math.max(this._radius + delta, 0);
+		this._updatePosition();
 	}
 
 	/**
@@ -291,10 +235,10 @@ export default class OrbitControl {
 	 * Updates the target position and orientation in the cartesian coordinate system.
 	 */
 	_updatePosition() {
-		OrbitControl.position(this._offset, this._radius, this._phi, this._theta, this._position);
-		OrbitControl.orientation(this._phi, this._theta, this._azimuth, this._inclination);
+		OrbitControl.position(this._offset, this._radius, this._azimuth, this._inclination, this._position);
+		OrbitControl.orientation(this._azimuth, this._inclination, this._orientation, this._inclination_orientation);
 
-		this._target.setPose(this._position, this._azimuth);
+		this._target.setPose(this._position, this._orientation);
 	}
 
 }
