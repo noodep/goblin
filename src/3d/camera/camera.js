@@ -2,7 +2,7 @@
  * @file A simple camera state object.
  *
  * @author noodep
- * @version 0.7
+ * @version 0.95
  */
 
 import Vec3 from '../../math/vec3.js';
@@ -11,11 +11,15 @@ import Quat from '../../math/quat.js';
 
 export default class Camera {
 
+	static DEFAULT_VERTICAL_FIELD_OF_VIEW = Math.PI / 3.0;
+	static DEFAULT_NEAR_CLIPPING_PLANE = 0.1;
+	static DEFAULT_FAR_CLIPPING_PLANE = 100.0;
+
 	constructor(options) {
 		({
 			// Perspective
 			aspect_ratio: this._aspect_ratio,
-			vertical_fov: this._vertical_fov = Camera.DEFAULT_VERTICAL_FOV,
+			vertical_field_of_view: this._vertical_field_of_view = Camera.DEFAULT_VERTICAL_FIELD_OF_VIEW,
 			near_clipping_plane: this._near_clipping_plane = Camera.DEFAULT_NEAR_CLIPPING_PLANE,
 			far_clipping_plane: this._far_clipping_plane = Camera.DEFAULT_FAR_CLIPPING_PLANE,
 			// Pose
@@ -29,6 +33,7 @@ export default class Camera {
 		// Matrices
 		this._view = Mat4.identity();
 		this._projection = Mat4.identity();
+		this._projection_function = Mat4.prototype.perspective;
 
 		this.updateView();
 		this.updateProjection();
@@ -65,10 +70,17 @@ export default class Camera {
 	}
 
 	/**
+	 * gets this camera vertical field of view
+	 */
+	get verticalFieldOfView() {
+		return this._vertical_field_of_view;
+	}
+
+	/**
 	 * Sets this camera vertical field of view and immediately updates the projection.
 	 */
-	set verticalFov(vertical_fov) {
-		this._vertical_fov = vertical_fov;
+	set verticalFieldOfView(vertical_field_of_view) {
+		this._vertical_field_of_view = Math.max(0, Math.min(Math.PI, vertical_field_of_view));
 		this.updateProjection();
 	}
 
@@ -125,7 +137,17 @@ export default class Camera {
 	 * Updates the projection matrix with this object values.
 	 */
 	updateProjection() {
-		this._projection.perspective(this._vertical_fov, this._aspect_ratio, this._near_clipping_plane, this._far_clipping_plane);
+		this._projection_function.call(this._projection, this._vertical_field_of_view, this._aspect_ratio, this._near_clipping_plane, this._far_clipping_plane);
+	}
+
+	setPerspectiveProjection() {
+		this._projection_function = Mat4.prototype.perspective;
+		this.updateProjection();
+	}
+
+	setOrthographicProjection() {
+		this._projection_function = Mat4.prototype.orthographic;
+		this.updateProjection();
 	}
 
 	/**
@@ -152,7 +174,3 @@ export default class Camera {
 	}
 
 }
-
-Camera.DEFAULT_VERTICAL_FOV = 45.0;
-Camera.DEFAULT_NEAR_CLIPPING_PLANE = 0.1;
-Camera.DEFAULT_FAR_CLIPPING_PLANE = 100.0;

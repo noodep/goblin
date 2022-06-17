@@ -2,33 +2,36 @@
  * @file object manipulation through orbit control
  *
  * @author noodep
- * @version 1.78
+ * @version 2.27
  */
 
 import Quat from '../../math/quat.js';
 import Vec3 from '../../math/vec3.js';
 
-export default class OrbitControl {
+export default class OrbitControl extends EventTarget {
+
+	static HALF_PI = Math.PI / 2.0;
+	static TWO_PI = 2.0 * Math.PI;
+	static SQRT_3 = Math.sqrt(3);
+	static DEFAULT_RADIUS = 1.0;
+	static DEFAULT_AZIMUTH = 0.0;
+	static DEFAULT_INCLINATION = OrbitControl.HALF_PI;
 
 	constructor(target, options = {}) {
+		super();
 		this._target = target;
 
 		({
-			element: this._element = document,
 			radius: this._radius = OrbitControl.DEFAULT_RADIUS,
-			sensitivity: this._sensitivity = OrbitControl.DEFAULT_SENSITIVITY,
-			sensitivity_modifier: this._sensitivity_modifier = OrbitControl.DEFAULT_SENSITIVITY_MODIFIER
+			azimuth: this._azimuth = OrbitControl.DEFAULT_AZIMUTH,
+			inclination: this._inclination = OrbitControl.DEFAULT_INCLINATION,
+			offset: this._offset = new Vec3(),
 		} = options);
-
-		this._azimuth = 0.0;
-		this._inclination = OrbitControl.HALFPI;
-		this._offset = new Vec3();
 
 		this._position = new Vec3();
 		this._orientation = new Quat();
 		this._inclination_orientation = new Quat();
 
-		this._initUserInputs();
 		this._updatePosition();
 	}
 
@@ -69,7 +72,7 @@ export default class OrbitControl {
 		// it effectively mirrors along the inclination normal plane
 		// in a xyz right handed coordinate system, if the camera is in the positive octant, it should look towards the negative octant
 		// computes the inclination
-		inclination_orientation.fromAxisRotation(inclination - OrbitControl.HALFPI, Vec3.Y_AXIS);
+		inclination_orientation.fromAxisRotation(inclination - OrbitControl.HALF_PI, Vec3.Y_AXIS);
 
 		// comuputes the azimuthal rotation
 		orientation.fromAxisRotation(azimuth, Vec3.Z_AXIS);
@@ -94,7 +97,7 @@ export default class OrbitControl {
 	}
 
 	set radius(radius) {
-		this._radius = radius;
+		this._radius = Math.max(radius, 0);
 		this._updatePosition();
 	}
 
@@ -154,9 +157,11 @@ export default class OrbitControl {
 	 * Moves the camera on the virtual sphere.
 	 */
 	moveOnSphere(horizontal_delta, vertical_delta) {
-		this._azimuth = (this._azimuth + horizontal_delta) % OrbitControl.TWOPI;
+		this._azimuth = (this._azimuth + horizontal_delta) % OrbitControl.TWO_PI;
 		this._inclination = Math.max(Math.min(this._inclination + vertical_delta, Math.PI), 0);
+
 		this._updatePosition();
+		this.dispatchEvent(new CustomEvent('orientation'));
 	}
 
 	setOnSphere(azimuth, inclination) {
@@ -164,78 +169,16 @@ export default class OrbitControl {
 		this._inclination = inclination;
 
 		this._updatePosition();
+		this.dispatchEvent(new CustomEvent('orientation'));
 	}
 
 	reset() {
 		this._offset.fill(0.0);
-		this._theta = OrbitControl.HALFPI;
+		this._theta = OrbitControl.HALF_PI;
 		this._phi = 0.0;
 		this._radius = OrbitControl.DEFAULT_RADIUS;
 
 		this._updatePosition();
-	}
-
-	/**
-	 * Sets up user event bindings.
-	 */
-	_initUserInputs() {
-		this._element.addEventListener('contextmenu', e => e.preventDefault());
-		this._element.addEventListener('mousedown', this._handleMouseDown.bind(this));
-		this._element.addEventListener('mouseup', this._handleMouseUp.bind(this));
-		this._element.addEventListener('wheel', this._handleMouseWheel.bind(this));
-		this._mouseMoveHandler = this._handleMouseMove.bind(this);
-	}
-
-	/**
-	 * Handles mouse down events.
-	 */
-	_handleMouseDown() {
-		this._element.addEventListener('mousemove', this._mouseMoveHandler);
-	}
-
-	/**
-	 * Handles mouse up events.
-	 */
-	_handleMouseUp() {
-		this._element.removeEventListener('mousemove', this._mouseMoveHandler);
-	}
-
-	/**
-	 * Handles dragging of the target.
-	 */
-	_handleMouseMove(e) {
-		const horizontal_delta = this._sensitivityAdjustedDisplacement(e, e.movementX);
-		const vertical_delta = this._sensitivityAdjustedDisplacement(e, e.movementY);
-
-		if(e.shiftKey)
-			this.offsetOrigin(horizontal_delta, vertical_delta);
-		else
-			// draging the visual sphere means moving the camera in the opposite direction, hence the negation
-			this.moveOnSphere(-horizontal_delta, -vertical_delta);
-	}
-
-	/**
-	 * Handles dragging of the target.
-	 */
-	_handleMouseWheel(e) {
-		e.preventDefault();
-
-		const delta = this._sensitivityAdjustedDisplacement(e, Math.sign(e.deltaY) * OrbitControl.DEFAULT_ZOOM_SENSITIVITY);
-		this._radius = Math.max(this._radius + delta, 0);
-		this._updatePosition();
-	}
-
-	/**
-	 * Gets sensitivity adjusted displacement value.
-	 */
-	_sensitivityAdjustedDisplacement(e, raw) {
-		let actual_sensitivity = this._sensitivity;
-		if(e.ctrlKey)
-			actual_sensitivity *= this._sensitivity_modifier;
-		else if(e.altKey)
-			actual_sensitivity /= this._sensitivity_modifier;
-
-		return raw * actual_sensitivity;
 	}
 
 	/**
@@ -249,12 +192,3 @@ export default class OrbitControl {
 	}
 
 }
-
-OrbitControl.HALFPI = Math.PI / 2.0;
-OrbitControl.TWOPI = 2.0 * Math.PI;
-OrbitControl.SQRT3 = Math.sqrt(3);
-OrbitControl.DEFAULT_SENSITIVITY = 0.005;
-OrbitControl.DEFAULT_ZOOM_SENSITIVITY = 10.0;
-OrbitControl.DEFAULT_SENSITIVITY_MODIFIER = 0.1;
-OrbitControl.DEFAULT_RADIUS = 1.0;
-OrbitControl.FOCUS_DISTANCE = 0.5;

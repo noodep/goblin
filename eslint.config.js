@@ -1,6 +1,6 @@
 /**
  * @author mvignati
- * @version 0.21
+ * @version 0.22
  */
 
 import js from '@eslint/js';
@@ -10,12 +10,14 @@ export default [
 	{
 		languageOptions: {
 			globals: {
-				console: "readonly",
-				crypto: "readonly",
-				document: "readonly",
-				fetch: "readonly",
-				WebGLRenderingContext: "readonly",
-				window: "readonly"
+				"console": "readonly",
+				"crypto": "readonly",
+				"document": "readonly",
+				"EventTarget": "readonly",
+				"CustomEvent": "readonly",
+				"fetch": "readonly",
+				"WebGLRenderingContext": "readonly",
+				"window": "readonly"
 			}
 		},
 		rules: {

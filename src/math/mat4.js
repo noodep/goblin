@@ -8,7 +8,7 @@
  * [03]:e41  [07]:e42  [11]:e43  [15]:e44
  *
  * @author noodep
- * @version 0.86
+ * @version 1.27
  */
 
 export default class Mat4 {
@@ -371,7 +371,7 @@ export default class Mat4 {
 	 * @return {module:math.Mat4} - this matrix set to the projection specified by the parameters above
 	 */
 	perspective(vertical_fov, aspect_ratio, near_clipping_plane, far_clipping_plane) {
-		const depth = (far_clipping_plane - near_clipping_plane);
+		const depth = far_clipping_plane - near_clipping_plane;
 		const focal_length = 1.0 / Math.tan(vertical_fov * 0.5);
 
 		this._m[0] = 0.0;
@@ -393,6 +393,38 @@ export default class Mat4 {
 		this._m[13] = 0.0;
 		this._m[14] = -(2.0 * far_clipping_plane * near_clipping_plane) / depth;
 		this._m[15] = 0.0;
+
+		return this;
+	}
+
+	/*
+	 * This function assumes clip space is centered on world frame and aspect ratio defined as width/height
+	 */
+	orthographic(vertical_field_of_view, aspect_ratio, near_clipping_plane, far_clipping_plane) {
+		const depth = far_clipping_plane - near_clipping_plane;
+
+		const height = 2.0 * Math.tan(vertical_field_of_view * 0.5);
+		const width = aspect_ratio * height;
+
+		this._m[0] = 0.0;
+		this._m[1] = 0.0;
+		this._m[2] = -2.0 / depth;
+		this._m[3] = 0.0;
+
+		this._m[4] = 2.0 / width;
+		this._m[5] = 0.0;
+		this._m[6] = 0.0;
+		this._m[7] = 0.0;
+
+		this._m[8] = 0.0;
+		this._m[9] = 2.0 / height;
+		this._m[10] = 0.0;
+		this._m[11] = 0.0;
+
+		this._m[12] = 0.0;
+		this._m[13] = 0.0;
+		this._m[14] = - (far_clipping_plane + near_clipping_plane) / depth;
+		this._m[15] = 1.0;
 
 		return this;
 	}
@@ -767,10 +799,10 @@ export default class Mat4 {
 	 * @return {String} - Human readable string of the matrix.
 	 */
 	toString(p = 16) {
-		return `[[${this._m[0].toFixed(p)}, ${this._m[4].toFixed(p)}, ${this._m[8].toFixed(p)},  ${this._m[12].toFixed(p)}],`
-			+  ` [${this._m[1].toFixed(p)}, ${this._m[5].toFixed(p)}, ${this._m[9].toFixed(p)},  ${this._m[13].toFixed(p)}],`
-			+  ` [${this._m[2].toFixed(p)}, ${this._m[6].toFixed(p)}, ${this._m[10].toFixed(p)}, ${this._m[14].toFixed(p)}],`
-			+  ` [${this._m[3].toFixed(p)}, ${this._m[7].toFixed(p)}, ${this._m[11].toFixed(p)}, ${this._m[15].toFixed(p)}]]`;
+		return `[${this._m[0].toFixed(p)}, ${this._m[4].toFixed(p)}, ${this._m[8].toFixed(p)},  ${this._m[12].toFixed(p)}\n`
+			+  ` ${this._m[1].toFixed(p)}, ${this._m[5].toFixed(p)}, ${this._m[9].toFixed(p)},  ${this._m[13].toFixed(p)}\n`
+			+  ` ${this._m[2].toFixed(p)}, ${this._m[6].toFixed(p)}, ${this._m[10].toFixed(p)}, ${this._m[14].toFixed(p)}\n`
+			+  ` ${this._m[3].toFixed(p)}, ${this._m[7].toFixed(p)}, ${this._m[11].toFixed(p)}, ${this._m[15].toFixed(p)}\n]`;
 	}
 
 }
