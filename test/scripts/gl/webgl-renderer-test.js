@@ -34,16 +34,16 @@ export default class WebGLRendererTest {
 
 		WebGLRendererTest.testScene();
 		WebGLRendererTest.testObjectRotation();
-		WebGLRendererTest.testCameraPose();
-		WebGLRendererTest.benchmarkMesh();
-		WebGLRendererTest.benchmarkStaticMesh();
-		WebGLRendererTest.benchmarkStaticIndexedMesh();
-		WebGLRendererTest.testIndexedColoredGeometryOutline();
-		WebGLRendererTest.testIndexedGeometryWithNormals();
-		WebGLRendererTest.testIndexedColoredGeometryWithNormals();
-		WebGLRendererTest.sceneModification();
-		WebGLRendererTest.textDisplay();
-		WebGLRendererTest.testIcosahedron();
+		// WebGLRendererTest.testCameraPose();
+		// WebGLRendererTest.benchmarkMesh();
+		// WebGLRendererTest.benchmarkStaticMesh();
+		// WebGLRendererTest.benchmarkStaticIndexedMesh();
+		// WebGLRendererTest.testIndexedGeometryWithNormals();
+		// WebGLRendererTest.testIndexedColoredGeometryOutline();
+		// WebGLRendererTest.testIndexedColoredGeometryWithNormals();
+		// WebGLRendererTest.sceneModification();
+		// WebGLRendererTest.textDisplay();
+		// WebGLRendererTest.testIcosahedron();
 
 		console.timeEnd('Perf');
 		console.log('%c---------------------------------------','color:teal;');
@@ -93,11 +93,12 @@ export default class WebGLRendererTest {
 		camera.position = new Vec3(3.0, 0.0, 0.0);
 		scene.addCamera(camera);
 
-		const cube = Renderable.create({
+		const cube = Renderable.from({
 			name: name,
 			geometry: Box.createBoxGeometry(),
 			program: 'simple',
 		});
+
 		scene.addChild(cube);
 
 		scene.addListener('update', (delta_t) => {
@@ -127,7 +128,7 @@ export default class WebGLRendererTest {
 		for(let axis_idx = 0; axis_idx < 3; axis_idx++) {
 			cubes[axis_idx] = [];
 			for(let rotation_type_idx = 0; rotation_type_idx < 5; rotation_type_idx++) {
-				const cube = Renderable.create({
+				const cube = Renderable.from({
 					name: `cube_${axis_idx}_${rotation_type_idx}`,
 					origin: Vec3.from([0.0, y_offset, z_offset]),
 					geometry: Box.createBoxGeometry(),
@@ -242,7 +243,7 @@ export default class WebGLRendererTest {
 
 		for(let i = 0 ; i < NUM ; i++) {
 			const cube = Renderable.create({
-				name: `cube${i}`,
+				name: `cube-${i}`,
 				geometry: Box.createBoxGeometry(),
 				program: 'simple',
 			});
@@ -527,7 +528,7 @@ export default class WebGLRendererTest {
 			const color = Vec3.random();
 
 			const cube = Renderable.create({
-				name: `cube${Math.random()}`,
+				name: `cube-${Math.random()}`,
 				geometry: Box.createIndexedColoredBoxGeometry(color, new Vec3(), SCALE_VECTOR),
 				program: 'color',
 			});
@@ -659,4 +660,3 @@ export default class WebGLRendererTest {
 	}
 
 }
-

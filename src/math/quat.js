@@ -2,7 +2,7 @@
  * @file Quaternion manipulation.
  *
  * @author Noodep
- * @version 0.2
+ * @version 0.21
  */
 
 const EPSILON32 = Math.pow(2, -23);
@@ -137,11 +137,7 @@ export default class Quaternion {
 	 * @return {module:math.Quaternion} - This Quaternion.
 	 */
 	copy(q) {
-		this._q[0] = q._q[0];
-		this._q[1] = q._q[1];
-		this._q[2] = q._q[2];
-		this._q[3] = q._q[3];
-
+		this._q.set(q);
 		return this;
 	}
 

@@ -2,7 +2,7 @@
  * @file Scene.
  *
  * @author noodep
- * @version 0.22
+ * @version 0.23
  */
 
 import Renderable from '../gl/renderable.js';
@@ -154,16 +154,6 @@ export default class Scene extends Object3D {
 				this._program_cache.delete(program_name);
 			}
 		}
-	}
-
-	/**
-	 * Update this Scene.
-	 */
-	update(delta_t) {
-		this.notify('update', delta_t);
-
-		// Update Models
-		super.update(delta_t);
 	}
 
 	/**

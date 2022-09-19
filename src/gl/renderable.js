@@ -3,7 +3,7 @@
  * Such object has a shader program associated with it and a geometry of some kind.
  *
  * @author Noodep
- * @version 0.17
+ * @version 0.38
  */
 
 import { dl } from '../util/log.js';
@@ -25,19 +25,17 @@ export default class Renderable extends Object3D {
 	 * @param {Object} options - Object3D options - id, origin, orientation, scale.
 	 * @return {module:3d.Renderable} - The newly created Renderable.
 	 */
-	constructor(id, name, origin, orientation, scale, geometry, program) {
-		super(id, name, origin, orientation, scale);
+	constructor(id, geometry, program, options) {
+		super(id, options);
 		this._geometry = geometry;
 		this._program = program;
-		this._model_uniform_location = undefined;
 
-		// Place to store a geometry between being set with the setter and being
-		// initialized later in setShaderState().
-		this._new_geometry = null;
+		this._model_uniform_location = undefined;
+		this._dirty = false
 	}
 
-	static create({ id, name, origin, orientation, scale, geometry, program } = {}) {
-		return new Renderable(id, name, origin, orientation, scale, geometry, program);
+	static from({ 'id': id, 'geometry': geometry, 'program': program, ...options }) {
+		return new this(id, geometry, program, options);
 	}
 
 	get program() {
@@ -49,7 +47,11 @@ export default class Renderable extends Object3D {
 	}
 
 	set geometry(geometry) {
-		this._new_geometry = geometry;
+		if (this._geometry !== null)
+			this._geometry.destroy();
+
+		this._geometry = geometry;
+		this._dirty = true;
 	}
 
 	initialize(renderer) {
@@ -64,11 +66,9 @@ export default class Renderable extends Object3D {
 	}
 
 	setShaderState(renderer) {
-		if (this._new_geometry) {
-			this._geometry.destroy(renderer);
-			this._geometry = this._new_geometry;
+		if (this._dirty) {
 			this._geometry.initialize(renderer);
-			this._new_geometry = null;
+			this._dirty = false;
 		}
 
 		renderer.activateVertexArray(this._geometry.vao);

@@ -2,7 +2,7 @@
  * @file 3 components vector manipulation.
  *
  * @author Noodep
- * @version 0.74
+ * @version 0.81
  */
 
 import { Vec2View } from './vec2.js';
@@ -72,12 +72,7 @@ export default class Vec3 {
 	 * @return {module:math.Vec3} - The newly created vector set to identity.
 	 */
 	static identity() {
-		const v = new Vec3();
-		v._v[0] = 1.0;
-		v._v[1] = 1.0;
-		v._v[2] = 1.0;
-
-		return v;
+		return new Vec3(1.0, 1.0, 1.0);
 	}
 
 	/**
@@ -137,10 +132,7 @@ export default class Vec3 {
 	 * @return {module:math.Vec3} - This vector.
 	 */
 	copy(v3) {
-		this._v[0] = v3._v[0];
-		this._v[1] = v3._v[1];
-		this._v[2] = v3._v[2];
-
+		this._v.set(v3)
 		return this;
 	}
 

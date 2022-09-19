@@ -2,32 +2,19 @@
  * @file Object3d class that represent a object that can be manipulated in a 3d environment
  *
  * @author noodep
- * @version 0.98
+ * @version 1.19
  */
 
 import { uuidv4 } from '../crypto/uuid.js';
 import Mat4 from '../math/mat4.js';
 import Quat from '../math/quat.js';
 import Vec3 from '../math/vec3.js';
-import Listenable from '../util/listenable.js';
 import { wl } from '../util/log.js';
 
 /**
  * Object in a 3D environment.
- *
- * Fires the following event types:
- * property:
- *	'origin' - When the origin property updates; passes the new origin
- *	'orientation' - When the orientation property updates; passed the new orientation
- *	'size' - When the size proprty updates; passes the new size
- *	'model' - When the world model updates; passes the new matrix
- *	'add' - When a child is added; passes this object and the added one
- *	'remove' - When a child is removed; passes this object and the removed one
- *	'destroy' - Directly after destroy() has been called
- * Note that "updates" above does not necessarily imply "changes"
- * Events will be fired when the property has the possibility of changing.
  */
-export default class Object3D extends Listenable {
+export default class Object3D extends EventTarget {
 
 	/**
 	 * @constructor
@@ -45,17 +32,24 @@ export default class Object3D extends Listenable {
 		super();
 		this._id = id;
 		this._name = name;
+
+		this._origin = new Vec3(origin);
+		this._orientation = new Quat(orientation);
+		this._scale = new Vec3(scale);
+
 		this._parent = undefined;
 		this._children = new Set();
-		this._origin = Vec3.from(origin);
-		this._orientation = Quat.from(orientation);
-		this._scale = Vec3.from(scale);
+
 		this._is_model_valid = false;
 		this._local_model = Mat4.identity();
 		this._world_model = Mat4.identity();
 
 		// Temporary quaternion used for rotations. This avoids creating one each time.
 		this._tmp_quaternion = new Quat();
+	}
+
+	static from({ 'id': id, ...options }) {
+		return new this(id, options);
 	}
 
 	/**
@@ -130,7 +124,6 @@ export default class Object3D extends Listenable {
 	set origin(v3) {
 		this._origin.copy(v3);
 		this._invalidateModel();
-		this.notify('origin', this._origin);
 	}
 
 	/**
@@ -150,7 +143,6 @@ export default class Object3D extends Listenable {
 	set orientation(q) {
 		this._orientation.copy(q);
 		this._invalidateModel();
-		this.notify('orientation', this._orientation);
 	}
 
 	/**
@@ -170,7 +162,6 @@ export default class Object3D extends Listenable {
 	set size(v3) {
 		this._scale.copy(v3);
 		this._invalidateModel();
-		this.notify('size', this._scale);
 	}
 
 	/**
@@ -207,8 +198,6 @@ export default class Object3D extends Listenable {
 
 		this._children.add(object);
 		object.parent = this;
-
-		this.notify('add', this, object);
 	}
 
 	/**
@@ -233,8 +222,7 @@ export default class Object3D extends Listenable {
 	 * Removes a child from this Object3d if possible.
 	 *
 	 * @param {module:3d.Object3d} object - The Object3d to be removed.
-	 * @return {Boolean} - true if the object was removed, false if the object
-	 * was not a child of this Object3d.
+	 * @return {Boolean} - true if the object was removed, false if the object was not a child of this Object3d.
 	 */
 	removeChild(object) {
 		if(!object || !this.hasChild(object)) {
@@ -244,7 +232,6 @@ export default class Object3D extends Listenable {
 
 		this._children.delete(object);
 		object.parent = undefined;
-		this.notify('remove', this, object);
 		return true;
 	}
 
@@ -276,7 +263,6 @@ export default class Object3D extends Listenable {
 	scale(v) {
 		this._scale.multiply(v);
 		this._invalidateModel();
-		this.notify('size', this._scale);
 	}
 
 	/**
@@ -287,7 +273,6 @@ export default class Object3D extends Listenable {
 	translate(v) {
 		this._origin.add(v);
 		this._invalidateModel();
-		this.notify('origin', this._origin);
 	}
 
 	/**
@@ -298,7 +283,6 @@ export default class Object3D extends Listenable {
 	translateX(delta_x) {
 		this._origin.translateX(delta_x);
 		this._invalidateModel();
-		this.notify('origin', this._origin);
 	}
 
 	/**
@@ -309,7 +293,6 @@ export default class Object3D extends Listenable {
 	translateY(delta_y) {
 		this._origin.translateY(delta_y);
 		this._invalidateModel();
-		this.notify('origin', this._origin);
 	}
 
 	/**
@@ -320,7 +303,6 @@ export default class Object3D extends Listenable {
 	translateZ(delta_z) {
 		this._origin.translateZ(delta_z);
 		this._invalidateModel();
-		this.notify('origin', this._origin);
 	}
 
 	/**
@@ -334,7 +316,6 @@ export default class Object3D extends Listenable {
 		this._tmp_quaternion.fromAxisRotation(theta, axis);
 		this._orientation.multiply(this._tmp_quaternion);
 		this._invalidateModel();
-		this.notify('orientation', this._orientation);
 	}
 
 	/**
@@ -346,7 +327,6 @@ export default class Object3D extends Listenable {
 		this._tmp_quaternion.fromAxisRotation(theta, Vec3.X_AXIS);
 		this._orientation.multiply(this._tmp_quaternion);
 		this._invalidateModel();
-		this.notify('orientation', this._orientation);
 	}
 
 	/**
@@ -358,7 +338,6 @@ export default class Object3D extends Listenable {
 		this._tmp_quaternion.fromAxisRotation(theta, Vec3.Y_AXIS);
 		this._orientation.multiply(this._tmp_quaternion);
 		this._invalidateModel();
-		return this;
 	}
 
 	/**
@@ -370,7 +349,6 @@ export default class Object3D extends Listenable {
 		this._tmp_quaternion.fromAxisRotation(theta, Vec3.Z_AXIS);
 		this._orientation.multiply(this._tmp_quaternion);
 		this._invalidateModel();
-		return this;
 	}
 
 	/**
@@ -387,8 +365,6 @@ export default class Object3D extends Listenable {
 			this.removeChild(child);
 			child.destroy();
 		}
-
-		this.notify('destroy');
 	}
 
 	/**
@@ -413,8 +389,6 @@ export default class Object3D extends Listenable {
 
 		for(let child of this._children)
 			child._invalidateModel();
-
-		this.notify('model', this.worldModel);
 	}
 
 	/**
@@ -430,4 +404,3 @@ export default class Object3D extends Listenable {
 	}
 
 }
-
