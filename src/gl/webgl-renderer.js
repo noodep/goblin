@@ -2,7 +2,7 @@
  * @file Class representing a 3D renderer that uses a WebGLRenderingContext.
  *
  * @author Noodep
- * @version 0.17
+ * @version 0.21
  */
 
 import { dl, wl } from '../util/log.js';
@@ -89,6 +89,9 @@ export default class WebGLRenderer {
 			return false;
 		}
 
+		scene.addEventListener('new-child', e => {
+			console.log(e);
+		});
 		scene.sceneAttached(this);
 		this._scenes.set(scene.id, scene);
 
@@ -329,10 +332,10 @@ export default class WebGLRenderer {
 
 			this._animation_frame = window.requestAnimationFrame(__loop);
 			this.clear(WebGLRenderingContext.COLOR_BUFFER_BIT | WebGLRenderingContext.DEPTH_BUFFER_BIT);
-			this._scenes.forEach((scene) => {
+			for (let scene of this._scenes.values()) {
 				scene.update(delta_t);
 				scene.render(this);
-			});
+			}
 		};
 
 		__loop(0);

@@ -2,7 +2,7 @@
  * @file Scene.
  *
  * @author noodep
- * @version 0.22
+ * @version 0.34
  */
 
 import Renderable from '../gl/renderable.js';
@@ -12,35 +12,13 @@ import Object3D from './object3d.js';
  * Scene to render a hierarchy of Renderables.
  *
  * Fires the following events, in addition to those in Object3D:
- *	'update' - When the scene updates; passes the time since the last update
  */
 export default class Scene extends Object3D {
 
-	/**
-	 * @constructor
-	 * @memberOf module:3d
-	 * @alias Scene
-	 *
-	 * @param {String} [name] - This scene display name.
-	 * @return {module:3d.Scene} - The newly created Scene.
-	 */
-	constructor(name) {
-		super(undefined, name);
-		this._lights = new Set();
-		this._cameras = new Array();
-
-		// Temporary test
-		this._active_camera = 0;
-		// Tempend
-
-		this._program_cache = new Map();
-
-		// Private instance symbols used to store the bound 'add' and 'remove'
-		// event handlers on each parent object so that the listeners can be
-		// removed when an object is removed from the scene.
-		this._add_handler_symbol = Symbol(`${this.id} add`);
-		this._remove_handler_symbol = Symbol(`${this.id} remove`);
-	}
+	_lights = new Set();
+	_cameras = new Array();
+	_active_camera = 0;
+	_program_cache = new Map();
 
 	/**
 	 * Returns an array of all renderable objects in this scene, in no
@@ -77,29 +55,8 @@ export default class Scene extends Object3D {
 			this.addRenderableToProgramCache(object);
 		}
 
-		// Utilize (exploit) the fact that a renderer is passed to this function
-		// to be able to initialize new objects added to the hierarchy without
-		// having to wait until a reference to a renderer is available.
-		//
-		// Binding the functions to pass the this pointer and the renderer
-		// creates new, anonymous functions; symbols private to this instance
-		// are used to store the callbacks with the objects they are listening
-		// to maintain references to them for removal in uninitializeObject3D().
-		// (Even though the remove listener does not have to bind to the
-		// renderer and could be defined as an arrow function in the
-		// constructor, it is created with the add listener for conisistency and
-		// possible future changes).
-		const add_event_handler = this._addEventHandler.bind(this, renderer);
-		const remove_event_handler = this._removeEventHandler.bind(this);
-
-		object.addListener('add', add_event_handler);
-		object.addListener('remove', remove_event_handler);
-		object[this._add_handler_symbol] = add_event_handler;
-		object[this._remove_handler_symbol] = remove_event_handler;
-
-		for(let child_object of object.getChildren()) {
+		for(let child_object of object.children)
 			this.initializeObject3D(renderer, child_object);
-		}
 	}
 
 	/**
@@ -113,18 +70,11 @@ export default class Scene extends Object3D {
 	 * re-added (current behavior) ?
 	 */
 	uninitializeObject3D(object) {
-		if (object instanceof Renderable) {
+		if (object instanceof Renderable)
 			this.removeRenderableFromProgramCache(object);
-		}
 
-		object.removeListener('add', object[this._add_handler_symbol]);
-		object.removeListener('remove', object[this._remove_handler_symbol]);
-		delete object[this._add_handler_symbol];
-		delete object[this._remove_handler_symbol];
-
-		for (let child_object of object.getChildren()) {
+		for (let child_object of object.children)
 			this.uninitializeObject3D(child_object);
-		}
 	}
 
 	/**
@@ -157,16 +107,6 @@ export default class Scene extends Object3D {
 	}
 
 	/**
-	 * Update this Scene.
-	 */
-	update(delta_t) {
-		this.notify('update', delta_t);
-
-		// Update Models
-		super.update(delta_t);
-	}
-
-	/**
 	 * Render this Scene using program batches.
 	 */
 	render(renderer) {
@@ -195,13 +135,4 @@ export default class Scene extends Object3D {
 		program.applyState(renderer, camera.projection, camera.view);
 	}
 
-	_addEventHandler(renderer, parent, child) {
-		this.initializeObject3D(renderer, child);
-	}
-
-	_removeEventHandler(parent, child) {
-		this.uninitializeObject3D(child);
-	}
-
 }
-

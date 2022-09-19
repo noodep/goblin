@@ -3,7 +3,7 @@
  * Such object has a shader program associated with it and a geometry of some kind.
  *
  * @author Noodep
- * @version 0.17
+ * @version 0.65
  */
 
 import { dl } from '../util/log.js';
@@ -20,24 +20,18 @@ export default class Renderable extends Object3D {
 	 * @memberOf module:3d
 	 * @alias Renderable
 	 *
-	 * @param {Array} geometry - This object geometry.
+	 * @param {Geometry} geometry - This object geometry.
 	 * @param {String} program - The name of this object rendering program.
-	 * @param {Object} options - Object3D options - id, origin, orientation, scale.
+	 * @param {Object} options - Object3D optional parameters
 	 * @return {module:3d.Renderable} - The newly created Renderable.
 	 */
-	constructor(id, name, origin, orientation, scale, geometry, program) {
-		super(id, name, origin, orientation, scale);
+	constructor(geometry, program, options) {
+		super(options);
 		this._geometry = geometry;
 		this._program = program;
+
 		this._model_uniform_location = undefined;
-
-		// Place to store a geometry between being set with the setter and being
-		// initialized later in setShaderState().
-		this._new_geometry = null;
-	}
-
-	static create({ id, name, origin, orientation, scale, geometry, program } = {}) {
-		return new Renderable(id, name, origin, orientation, scale, geometry, program);
+		this._dirty = false
 	}
 
 	get program() {
@@ -49,7 +43,11 @@ export default class Renderable extends Object3D {
 	}
 
 	set geometry(geometry) {
-		this._new_geometry = geometry;
+		if (this._geometry !== null)
+			this._geometry.destroy();
+
+		this._geometry = geometry;
+		this._dirty = true;
 	}
 
 	initialize(renderer) {
@@ -64,11 +62,9 @@ export default class Renderable extends Object3D {
 	}
 
 	setShaderState(renderer) {
-		if (this._new_geometry) {
-			this._geometry.destroy(renderer);
-			this._geometry = this._new_geometry;
+		if (this._dirty) {
 			this._geometry.initialize(renderer);
-			this._new_geometry = null;
+			this._dirty = false;
 		}
 
 		renderer.activateVertexArray(this._geometry.vao);
