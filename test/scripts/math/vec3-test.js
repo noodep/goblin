@@ -18,7 +18,6 @@ export default class Vec3Test {
 		Vec3Test.testDefaultConstruction();
 		Vec3Test.testIdentityConstruction();
 		Vec3Test.testArrayConstruction();
-		Vec3Test.testBadArrayConstruction();
 		Vec3Test.testZeroAssignement();
 		Vec3Test.testRandomAssignement();
 		Vec3Test.testSetters();
@@ -61,14 +60,6 @@ export default class Vec3Test {
 		const z = rf32();
 		const v = Vec3.from([x, y, z]);
 		console.assert(vectorEpsilonEquals(v, x, y, z), 'Assigned array construction failed.');
-	}
-
-	static testBadArrayConstruction() {
-		let v$undefined = Vec3.from(undefined);
-		console.assert(v$undefined === undefined, `Array construction from undefined failed should be ${undefined}, was ${v$undefined}`);
-
-		let v$number = Vec3.from(Math.random());
-		console.assert(v$number === undefined, `Array construction from undefined failed should be ${undefined}, was ${v$number}`);
 	}
 
 	static testZeroAssignement() {

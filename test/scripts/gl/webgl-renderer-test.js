@@ -2,7 +2,7 @@
  * @file test suite for webgl rendering
  *
  * @author noodep
- * @version 1.93
+ * @version 2.22
  */
 
 import { Logger, DEFAULT_LOGGER as DL } from '/src/util/log.js';
@@ -34,16 +34,16 @@ export default class WebGLRendererTest {
 
 		WebGLRendererTest.testScene();
 		WebGLRendererTest.testObjectRotation();
-		// WebGLRendererTest.testCameraPose();
-		// WebGLRendererTest.benchmarkMesh();
-		// WebGLRendererTest.benchmarkStaticMesh();
-		// WebGLRendererTest.benchmarkStaticIndexedMesh();
-		// WebGLRendererTest.testIndexedGeometryWithNormals();
-		// WebGLRendererTest.testIndexedColoredGeometryOutline();
-		// WebGLRendererTest.testIndexedColoredGeometryWithNormals();
-		// WebGLRendererTest.sceneModification();
-		// WebGLRendererTest.textDisplay();
-		// WebGLRendererTest.testIcosahedron();
+		WebGLRendererTest.testCameraPose();
+		WebGLRendererTest.benchmarkMesh();
+		WebGLRendererTest.benchmarkStaticMesh();
+		WebGLRendererTest.benchmarkStaticIndexedMesh();
+		WebGLRendererTest.testIndexedGeometryWithNormals();
+		WebGLRendererTest.testIndexedColoredGeometryOutline();
+		WebGLRendererTest.testIndexedColoredGeometryWithNormals();
+		WebGLRendererTest.sceneModification();
+		WebGLRendererTest.textDisplay();
+		WebGLRendererTest.testIcosahedron();
 
 		console.timeEnd('Perf');
 		console.log('%c---------------------------------------','color:teal;');
@@ -93,15 +93,10 @@ export default class WebGLRendererTest {
 		camera.position = new Vec3(3.0, 0.0, 0.0);
 		scene.addCamera(camera);
 
-		const cube = Renderable.from({
-			name: name,
-			geometry: Box.createBoxGeometry(),
-			program: 'simple',
-		});
-
+		const cube = new Renderable(Box.createBoxGeometry(), 'simple', {id: 'cube'});
 		scene.addChild(cube);
 
-		scene.addListener('update', (delta_t) => {
+		scene.addEventListener('update', ({ detail: delta_t }) => {
 			cube.rotateX(delta_t / 2000.0);
 			cube.rotateY(delta_t / 1000.0);
 		});
@@ -128,11 +123,9 @@ export default class WebGLRendererTest {
 		for(let axis_idx = 0; axis_idx < 3; axis_idx++) {
 			cubes[axis_idx] = [];
 			for(let rotation_type_idx = 0; rotation_type_idx < 5; rotation_type_idx++) {
-				const cube = Renderable.from({
-					name: `cube_${axis_idx}_${rotation_type_idx}`,
-					origin: Vec3.from([0.0, y_offset, z_offset]),
-					geometry: Box.createBoxGeometry(),
-					program: 'simple',
+				const cube = new Renderable(Box.createBoxGeometry(), 'simple', {
+					id: `cube_${axis_idx}_${rotation_type_idx}`,
+					origin: [0.0, y_offset, z_offset],
 				});
 				cubes[axis_idx][rotation_type_idx] = cube;
 				scene.addChild(cube);
@@ -148,7 +141,7 @@ export default class WebGLRendererTest {
 
 		let angle = 0;
 
-		scene.addListener('update', (delta_t) => {
+		scene.addEventListener('update', ({ detail: delta_t }) => {
 			const SPEED = 1000.0;
 			angle += delta_t / SPEED;
 
@@ -199,11 +192,7 @@ export default class WebGLRendererTest {
 		camera.position = new Vec3(2.0, 0.0, 0.0);
 		scene.addCamera(camera);
 
-		const cube = Renderable.create({
-			name: 'cube',
-			geometry: Box.createBoxGeometry(),
-			program: 'simple',
-		});
+		const cube = new Renderable(Box.createBoxGeometry(), 'simple', {id: 'cube'});
 		scene.addChild(cube);
 
 		// Camera pose update
@@ -211,7 +200,7 @@ export default class WebGLRendererTest {
 		const camera_orientation = new Quat();
 		let angle = 0;
 
-		scene.addListener('update', (delta_t) => {
+		scene.addEventListener('update', ({ detail: delta_t }) => {
 			angle += delta_t / 10000;
 			camera_orientation.fromAxisRotation(angle, x_axis);
 			camera.orientation = camera_orientation;
@@ -242,11 +231,7 @@ export default class WebGLRendererTest {
 		const SCALE_VECTOR = new Vec3(SCALE, SCALE, SCALE);
 
 		for(let i = 0 ; i < NUM ; i++) {
-			const cube = Renderable.create({
-				name: `cube-${i}`,
-				geometry: Box.createBoxGeometry(),
-				program: 'simple',
-			});
+			const cube = new Renderable(Box.createBoxGeometry(), 'simple', {id : `cube-${i}`});
 
 			const ix = (i%SIZE);
 			const iy = Math.floor(i / (SIZE*SIZE));
@@ -257,7 +242,7 @@ export default class WebGLRendererTest {
 			cube.translateZ(-1.0 + (iz + 1) * OFFSET);
 			cube.scale(SCALE_VECTOR);
 
-			scene.addListener('update', (delta_t) => {
+			scene.addEventListener('update', ({ detail: delta_t }) => {
 				cube.rotateX(-delta_t / 2000);
 				cube.rotateY(-delta_t / 3000);
 				cube.rotateZ(-delta_t / 4000);
@@ -265,7 +250,7 @@ export default class WebGLRendererTest {
 			scene.addChild(cube);
 		}
 
-		scene.addListener('update', (delta_t) => {
+		scene.addEventListener('update', ({ detail: delta_t }) => {
 			scene.rotateX(delta_t / 40000);
 			scene.rotateY(delta_t / 30000);
 			scene.rotateZ(delta_t / 20000);
@@ -273,7 +258,6 @@ export default class WebGLRendererTest {
 
 		r.enable(WebGLRenderingContext.DEPTH_TEST);
 		r.background = [0.1, 0.2, 0.3, 1.0];
-		r.clear(WebGLRenderingContext.COLOR_BUFFER_BIT);
 
 		simple_p.ready().then(() => {
 			r.addScene(scene);
@@ -312,14 +296,10 @@ export default class WebGLRendererTest {
 		const geometry = new Geometry(buffer, buffer.length / 3, WebGLRenderingContext.TRIANGLES);
 		geometry.addAttribute('position', new BufferAttribute(3));
 
-		const cube = Renderable.create({
-			name: 'cube',
-			geometry: geometry,
-			program: 'simple',
-		});
+		const cube = new Renderable(geometry, 'simple', {id: 'cube'});
 
 		scene.addChild(cube);
-		scene.addListener('update', (delta_t) => {
+		scene.addEventListener('update', ({ detail: delta_t }) => {
 			cube.rotateX(delta_t / 10000);
 			cube.rotateY(delta_t / 10000);
 			cube.rotateZ(delta_t / 10000);
@@ -370,14 +350,10 @@ export default class WebGLRendererTest {
 
 		const indexed_geometry = new IndexedGeometry(indices, vertices, WebGLRenderingContext.TRIANGLES, WebGLRenderingContext.UNSIGNED_INT);
 		indexed_geometry.addAttribute('position', new BufferAttribute(3));
-		const cubes = Renderable.create({
-			name: 'cubes',
-			geometry: indexed_geometry,
-			program: 'simple',
-		});
+		const cubes = new Renderable(indexed_geometry, 'simple', {id: 'cubes'});
 
 		scene.addChild(cubes);
-		scene.addListener('update', (delta_t) => {
+		scene.addEventListener('update', ({ detail: delta_t }) => {
 			cubes.rotateX(delta_t / 10000);
 			cubes.rotateY(delta_t / 10000);
 			cubes.rotateZ(delta_t / 10000);
@@ -405,12 +381,10 @@ export default class WebGLRendererTest {
 		const SIZE = 5.0;
 
 		for(let i = 0 ; i < NUM ; i++) {
-			const cube = Renderable.create({
-				name: `cube-${i}`,
+			const cube = new Renderable(Box.createIndexedColoredBoxOutlineGeometry(), 'color', {
+				id: `cube-${i}`,
 				origin: Vec3.random().add(new Vec3(-0.5, -0.5, -0.5)).scale(SIZE),
 				scale: Vec3.random().scale(1 / SIZE),
-				geometry: Box.createIndexedColoredBoxOutlineGeometry(),
-				program: 'color',
 			});
 
 			scene.addChild(cube);
@@ -439,20 +413,16 @@ export default class WebGLRendererTest {
 		const SIZE = 5.0;
 
 		for(let i = 0 ; i < NUM ; i++) {
-			const cube = Renderable.create({
-				name: `cube-${i}`,
+			const cube = new Renderable(Box.createIndexedBoxGeometryWithNormals(), 'light', {
+				id: `cube-${i}`,
 				origin: Vec3.random().add(new Vec3(-1, -0.5, -0.5)).scale(SIZE),
 				scale: Vec3.random().scale(1 / SIZE),
-				geometry: Box.createIndexedBoxGeometryWithNormals(),
-				program: 'light',
 			});
 
-			const plane = Renderable.create({
-				name: `plane-${i}`,
+			const plane = new Renderable(Plane.createIndexedPlaneGeometryWithNormals(), 'light', {
+				id: `plane-${i}`,
 				origin: Vec3.random().add(new Vec3(0, -0.5, -0.5)).scale(SIZE),
 				scale: Vec3.random().scale(1 / SIZE),
-				geometry: Plane.createIndexedPlaneGeometryWithNormals(),
-				program: 'light',
 			});
 
 			scene.addChild(cube);
@@ -481,14 +451,11 @@ export default class WebGLRendererTest {
 		const SIZE = 5.0;
 
 		for(let i = 0 ; i < NUM ; i++) {
-			const cube = Renderable.create({
-				name: `cube-${i}`,
+			const cube = new Renderable(Box.createIndexedColoredBoxGeometryWithNormals(Vec3.random()),'light', {
+				id: `cube-${i}`,
 				origin: Vec3.random().add(new Vec3(-0.5, -0.5, -0.5)).scale(SIZE),
 				scale: Vec3.random().scale(1 / SIZE),
-				geometry: Box.createIndexedColoredBoxGeometryWithNormals(Vec3.random()),
-				program: 'light',
 			});
-
 			scene.addChild(cube);
 		}
 
@@ -513,31 +480,25 @@ export default class WebGLRendererTest {
 		const SCALE = 0.01;
 		const SCALE_VECTOR = new Vec3(SCALE, SCALE, SCALE);
 
-		const sun = Renderable.create({
-			name: 'sun',
-			geometry: Box.createIndexedColoredBoxGeometry(new Vec3(0.99, 0.72, 0.07), new Vec3(), SCALE_VECTOR),
-			program: 'color',
-		});
-
+		const sun_geometry = Box.createIndexedColoredBoxGeometry(new Vec3(0.99, 0.72, 0.07), new Vec3(), SCALE_VECTOR);
+		const sun = new Renderable(sun_geometry, 'color', {id: 'sun'});
 		scene.addChild(sun);
-		scene.addListener('update', (delta_t) => {
+		scene.addEventListener('update', ({ detail: delta_t }) => {
 			sun.rotateZ(delta_t / 20000);
 		});
 
 		const createRandomBox = (parent, dist, create) => {
 			const color = Vec3.random();
 
-			const cube = Renderable.create({
-				name: `cube-${Math.random()}`,
-				geometry: Box.createIndexedColoredBoxGeometry(color, new Vec3(), SCALE_VECTOR),
-				program: 'color',
-			});
+			const planet_geometry = Box.createIndexedColoredBoxGeometry(color, new Vec3(), SCALE_VECTOR);
+			const cube = new Renderable(planet_geometry, 'color', {id: `cube-${Math.random()}`});
 
 			cube.translateX(Math.random() * dist - dist / 2.0);
-			scene.addListener('update', (delta_t) => {
+			scene.addEventListener('update', ({ detail: delta_t }) => {
 				cube.rotateZ(delta_t / 5000 * dist);
 			});
 			parent.addChild(cube);
+			scene.initializeObject3D(r, cube);
 
 			if(create > 0.4)
 				createRandomBox(cube, dist/3, create / 2);
@@ -556,6 +517,7 @@ export default class WebGLRendererTest {
 				var random_box = createRandomBox(sun, 1 + Math.random() * 3, Math.random());
 				setTimeout(() => {
 					sun.removeChild(random_box);
+					scene.uninitializeObject3D(random_box);
 					random_box.destroy();
 				}, Math.random() * 4000);
 			}, Math.random() * 4000);
@@ -591,11 +553,9 @@ export default class WebGLRendererTest {
 		const text_geometry = TextUtils.createTextGeometry(string, atlas);
 		const text_width = TextUtils.getTextWidth(string, atlas);
 
-		const hello_world = Renderable.create({
-			name: 'hello-world',
+		const hello_world = new Renderable(text_geometry, 'sampler', {
+			id: 'hello-world',
 			origin: new Vec3(-text_width / 2.0, 0.0, 0.0),
-			geometry: text_geometry,
-			program: 'sampler',
 		});
 		scene.addChild(hello_world);
 
@@ -622,24 +582,21 @@ export default class WebGLRendererTest {
 		const control = new OrbitControl(camera, {element: r._canvas});
 		control.radius = 2;
 
-		const uniform_icosahedron= Renderable.create({
-			name: 'uniform',
+		const uniform_icosahedron = new Renderable(Icosahedron.createIndexedIcosahedronOutlineGeometry(), 'simple', {
+			id: 'uniform-ico',
 			origin: new Vec3(-0.6, 0, 0),
-			geometry: Icosahedron.createIndexedIcosahedronOutlineGeometry(),
-			program: 'simple',
 		});
 
-		const colored_icosahedron= Renderable.create({
-			name: 'colored',
+		const colored_ico_geometry = Icosahedron.createIndexedColoredIcosahedronOutlineGeometry(new Vec3(0.2, 0.4, 0.9));
+		const colored_icosahedron= new Renderable(colored_ico_geometry, 'color', {
+			id: 'colored-ico',
 			origin: new Vec3(0.6, 0, 0),
-			geometry: Icosahedron.createIndexedColoredIcosahedronOutlineGeometry(new Vec3(0.2, 0.4, 0.9)),
-			program: 'color',
 		});
 
 		scene.addChild(uniform_icosahedron);
 		scene.addChild(colored_icosahedron);
 
-		scene.addListener('update', (delta_t) => {
+		scene.addEventListener('update', ({ detail: delta_t }) => {
 			colored_icosahedron.rotateX(delta_t / (1000.0 + Math.random() * 8999));
 			colored_icosahedron.rotateY(delta_t / (1000.0 + Math.random() * 8999));
 			colored_icosahedron.rotateZ(delta_t / (1000.0 + Math.random() * 8999));

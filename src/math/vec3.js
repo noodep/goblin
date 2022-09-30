@@ -2,7 +2,7 @@
  * @file 3 components vector manipulation.
  *
  * @author Noodep
- * @version 0.81
+ * @version 0.83
  */
 
 import { Vec2View } from './vec2.js';
@@ -49,9 +49,7 @@ export default class Vec3 {
 	 * @return {module:math.Vec3} - The newly created vector set with values from the specified Array.
 	 */
 	static from(array) {
-		if(array && array[Symbol.iterator])
-			return new Vec3(array[0], array[1], array[2]);
-		return undefined;
+		return new Vec3(array[0], array[1], array[2]);
 	}
 
 	/**
@@ -81,12 +79,7 @@ export default class Vec3 {
 	 * @return {module:math.Vec3} - The newly created vector set with random values between 0.0 and 1.0.
 	 */
 	static random() {
-		const v = new Vec3();
-		v._v[0] = Math.random();
-		v._v[1] = Math.random();
-		v._v[2] = Math.random();
-
-		return v;
+		return new Vec3(Math.random(), Math.random(), Math.random());
 	}
 
 	/**

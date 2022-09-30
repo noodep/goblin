@@ -2,7 +2,7 @@
  * @file Object3d class that represent a object that can be manipulated in a 3d environment
  *
  * @author noodep
- * @version 1.19
+ * @version 1.93
  */
 
 import { uuidv4 } from '../crypto/uuid.js';
@@ -16,6 +16,8 @@ import { wl } from '../util/log.js';
  */
 export default class Object3D extends EventTarget {
 
+	static #type_mapping = new Map();
+
 	/**
 	 * @constructor
 	 * @memberOf module:3d
@@ -28,17 +30,20 @@ export default class Object3D extends EventTarget {
 	 * @param {Array} [scale] - a 3 dimensional array containing this object scaling.
 	 * @return {module:3d.Object3d} - The newly created Object3d.
 	 */
-	constructor(id = uuidv4(), name = '', origin = Vec3.NULL, orientation = Quat.IDENTITY, scale = Vec3.IDENTITY) {
+	constructor({ id = uuidv4(), name = undefined, origin = Vec3.NULL, orientation = Quat.IDENTITY, scale = Vec3.IDENTITY, children = []} = {}) {
 		super();
 		this._id = id;
 		this._name = name;
 
-		this._origin = new Vec3(origin);
-		this._orientation = new Quat(orientation);
-		this._scale = new Vec3(scale);
+		this._origin = Vec3.from(origin);
+		this._orientation = Quat.from(orientation);
+		this._scale = Vec3.from(scale);
 
 		this._parent = undefined;
-		this._children = new Set();
+
+		this._children = new Map();
+		for (let child of children)
+			this.addChild(child);
 
 		this._is_model_valid = false;
 		this._local_model = Mat4.identity();
@@ -48,8 +53,35 @@ export default class Object3D extends EventTarget {
 		this._tmp_quaternion = new Quat();
 	}
 
-	static from({ 'id': id, ...options }) {
-		return new this(id, options);
+	static registerTypeMapping(name, type) {
+		Object3D.#type_mapping.set(name, type);
+	}
+
+	static get type_mapping() {
+		return Object3D.#type_mapping;
+	}
+
+	static fromJSON(properties) {
+		const args = this.parse(properties);
+		return new this(...args);
+	}
+
+	static parse({ 'id': id, 'name': name, 'origin': origin, 'orientation': orientation, 'scale': scale, 'children': children_properties = [] }) {
+		const children = children_properties.map(({ 'type': type_name, ...child_properties }) => {
+			const type = Object3D.#type_mapping.get(type_name);
+			return type.fromJSON(child_properties);
+		});
+
+		const options = {
+			id: id,
+			name: name,
+			origin: origin,
+			orientation: orientation,
+			scale: scale,
+			children: children
+		};
+
+		return [options];
 	}
 
 	/**
@@ -67,7 +99,7 @@ export default class Object3D extends EventTarget {
 	 * @return {String} - This Object3d display name.
 	 */
 	get name() {
-		return this._name;
+		return this._name || this._id;
 	}
 
 	/**
@@ -187,17 +219,21 @@ export default class Object3D extends EventTarget {
 	 *
 	 * @param {module:3d.Object3d} object - The Object3d to be added as a child.
 	 */
-	addChild(object) {
-		if(object.parent)
+	addChild(child) {
+		if(child.parent)
 			throw new Error('Unable to add the specified object to this node as it already has a parent.');
 
-		if (this.hasChild(object)) {
-			wl(`Object ${object.id} is already a child of this object.`);
+		if (this.hasChild(child.id)) {
+			wl(`Object ${child.id} is already a child of this object.`);
 			return;
 		}
 
-		this._children.add(object);
-		object.parent = this;
+		this._children.set(child.id, child);
+		child.parent = this;
+	}
+
+	child(id) {
+		return this._children.get(id);
 	}
 
 	/**
@@ -214,7 +250,7 @@ export default class Object3D extends EventTarget {
 	/**
 	 * Returns an iterator over the children of this Object3D.
 	 */
-	getChildren() {
+	get children() {
 		return this._children.values();
 	}
 
@@ -248,10 +284,11 @@ export default class Object3D extends EventTarget {
 	 * Updates this object model matrix.
 	 */
 	update(delta_t) {
+		this.dispatchEvent(new CustomEvent('update', {detail: delta_t}));
 		if(!this._is_model_valid)
 			this._revalidateModel();
 
-		for(let child of this._children)
+		for(let child of this.children)
 			child.update(delta_t);
 	}
 
@@ -359,9 +396,7 @@ export default class Object3D extends EventTarget {
 			this.parent.removeChild(this);
 		}
 
-		this.clearListeners();
-
-		for (let child of this._children) {
+		for (let child of this.children) {
 			this.removeChild(child);
 			child.destroy();
 		}
@@ -387,7 +422,7 @@ export default class Object3D extends EventTarget {
 		this._computeWorldModel();
 		this._is_model_valid = true;
 
-		for(let child of this._children)
+		for(let child of this.children)
 			child._invalidateModel();
 	}
 
