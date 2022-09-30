@@ -1,11 +1,11 @@
 /**
- * @file Object3d class that represent a object that can be manipulated in a 3d environment.
+ * @file Object3d class that represent a object that can be manipulated in a 3d environment
  *
- * @author Noodep
- * @version 0.9
+ * @author noodep
+ * @version 0.98
  */
 
-import { UUIDv4 } from '../crypto/uuid.js';
+import { uuidv4 } from '../crypto/uuid.js';
 import Mat4 from '../math/mat4.js';
 import Quat from '../math/quat.js';
 import Vec3 from '../math/vec3.js';
@@ -41,7 +41,7 @@ export default class Object3D extends Listenable {
 	 * @param {Array} [scale] - a 3 dimensional array containing this object scaling.
 	 * @return {module:3d.Object3d} - The newly created Object3d.
 	 */
-	constructor(id = UUIDv4(), name = '', origin = Vec3.NULL, orientation = Quat.IDENTITY, scale = Vec3.IDENTITY) {
+	constructor(id = uuidv4(), name = '', origin = Vec3.NULL, orientation = Quat.IDENTITY, scale = Vec3.IDENTITY) {
 		super();
 		this._id = id;
 		this._name = name;
