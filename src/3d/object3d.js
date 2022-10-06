@@ -2,7 +2,7 @@
  * @file Object3d class that represent a object that can be manipulated in a 3d environment
  *
  * @author noodep
- * @version 1.93
+ * @version 2.08
  */
 
 import { uuidv4 } from '../crypto/uuid.js';
@@ -16,7 +16,7 @@ import { wl } from '../util/log.js';
  */
 export default class Object3D extends EventTarget {
 
-	static #type_mapping = new Map();
+	static #module_mapping = new Map();
 
 	/**
 	 * @constructor
@@ -53,12 +53,12 @@ export default class Object3D extends EventTarget {
 		this._tmp_quaternion = new Quat();
 	}
 
-	static registerTypeMapping(name, type) {
-		Object3D.#type_mapping.set(name, type);
+	static registerModuleMapping(name, type) {
+		Object3D.#module_mapping.set(name, type);
 	}
 
-	static get type_mapping() {
-		return Object3D.#type_mapping;
+	static moduleMapping(name) {
+		return Object3D.#module_mapping.get(name);
 	}
 
 	static fromJSON(properties) {
@@ -67,9 +67,9 @@ export default class Object3D extends EventTarget {
 	}
 
 	static parse({ 'id': id, 'name': name, 'origin': origin, 'orientation': orientation, 'scale': scale, 'children': children_properties = [] }) {
-		const children = children_properties.map(({ 'type': type_name, ...child_properties }) => {
-			const type = Object3D.#type_mapping.get(type_name);
-			return type.fromJSON(child_properties);
+		const children = children_properties.map(({ 'module': module_id, ...child_properties }) => {
+			const module = Object3D.moduleMapping(module_id);
+			return module.fromJSON(child_properties);
 		});
 
 		const options = {

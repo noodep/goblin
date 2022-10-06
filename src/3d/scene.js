@@ -2,7 +2,7 @@
  * @file Scene.
  *
  * @author noodep
- * @version 0.32
+ * @version 0.34
  */
 
 import Renderable from '../gl/renderable.js';
@@ -15,31 +15,10 @@ import Object3D from './object3d.js';
  */
 export default class Scene extends Object3D {
 
-	/**
-	 * @constructor
-	 * @memberOf module:3d
-	 * @alias Scene
-	 *
-	 * @param {String} [name] - This scene display name.
-	 * @return {module:3d.Scene} - The newly created Scene.
-	 */
-	constructor(name) {
-		super(undefined, name);
-		this._lights = new Set();
-		this._cameras = new Array();
-
-		// Temporary test
-		this._active_camera = 0;
-		// Tempend
-
-		this._program_cache = new Map();
-
-		// Private instance symbols used to store the bound 'add' and 'remove'
-		// event handlers on each parent object so that the listeners can be
-		// removed when an object is removed from the scene.
-		this._add_handler_symbol = Symbol(`${this.id} add`);
-		this._remove_handler_symbol = Symbol(`${this.id} remove`);
-	}
+	_lights = new Set();
+	_cameras = new Array();
+	_active_camera = 0;
+	_program_cache = new Map();
 
 	/**
 	 * Returns an array of all renderable objects in this scene, in no

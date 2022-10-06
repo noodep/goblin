@@ -3,7 +3,7 @@
  * Such object has a shader program associated with it and a geometry of some kind.
  *
  * @author Noodep
- * @version 0.62
+ * @version 0.65
  */
 
 import { dl } from '../util/log.js';
@@ -20,9 +20,9 @@ export default class Renderable extends Object3D {
 	 * @memberOf module:3d
 	 * @alias Renderable
 	 *
-	 * @param {Array} geometry - This object geometry.
+	 * @param {Geometry} geometry - This object geometry.
 	 * @param {String} program - The name of this object rendering program.
-	 * @param {Object} options - Object3D options - id, origin, orientation, scale.
+	 * @param {Object} options - Object3D optional parameters
 	 * @return {module:3d.Renderable} - The newly created Renderable.
 	 */
 	constructor(geometry, program, options) {
@@ -33,7 +33,6 @@ export default class Renderable extends Object3D {
 		this._model_uniform_location = undefined;
 		this._dirty = false
 	}
-
 
 	get program() {
 		return this._program;

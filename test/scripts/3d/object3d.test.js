@@ -2,7 +2,7 @@
  * @file object3d tests
  *
  * @author noodep
- * @version 1.93
+ * @version 2.26
  */
 
 import { assert, assertEquals, assertInstanceOf, assertNotStrictEquals, assertStrictEquals, assertThrows} from 'https://deno.land/std@0.158.0/testing/asserts.ts';
@@ -104,7 +104,8 @@ Deno.test('object::fromJSON', async test => {
 				static parse({ 'instance-property': property, ...properties }) {
 					const [ options ] = super.parse(properties);
 					const instance_property = new String(property);
-					return [instance_property, options];
+
+					return [ instance_property, options ];
 				}
 
 			}
@@ -120,27 +121,27 @@ Deno.test('object::fromJSON', async test => {
 				static parse({ 'optional-property': optional_property, ...properties }) {
 					const [ instance_property, options ] = super.parse(properties);
 					options.optional_property = optional_property;
-					return [instance_property, options];
+					return [ instance_property, options ];
 				}
 
 			}
 
-			Object3D.registerTypeMapping('object-3d', Object3D);
-			Object3D.registerTypeMapping('no-override-object-3d', NoOverrideObject3D);
-			Object3D.registerTypeMapping('sub-override-object-3d', SubOverrideObject3D);
+			Object3D.registerModuleMapping('object-3d', Object3D);
+			Object3D.registerModuleMapping('no-override-object-3d', NoOverrideObject3D);
+			Object3D.registerModuleMapping('sub-override-object-3d', SubOverrideObject3D);
 
 			const a_properties = {
-				'type': 'object-3d',
+				'module': 'object-3d',
 				'id': 'a',
 			};
 
 			const b_properties = {
-				'type': 'no-override-object-3d',
+				'module': 'no-override-object-3d',
 				'id': 'b',
 			};
 
 			const c_properties = {
-				'type': 'sub-override-object-3d',
+				'module': 'sub-override-object-3d',
 				'id': 'c',
 				'instance-property': 'instance-property-value',
 				'optional-property': 'optional-property-value',
@@ -156,7 +157,7 @@ Deno.test('object::fromJSON', async test => {
 
 			for (let child_properties of children_properties) {
 				const child_node = node.child(child_properties['id']);
-				const child_type = Object3D.type_mapping.get(child_properties['type']);
+				const child_type = Object3D.moduleMapping(child_properties['module']);
 				assertInstanceOf(child_node, child_type);
 				assertStrictEquals(child_node.parent, node);
 			}
