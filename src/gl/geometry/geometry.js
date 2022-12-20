@@ -2,7 +2,7 @@
  * @file Geometry object containing data and it description.
  *
  * @author Noodep
- * @version 0.36
+ * @version 0.37
  */
 
 import { wl } from '../../util/log.js';
@@ -90,7 +90,7 @@ export default class Geometry {
 		// Prevents procedure to get additional steps
 		renderer.activateVertexArray(null);
 
-		this.destroy = _destroyBuffers.bind(renderer, this);
+		this.destroy = _destroyBuffers.bind(this, renderer);
 		this._initialized = true;
 	}
 
