@@ -1,6 +1,6 @@
 {
 	"name": "goblin",
-	"version": "1.0.9",
+	"version": "1.0.91",
 	"description": "Javascript utility library",
 	"main": "goblin.js",
 	"directories": {
