@@ -1,8 +1,8 @@
 /**
  * @file Triangular plane geometry generation.
  *
- * @author Noodep
- * @version 0.07
+ * @author noodep
+ * @version 0.08
  */
 
 import Vec3 from '../../math/vec3.js';
@@ -147,4 +147,3 @@ export default class Plane {
 	}
 
 }
-

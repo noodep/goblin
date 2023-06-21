@@ -2,7 +2,7 @@
  * @file Object3d class that represent a object that can be manipulated in a 3d environment
  *
  * @author noodep
- * @version 0.98
+ * @version 0.99
  */
 
 import { uuidv4 } from '../crypto/uuid.js';
@@ -430,4 +430,3 @@ export default class Object3D extends Listenable {
 	}
 
 }
-

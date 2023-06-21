@@ -1,8 +1,8 @@
 /**
- * @file Base class to make an object generate events.
+ * @file b class to make an object generate events.
  *
- * @author Noodep
- * @version 0.05
+ * @author noodep
+ * @version 0.07
  */
 
 import { el } from './log.js';
@@ -103,4 +103,3 @@ export default class Listenable {
 	}
 
 }
-

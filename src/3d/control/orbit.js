@@ -2,7 +2,7 @@
  * @file object manipulation through orbit control
  *
  * @author noodep
- * @version 1.77
+ * @version 1.78
  */
 
 import Quat from '../../math/quat.js';
@@ -258,4 +258,3 @@ OrbitControl.DEFAULT_ZOOM_SENSITIVITY = 10.0;
 OrbitControl.DEFAULT_SENSITIVITY_MODIFIER = 0.1;
 OrbitControl.DEFAULT_RADIUS = 1.0;
 OrbitControl.FOCUS_DISTANCE = 0.5;
-

@@ -1,8 +1,8 @@
 /**
- * @file Polygon triangulation utility
+ * @file polygon triangulation utility
  *
- * @author Noodep
- * @version 0.22
+ * @author noodep
+ * @version 0.26
  */
 
 import Vec2 from '../vec2.js';
@@ -36,8 +36,7 @@ export default class Triangulator {
 
 	/**
 	 * Triangulates this triangulator polygon. Returns a promise that resolves with the list of triangle indices.
-	 * Promises are scheduled as micro tasks. This will still block the thread it is running on. Consider triangulating
-	 * from a worker.
+	 * Promises are scheduled as micro tasks. This will still block the thread it is running on. Consider triangulating from a worker.
 	 *
 	 * @return {Promise} - A promise that resolves when the triangulation is done.
 	 */
@@ -202,4 +201,3 @@ export default class Triangulator {
 	}
 
 }
-

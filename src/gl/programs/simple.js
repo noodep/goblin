@@ -1,8 +1,8 @@
 /**
- * @file Class representing a simple OpenGL ES program.
+ * @file class representing a simple webgl program
  *
- * @author Noodep
- * @version 0.07
+ * @author noodep
+ * @version 0.08
  */
 
 import Mat4 from '../../math/mat4.js';
@@ -37,4 +37,3 @@ export default class SimpleProgram extends Program {
 	}
 
 }
-

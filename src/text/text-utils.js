@@ -1,8 +1,8 @@
 /**
- * @file Utility classes for 3d font manipulation.
+ * @file utility classes for 3d font manipulation.
  *
- * @author Noodep
- * @version 0.1
+ * @author noodep
+ * @version 0.11
  */
 
 import Vec3 from '../math/vec3.js';
@@ -160,4 +160,3 @@ TextUtils.GLYPH_SETS = {
 	'basic': Array.from('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!;%:?*()_+-=.,/|"\'@#$^&{}[] '),
 	'basic+digits': Array.from('!"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz ')
 };
-

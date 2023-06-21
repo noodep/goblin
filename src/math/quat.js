@@ -1,8 +1,8 @@
 /**
- * @file Quaternion manipulation.
+ * @file quaternion manipulation.
  *
- * @author Noodep
- * @version 0.2
+ * @author noodep
+ * @version 0.22
  */
 
 const EPSILON32 = Math.pow(2, -23);
@@ -387,4 +387,3 @@ QuatView.prototype = Object.create(Quaternion.prototype);
  * @see Vec3 for why caution should be used when using these.
  */
 Quaternion.IDENTITY = Quaternion.identity();
-

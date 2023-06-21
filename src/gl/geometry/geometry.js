@@ -1,8 +1,8 @@
 /**
- * @file Geometry object containing data and it description.
+ * @file geometry object containing data and it description.
  *
- * @author Noodep
- * @version 0.37
+ * @author noodep
+ * @version 0.39
  */
 
 import { wl } from '../../util/log.js';
@@ -109,4 +109,3 @@ export default class Geometry {
 	}
 
 }
-

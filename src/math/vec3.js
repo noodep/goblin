@@ -1,8 +1,8 @@
 /**
- * @file 3 components vector manipulation.
+ * @file 3-components vector manipulation
  *
- * @author Noodep
- * @version 0.74
+ * @author oodep
+ * @version 0.76
  */
 
 import { Vec2View } from './vec2.js';
@@ -576,4 +576,3 @@ Vec3.Z_AXIS = new Vec3(0.0, 0.0, 1.0);
 Vec3.NEG_X_AXIS = new Vec3(-1.0, 0.0, 0.0);
 Vec3.NEG_Y_AXIS = new Vec3(0.0, -1.0, 0.0);
 Vec3.NEG_Z_AXIS = new Vec3(0.0, 0.0, -1.0);
-

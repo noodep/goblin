@@ -1,8 +1,8 @@
 /**
- * @file Class representing an OpenGL ES program.
+ * @file class representing an webgl program
  *
- * @author Noodep
- * @version 0.23
+ * @author noodep
+ * @version 0.27
  */
 
 import { dl } from '../util/log.js';
@@ -158,4 +158,3 @@ Program.SHADER_EXTENSIONS.set(WebGLRenderingContext.FRAGMENT_SHADER, '.frag');
 Program.QUALIFYING_FUNCTION = new Map();
 Program.QUALIFYING_FUNCTION.set(WebGLRenderingContext.ACTIVE_UNIFORMS, 'Uniform');
 Program.QUALIFYING_FUNCTION.set(WebGLRenderingContext.ACTIVE_ATTRIBUTES, 'Attrib');
-

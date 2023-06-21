@@ -1,8 +1,8 @@
 /**
- * @file 2 components vector manipulation.
+ * @file 2-components vector manipulation
  *
- * @author Noodep
- * @version 0.27
+ * @author noodep
+ * @version 0.3
  */
 
 const EPSILON32 = Math.pow(2, -23);
@@ -377,4 +377,3 @@ Vec2View.prototype = Object.create(Vec2.prototype);
  */
 Vec2.NULL = new Vec2(0.0, 0.0);
 Vec2.IDENTITY = Vec2.identity();
-

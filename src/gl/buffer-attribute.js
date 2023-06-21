@@ -1,8 +1,8 @@
 /**
- * @file GL Attribute defines the caracteristics of a piece of rendering data.
+ * @file webgl attribute defines the caracteristics of a piece of rendering data
  *
- * @author Noodep
- * @version 0.33
+ * @author noodep
+ * @version 0.37
  */
 
 export default class BufferAttribute {
@@ -31,4 +31,3 @@ export default class BufferAttribute {
 	}
 
 }
-

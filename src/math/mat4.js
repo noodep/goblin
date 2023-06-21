@@ -1,14 +1,14 @@
 /**
- * @file Matrix manipulation library for computer graphics assuming column major flatenning.
- * We use matrix notation for elements, starting at 1. First is the row second is the column
+ * @file matrix manipulation library for computer graphics assuming column major flatenning
+ * this uses matrix notation for elements, starting at 1. First is the row second is the column
  *
  * [00]:e11  [04]:e12  [08]:e13  [12]:e14
  * [01]:e21  [05]:e22  [09]:e23  [13]:e24
  * [02]:e31  [06]:e32  [10]:e33  [14]:e34
  * [03]:e41  [07]:e42  [11]:e43  [15]:e44
  *
- * @author Noodep
- * @version 0.83
+ * @author noodep
+ * @version 0.86
  */
 
 export default class Mat4 {
@@ -850,4 +850,3 @@ Mat4.prototype.length = 16;
 
 Mat4.NULL = new Mat4();
 Mat4.IDENTITY = Mat4.identity();
-

@@ -1,8 +1,8 @@
 /**
- * @file Class representing a 3D renderer that uses a WebGLRenderingContext.
+ * @file class representing a 3D renderer that uses a WebGLRenderingContext
  *
- * @author Noodep
- * @version 0.17
+ * @author noodep
+ * @version 0.19
  */
 
 import { dl, wl } from '../util/log.js';
@@ -357,4 +357,3 @@ WebGLRenderer.DEFAULT_WEBGL_OPTIONS = {
 	alpha: false,
 	premultipliedAlpha: false
 };
-

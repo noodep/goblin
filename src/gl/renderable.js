@@ -1,9 +1,9 @@
 /**
- * @file Renderable class that represent a Object3D  thst can be rendered on screen.
- * Such object has a shader program associated with it and a geometry of some kind.
+ * @file Renderable class that represent a Object3D  thst can be rendered on screen
+ * Such object has a shader program associated with it and a geometry of some kind
  *
- * @author Noodep
- * @version 0.17
+ * @author noodep
+ * @version 0.19
  */
 
 import { dl } from '../util/log.js';
@@ -93,4 +93,3 @@ export default class Renderable extends Object3D {
 	}
 
 }
-

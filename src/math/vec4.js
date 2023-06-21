@@ -1,8 +1,8 @@
 /**
- * @file 4-component vector manipulation.
+ * @file 4-component vector manipulation
  *
- * @author Noodep
- * @version 0.16
+ * @author noodep
+ * @version 0.18
  */
 
 const EPSILON32 = Math.pow(2, -23);
@@ -572,4 +572,3 @@ Vec4.Z_DIR = new Vec4(0.0, 0.0, 1.0, 0.0);
 Vec4.NEG_X_DIR = new Vec4(-1.0, 0.0, 0.0, 0.0);
 Vec4.NEG_Y_DIR = new Vec4(0.0, -1.0, 0.0, 0.0);
 Vec4.NEG_Z_DIR = new Vec4(0.0, 0.0, -1.0, 0.0);
-

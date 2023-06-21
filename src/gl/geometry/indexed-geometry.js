@@ -1,9 +1,9 @@
 /**
- * @file Geometry object containing data and its description.
- * This geometry is to be rendered with draw elements.
+ * @file geometry object containing data and its description
+ * this geometry is to be rendered with draw elements
  *
- * @author Noodep
- * @version 0.34
+ * @author noodep
+ * @version 0.39
  */
 
 import Geometry from './geometry.js';
@@ -62,4 +62,3 @@ export default class IndexedGeometry extends Geometry {
 	}
 
 }
-

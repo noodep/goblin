@@ -1,8 +1,8 @@
 /**
- * @file Scene.
+ * @file Scene
  *
  * @author noodep
- * @version 0.22
+ * @version 0.24
  */
 
 import Renderable from '../gl/renderable.js';
@@ -204,4 +204,3 @@ export default class Scene extends Object3D {
 	}
 
 }
-

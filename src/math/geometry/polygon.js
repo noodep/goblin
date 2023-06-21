@@ -1,14 +1,14 @@
 /**
  * @file Simple Polygon object.
  *
- * @author Noodep
- * @version 0.06
+ * @author noodep
+ * @version 0.21
  */
 
 export default class Polygon {
 
 	constructor() {
-		this._vertices = new Array();
+		this._vertices = [];
 	}
 
 	get vertices() {
@@ -20,4 +20,3 @@ export default class Polygon {
 	}
 
 }
-

@@ -1,8 +1,8 @@
 /**
- * @file Class representing a simple OpenGL ES program with a sampler.
+ * @file class representing a simple webgl sampler program
  *
- * @author Noodep
- * @version 0.06
+ * @author noodep
+ * @version 0.07
  */
 
 import Mat4 from '../../math/mat4.js';
@@ -39,4 +39,3 @@ export default class SamplerProgram extends Program {
 	}
 
 }
-

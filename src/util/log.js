@@ -1,8 +1,8 @@
 /**
- * @file General purpose Logger and associated utilities.
+ * @file general purpose Logger and associated utilities.
  *
- * @author Noodep
- * @version 0.25
+ * @author noodep
+ * @version 0.27
  */
 
 export class Logger {
@@ -75,4 +75,3 @@ export const il = (msg) => DEFAULT_LOGGER.log(msg, Logger.LEVELS.INFO);
 export const l = (msg) => DEFAULT_LOGGER.log(msg, Logger.LEVELS.INFO);
 export const wl = (msg) => DEFAULT_LOGGER.log(msg, Logger.LEVELS.WARN);
 export const el = (msg) => DEFAULT_LOGGER.log(msg, Logger.LEVELS.ERROR);
-
