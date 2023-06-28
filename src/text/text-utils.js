@@ -2,7 +2,7 @@
  * @file utility classes for 3d font manipulation.
  *
  * @author noodep
- * @version 0.11
+ * @version 0.16
  */
 
 import Vec3 from '../math/vec3.js';
@@ -93,7 +93,7 @@ export default class TextUtils {
 		return width;
 	}
 
-	static createTextGeometry(text, atlas) {
+	static createTextGeometry(text, atlas, align = 0.0) {
 		const glyphs = Array.from(text);
 		const glyph_count = glyphs.length;
 
@@ -110,7 +110,13 @@ export default class TextUtils {
 		// 2 triangles * 3 vertices = 6 indices
 		const indices = new index_typed_array(glyph_count * 6);
 
-		let offset_x = 0;
+		let offset_x = 0.0;
+		// skips computing text_width if text origin is aligned with the start
+		if (align && align !== 0.0) {
+			const text_width = TextUtils.getTextWidth(text, atlas);
+			offset_x = -text_width * align;
+		}
+
 		for(let idx = 0 ; idx < glyph_count ; idx++) {
 			const glyph = glyphs[idx];
 			const glyph_data = atlas.glyphs[glyph];
