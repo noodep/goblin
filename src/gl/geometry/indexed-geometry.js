@@ -3,7 +3,7 @@
  * this geometry is to be rendered with draw elements
  *
  * @author noodep
- * @version 0.44
+ * @version 0.53
  */
 
 import Geometry from './geometry.js';
@@ -24,11 +24,12 @@ function _destroyBuffers(renderer) {
 
 export default class IndexedGeometry extends Geometry {
 
-	constructor(index_buffer, vertex_buffer, rendering_type = WebGLRenderingContext.TRIANGLES, index_type = WebGLRenderingContext.UNSIGNED_BYTE) {
-		super(vertex_buffer, index_buffer.length, rendering_type);
+	constructor(index_buffer, vertex_buffer, rendering_type = WebGLRenderingContext.TRIANGLES, index_type = WebGLRenderingContext.UNSIGNED_BYTE, element_count, offset = 0) {
+		super(vertex_buffer, element_count || index_buffer.length, rendering_type);
 		// this._ebo = null;
 		this._index_buffer = index_buffer;
 		this._index_type = index_type;
+		this._offset = offset;
 	}
 
 	get indices() {
@@ -44,15 +45,6 @@ export default class IndexedGeometry extends Geometry {
 
 		this._index_buffer.initialize(renderer)
 
-
-		//this._ebo = renderer.createBuffer(
-		//	this._indices.byteLength,
-		//	WebGLRenderingContext.ELEMENT_ARRAY_BUFFER,
-		//	WebGLRenderingContext.STATIC_DRAW
-		//);
-		//
-		//renderer.updateBufferData(this._ebo, this._indices, 0, WebGLRenderingContext.ELEMENT_ARRAY_BUFFER);
-
 		renderer.activateVertexArray(this._vao);
 		renderer.activateBuffer(this._index_buffer);
 		renderer.activateVertexArray(null);
@@ -61,7 +53,7 @@ export default class IndexedGeometry extends Geometry {
 	}
 
 	render(renderer) {
-		renderer._context.drawElements(this._rendering_type, this._size, this._index_type, 0);
+		renderer._context.drawElements(this._rendering_type, this._size, this._index_type, this._offset);
 	}
 
 }
