@@ -2,11 +2,13 @@
  * @file Scene
  *
  * @author noodep
- * @version 0.24
+ * @author jdiemert
+ * @version 0.26
  */
 
 import Renderable from '../gl/renderable.js';
 import Object3D from './object3d.js';
+import { wl } from '../util/log.js';
 
 /**
  * Scene to render a hierarchy of Renderables.
@@ -33,7 +35,18 @@ export default class Scene extends Object3D {
 		this._active_camera = 0;
 		// Tempend
 
+		/**
+		 * @type {Map<string, Set<Renderable>>}
+		 * Program → Set of renderables to be drawn.
+		 */
 		this._program_cache = new Map();
+
+		/**
+		 * @type {Map<string, Set<Renderable>>}
+		 * Program → Set of renderables that are currently hidden (not drawn).
+		 * These remain initialized and can be restored to the program cache.
+		 */
+		this._hidden_program_cache = new Map();
 
 		// Private instance symbols used to store the bound 'add' and 'remove'
 		// event handlers on each parent object so that the listeners can be
@@ -43,8 +56,8 @@ export default class Scene extends Object3D {
 	}
 
 	/**
-	 * Returns an array of all renderable objects in this scene, in no
-	 * particular order.
+	 * Returns an array of all visible (drawn) renderables in this scene, in no particular order.
+	 * @returns {Renderable[]}
 	 */
 	getRenderables() {
 		const renderables = [];
@@ -53,16 +66,42 @@ export default class Scene extends Object3D {
 				renderables.push(renderable);
 			}
 		}
-
 		return renderables;
 	}
 
+	/**
+	 * Returns an array of all hidden (not drawn) renderables retained by the scene.
+	 * @returns {Renderable[]}
+	 */
+	getHiddenRenderables() {
+		const renderables = [];
+		for (let cache of this._hidden_program_cache.values()) {
+			for (let renderable of cache) {
+				renderables.push(renderable);
+			}
+		}
+		return renderables;
+	}
+
+	/**
+	 * Returns an array of all renderables known to the scene (visible + hidden).
+	 * @returns {Renderable[]}
+	 */
+	getAllRenderables() {
+		return [...this.getRenderables(), ...this.getHiddenRenderables()];
+	}
+
+	/**
+	 * Called by renderer when this scene is attached.
+	 * @param {object} renderer
+	 */
 	sceneAttached(renderer) {
 		this.initializeObject3D(renderer, this);
 	}
 
 	/**
-	 * Adds a camera projection matrix
+	 * Adds a camera projection matrix.
+	 * @param {object} camera
 	 */
 	addCamera(camera) {
 		this._cameras.push(camera);
@@ -70,11 +109,13 @@ export default class Scene extends Object3D {
 
 	/**
 	 * Recursive initialization of the specified Object3D.
+	 * @param {object} renderer
+	 * @param {Object3D} object
 	 */
 	initializeObject3D(renderer, object) {
-		if(object instanceof Renderable) {
+		if (object instanceof Renderable) {
 			object.initialize(renderer);
-			this.addRenderableToProgramCache(object);
+			this._addRenderableToProgramCache(object);
 		}
 
 		// Utilize (exploit) the fact that a renderer is passed to this function
@@ -97,7 +138,7 @@ export default class Scene extends Object3D {
 		object[this._add_handler_symbol] = add_event_handler;
 		object[this._remove_handler_symbol] = remove_event_handler;
 
-		for(let child_object of object.getChildren()) {
+		for (let child_object of object.getChildren()) {
 			this.initializeObject3D(renderer, child_object);
 		}
 	}
@@ -107,14 +148,14 @@ export default class Scene extends Object3D {
 	 * This undoes the action of initializeObject3D() by recursively removing
 	 * event listeners on Object3D instances and removing Renderables in the
 	 * hierarchy at and below the specified object from the program cache.
+	 * Removes any renderables from both the visible and hidden caches.
 	 *
-	 * TODO Should renderables be destroyed via Renderable#destroy() when
-	 * uninitialized, or still be allowed to exist in case they are later
-	 * re-added (current behavior) ?
+	 * @param {Object3D} object
 	 */
 	uninitializeObject3D(object) {
 		if (object instanceof Renderable) {
-			this.removeRenderableFromProgramCache(object);
+			this._removeRenderableFromProgramCache(object);
+			this._removeRenderableFromHiddenCache(object);
 		}
 
 		object.removeListener('add', object[this._add_handler_symbol]);
@@ -128,46 +169,17 @@ export default class Scene extends Object3D {
 	}
 
 	/**
-	 * Add the specified {@code Renderable} to this {@code Scene} program cache.
-	 */
-	addRenderableToProgramCache(renderable) {
-		const program_name = renderable.program;
-		if(!this._program_cache.has(program_name))
-			this._program_cache.set(program_name, new Set());
-
-		this._program_cache.get(program_name).add(renderable);
-	}
-
-	/**
-	 * Remove the specified {@code Renderable} from this {@code Scene} program
-	 * cache.
-	 */
-	removeRenderableFromProgramCache(renderable) {
-		const program_name = renderable.program;
-		if (this._program_cache.has(program_name)) {
-			let cache = this._program_cache.get(program_name);
-			cache.delete(renderable);
-
-			// Remove the program altogether if there are no more renderables in
-			// it.
-			if (cache.size === 0) {
-				this._program_cache.delete(program_name);
-			}
-		}
-	}
-
-	/**
 	 * Update this Scene.
+	 * @param {number} delta_t - Time since last update in seconds.
 	 */
 	update(delta_t) {
 		this.notify('update', delta_t);
-
-		// Update Models
 		super.update(delta_t);
 	}
 
 	/**
-	 * Render this Scene using program batches, respecting the visibility of renderables.
+	 * Render this Scene using program batches.
+	 * @param {object} renderer
 	 */
 	render(renderer) {
 		// render fully opaque objects first, deferring those that may blend colors
@@ -177,15 +189,10 @@ export default class Scene extends Object3D {
 
 			let any_may_blend = false;
 			for (let renderable of renderables) {
-				// Check if the renderable is visible before rendering
-				if (!renderable.visible) {
-					continue; // Skip rendering this renderable if it's not visible
-				}
 				if (renderable.may_blend) {
 					any_may_blend = true;
 					continue;
 				}
-
 				renderable.setShaderState(renderer);
 				renderable.render(renderer);
 				renderable.cleanShaderState(renderer);
@@ -199,10 +206,6 @@ export default class Scene extends Object3D {
 				this.applyProgramState(renderer, program_name);
 
 				for (let renderable of renderables) {
-					// Check if the renderable is visible before rendering
-					if (!renderable.visible) {
-						continue; // Skip rendering this renderable if it's not visible
-					}
 					if (!renderable.may_blend) continue;
 
 					renderable.setShaderState(renderer);
@@ -218,6 +221,8 @@ export default class Scene extends Object3D {
 	/**
 	 * Applies the specified program rendering state to the specified renderer.
 	 * Camera and View for now. Fog and Overrides later.
+	 * @param {object} renderer
+	 * @param {string} program_name
 	 */
 	applyProgramState(renderer, program_name) {
 		renderer.useProgram(program_name);
@@ -225,6 +230,185 @@ export default class Scene extends Object3D {
 		const camera = this._cameras[this._active_camera];
 
 		program.applyState(renderer, camera.projection, camera.view);
+	}
+
+	/**
+	 * Hide a renderable by moving it from the visible program cache
+	 * to the hidden cache. No GPU teardown is performed; the object
+	 * remains initialized and can be restored quickly.
+	 *
+	 * @param {Renderable|string} renderable_or_id - The renderable instance or its id.
+	 * @returns {boolean} - True if a renderable was moved; false otherwise.
+	 */
+	makeRenderableInvisible(renderable_or_id) {
+		const renderable = this._resolveRenderable(renderable_or_id);
+		if (!renderable) return false;
+
+		// If it's already hidden, do nothing.
+		if (this._isInHiddenCache(renderable)) return true;
+
+		// Remove from visible cache (if present) and stash to hidden.
+		const removed = this._removeRenderableFromProgramCache(renderable);
+		this._addRenderableToHiddenCache(renderable);
+		// Notify the renderable (compat listeners) that its visibility changed.
+		try { 
+			renderable.notify('visibility', false); 
+		} catch (e) { 
+			wl(`Failed to notify renderable of visibility change: ${e.message} (renderable: ${renderable.id || renderable.constructor.name})`); 
+		}
+		return removed;
+	}
+
+	/**
+	 * Show a previously hidden renderable by moving it from the hidden cache
+	 * back to the visible program cache.
+	 *
+	 * @param {Renderable|string} renderable_or_id - The renderable instance or its id.
+	 * @returns {boolean} - True if a renderable was restored; false otherwise.
+	 */
+	makeRenderableVisible(renderable_or_id) {
+		const renderable = this._resolveRenderable(renderable_or_id);
+		if (!renderable) return false;
+
+		// If it's already visible, do nothing.
+		if (this._isInProgramCache(renderable)) return true;
+
+		const removed = this._removeRenderableFromHiddenCache(renderable);
+		if (!removed) return false;
+
+		this._addRenderableToProgramCache(renderable);
+		// Notify the renderable (compat listeners) that its visibility changed.
+		try { 
+			renderable.notify('visibility', true); 
+		} catch (e) { 
+			wl(`Failed to notify renderable of visibility change: ${e.message} (renderable: ${renderable.id || renderable.constructor.name})`); 
+		}
+		return true;
+	}
+
+	/**
+	 * Toggle visibility of a renderable.
+	 * @param {Renderable|string} renderable_or_id
+	 * @param {boolean} should_be_visible
+	 * @returns {boolean}
+	 */
+	setRenderableVisible(renderable_or_id, should_be_visible) {
+		return should_be_visible
+			? this.makeRenderableVisible(renderable_or_id)
+			: this.makeRenderableInvisible(renderable_or_id);
+	}
+
+	/**
+	 * Returns whether a renderable is currently considered visible (i.e., in the draw cache).
+	 * @param {Renderable|string} renderable_or_id
+	 * @returns {boolean}
+	 */
+	isRenderableVisible(renderable_or_id) {
+		const renderable = this._resolveRenderable(renderable_or_id);
+		if (!renderable) return false;
+		return this._isInProgramCache(renderable);
+	}
+
+	/**
+	 * Internal: add a renderable to the visible program cache.
+	 * @param {Renderable} renderable
+	 * @private
+	 */
+	_addRenderableToProgramCache(renderable) {
+		const program_name = renderable.program;
+		if (!this._program_cache.has(program_name))
+			this._program_cache.set(program_name, new Set());
+		this._program_cache.get(program_name).add(renderable);
+	}
+
+	/**
+	 * Internal: remove a renderable from the visible program cache.
+	 * @param {Renderable} renderable
+	 * @returns {boolean} - True if removed from visible cache.
+	 * @private
+	 */
+	_removeRenderableFromProgramCache(renderable) {
+		const program_name = renderable.program;
+		if (!this._program_cache.has(program_name)) return false;
+
+		const cache = this._program_cache.get(program_name);
+		const did_delete = cache.delete(renderable);
+
+		if (cache.size === 0) {
+			this._program_cache.delete(program_name);
+		}
+		return did_delete;
+	}
+
+	/**
+	 * Internal: add a renderable to the hidden cache.
+	 * @param {Renderable} renderable
+	 * @private
+	 */
+	_addRenderableToHiddenCache(renderable) {
+		const program_name = renderable.program;
+		if (!this._hidden_program_cache.has(program_name))
+			this._hidden_program_cache.set(program_name, new Set());
+		this._hidden_program_cache.get(program_name).add(renderable);
+	}
+
+	/**
+	 * Internal: remove a renderable from the hidden cache.
+	 * @param {Renderable} renderable
+	 * @returns {boolean} - True if removed from hidden cache.
+	 * @private
+	 */
+	_removeRenderableFromHiddenCache(renderable) {
+		const program_name = renderable.program;
+		if (!this._hidden_program_cache.has(program_name)) return false;
+
+		const cache = this._hidden_program_cache.get(program_name);
+		const did_delete = cache.delete(renderable);
+
+		if (cache.size === 0) {
+			this._hidden_program_cache.delete(program_name);
+		}
+		return did_delete;
+	}
+
+	/**
+	 * Internal: check if a renderable is in the visible cache.
+	 * @param {Renderable} renderable
+	 * @returns {boolean}
+	 * @private
+	 */
+	_isInProgramCache(renderable) {
+		const program_name = renderable.program;
+		return this._program_cache.has(program_name) &&
+			this._program_cache.get(program_name).has(renderable);
+	}
+
+	/**
+	 * Internal: check if a renderable is in the hidden cache.
+	 * @param {Renderable} renderable
+	 * @returns {boolean}
+	 * @private
+	 */
+	_isInHiddenCache(renderable) {
+		const program_name = renderable.program;
+		return this._hidden_program_cache.has(program_name) &&
+			this._hidden_program_cache.get(program_name).has(renderable);
+	}
+
+	/**
+	 * Internal: resolve a renderable from an instance or an id string.
+	 * Searches both visible and hidden caches.
+	 * @param {Renderable|string} renderable_or_id
+	 * @returns {Renderable|null}
+	 * @private
+	 */
+	_resolveRenderable(renderable_or_id) {
+		if (renderable_or_id instanceof Renderable) return renderable_or_id;
+		const id = String(renderable_or_id);
+		for (let r of this.getAllRenderables()) {
+			if (r.id === id) return r;
+		}
+		return null;
 	}
 
 	_addEventHandler(renderer, parent, child) {
