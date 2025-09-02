@@ -3,11 +3,12 @@
  *
  * @author noodep
  * @author jdiemert
- * @version 0.25
+ * @version 0.26
  */
 
 import Renderable from '../gl/renderable.js';
 import Object3D from './object3d.js';
+import { wl } from '../util/log.js';
 
 /**
  * Scene to render a hierarchy of Renderables.
@@ -250,7 +251,11 @@ export default class Scene extends Object3D {
 		const removed = this._removeRenderableFromProgramCache(renderable);
 		this._addRenderableToHiddenCache(renderable);
 		// Notify the renderable (compat listeners) that its visibility changed.
-		try { renderable.notify('visibility', false); } catch (e) { /* ignore */ }
+		try { 
+			renderable.notify('visibility', false); 
+		} catch (e) { 
+			wl(`Failed to notify renderable of visibility change: ${e.message} (renderable: ${renderable.id || renderable.constructor.name})`); 
+		}
 		return removed;
 	}
 
@@ -273,7 +278,11 @@ export default class Scene extends Object3D {
 
 		this._addRenderableToProgramCache(renderable);
 		// Notify the renderable (compat listeners) that its visibility changed.
-		try { renderable.notify('visibility', true); } catch (e) { /* ignore */ }
+		try { 
+			renderable.notify('visibility', true); 
+		} catch (e) { 
+			wl(`Failed to notify renderable of visibility change: ${e.message} (renderable: ${renderable.id || renderable.constructor.name})`); 
+		}
 		return true;
 	}
 
