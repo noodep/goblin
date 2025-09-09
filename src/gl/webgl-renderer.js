@@ -48,7 +48,7 @@ export default class WebGLRenderer {
 	/**
 	 * Sets this renderer background color as specified by the rgba array.
 	 *
-	 * @param {Array} rgba - An array containing red green blue alpha values (between 0.0 and 1.0).
+	 * @param {Array} rgba - An array containing red green blue alpha values (between 0.0 and 1.0)
 	 */
 	set background(rgba) {
 		dl(`Setting background color to ${rgba}`);
@@ -63,14 +63,18 @@ export default class WebGLRenderer {
 	}
 
 	/**
-	 * Enables the specified capability.
+	 * Enables the specified WebGL capability for transparency and rendering control.
+	 *
+	 * @param {number} capability - The WebGL capability to enable (e.g., gl.BLEND)
 	 */
 	enable(capability) {
 		this._context.enable(capability);
 	}
 
 	/**
-	 * Disables the specified capability.
+	 * Disables the specified WebGL capability with transparency state considerations.
+	 *
+	 * @param {number} capability - The WebGL capability to disable (e.g., gl.BLEND)
 	 */
 	disable(capability) {
 		this._context.disable(capability);
@@ -314,7 +318,12 @@ export default class WebGLRenderer {
 	}
 
 	/**
-	 * Starts this renderer animation loop.
+	 * Starts the animation loop for continuous rendering.
+	 *
+	 * **Animation Loop Architecture:**
+	 * - Uses requestAnimationFrame for smooth 60fps rendering and VSync coordination
+	 * - Calculates delta time for frame-rate independent animations transitions
+	 * - Clears color and depth buffers to prepare for two-pass rendering
 	 */
 	start() {
 		let previous_timestamp = 0;
@@ -339,12 +348,15 @@ export default class WebGLRenderer {
 	}
 
 	/**
-	 * Initialize this renderer context with and instance of a WebGLRenderingContext.
+	 * Initialize WebGL context
 	 *
-	 * @throws {Error} - if unable to create a webgl context.
+	 * @param {string} context_type - The WebGL context type ('webgl' or 'webgl2')
+	 * @param {Object} options - WebGL context creation options
+	 * @throws {Error} - if unable to create a WebGL context
+	 * @private
 	 */
 	_initContext(context_type = 'webgl', options = WebGLRenderer.DEFAULT_WEBGL_OPTIONS) {
-		dl(`Creating WebGlRenderer context with options ${options}.`);
+		dl(`Creating WebGlRenderer context with options ${JSON.stringify(options)}.`);
 		this._context = this._canvas.getContext(context_type, options);
 
 		if(!this._context)
