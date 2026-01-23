@@ -39,7 +39,7 @@ export default class SimpleOrbitControlInput {
 	#attachEvents() {
 		this.#$element.addEventListener('contextmenu', e => e.preventDefault());
 		this.#$element.addEventListener('mousedown', this.#handleMouseDown.bind(this));
-		this.#$element.addEventListener('mouseup', this.#handleMouseUp.bind(this));
+		window.addEventListener('mouseup', this.#handleMouseUp.bind(this));
 		this.#$element.addEventListener('wheel', this.#handleMouseWheel.bind(this));
 	}
 
@@ -47,14 +47,14 @@ export default class SimpleOrbitControlInput {
 	 * Handles mouse down events.
 	 */
 	#handleMouseDown() {
-		this.#$element.addEventListener('mousemove', this.#mouseMoveHandler);
+		window.addEventListener('mousemove', this.#mouseMoveHandler);
 	}
 
 	/**
 	 * Handles mouse up events.
 	 */
 	#handleMouseUp() {
-		this.#$element.removeEventListener('mousemove', this.#mouseMoveHandler);
+		window.removeEventListener('mousemove', this.#mouseMoveHandler);
 	}
 
 	/**
@@ -80,9 +80,9 @@ export default class SimpleOrbitControlInput {
 		const delta = this.#sensitivityAdjustedDisplacement(e, Math.sign(e.deltaY) * this.#wheel_sensitivity);
 
 		if(e.shiftKey)
-			this.#orbit_control.radius += delta;
-		else
 			this.#camera.verticalFieldOfView = this.#camera.verticalFieldOfView + delta;
+		else
+			this.#orbit_control.radius += delta;
 	}
 
 	/**

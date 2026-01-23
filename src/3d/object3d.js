@@ -2,7 +2,7 @@
  * @file Object3d class that represent a object that can be manipulated in a 3d environment
  *
  * @author noodep
- * @version 0.99
+ * @version 1.01
  */
 
 import { uuidv4 } from '../crypto/uuid.js';
@@ -13,19 +13,31 @@ import Listenable from '../util/listenable.js';
 import { wl } from '../util/log.js';
 
 /**
- * Object in a 3D environment.
+ * @typedef {import('../math/vec3.js').default} Vec3
+ * @typedef {import('../math/quat.js').default} Quat
  *
- * Fires the following event types:
- * property:
- *	'origin' - When the origin property updates; passes the new origin
- *	'orientation' - When the orientation property updates; passed the new orientation
- *	'size' - When the size proprty updates; passes the new size
- *	'model' - When the world model updates; passes the new matrix
- *	'add' - When a child is added; passes this object and the added one
- *	'remove' - When a child is removed; passes this object and the removed one
- *	'destroy' - Directly after destroy() has been called
- * Note that "updates" above does not necessarily imply "changes"
- * Events will be fired when the property has the possibility of changing.
+ * @typedef {[number,number,number]} Vec3Tuple
+ * @typedef {[number,number,number,number]} QuatTuple
+ * @typedef {Vec3|Vec3Tuple} VecLike
+ * @typedef {Quat|QuatTuple} QuatLike
+ */
+
+/**
+ * @typedef {{ x:number, y:number, z:number }} OriginEvent
+ * @typedef {{ x:number, y:number, z:number, w:number }} OrientationEvent
+ * @typedef {{ x:number, y:number, z:number }} ScaleEvent
+ * @typedef {{ m:number[] }} ModelEvent
+ */
+
+/**
+ * Object in a 3D environment.
+ * @fires 'origin' {OriginEvent}
+ * @fires 'orientation' {OrientationEvent}
+ * @fires 'size' {ScaleEvent}
+ * @fires 'model' {ModelEvent}
+ * @fires 'add' {{ parent:Object3D, child:Object3D }}
+ * @fires 'remove' {{ parent:Object3D, child:Object3D }}
+ * @fires 'destroy' {{}}
  */
 export default class Object3D extends Listenable {
 
@@ -36,26 +48,24 @@ export default class Object3D extends Listenable {
 	 *
 	 * @param {String} [id=uuidv4()] - this object's id.
 	 * @param {String} [name=''] - this object's name.
-	 * @param {Array} [origin] - a 3 dimensional array containing this object origin.
-	 * @param {Array} [orientation] - a 3 dimensional array containing this object orientation. Euler angles in radians around XYZ.
-	 * @param {Array} [scale] - a 3 dimensional array containing this object scaling.
+	 * @param {VecLike} [origin=Vec3.NULL] - a 3 dimensional array containing this object origin or a Vec3.
+	 * @param {QuatLike} [orientation=Quat.IDENTITY] - a 3 dimensional array containing this object orientation. Euler angles in radians around XYZ or a Quat.
+	 * @param {VecLike} [scale=Vec3.IDENTITY] - a 3 dimensional array containing this object scaling or a Vec3.
 	 * @return {module:3d.Object3d} - The newly created Object3d.
 	 */
 	constructor(id = uuidv4(), name = '', origin = Vec3.NULL, orientation = Quat.IDENTITY, scale = Vec3.IDENTITY) {
 		super();
-		this._id = id;
-		this._name = name;
-		this._parent = undefined;
-		this._children = new Set();
-		this._origin = Vec3.from(origin);
-		this._orientation = Quat.from(orientation);
-		this._scale = Vec3.from(scale);
-		this._is_model_valid = false;
-		this._local_model = Mat4.identity();
-		this._world_model = Mat4.identity();
-
-		// Temporary quaternion used for rotations. This avoids creating one each time.
-		this._tmp_quaternion = new Quat();
+        /** @type {string} */ this._id = id;
+        /** @type {string} */ this._name = name;
+		/** @type {Object3D|undefined} */ this._parent = undefined;
+		/** @type {Set<Object3D>} */ this._children = new Set();
+		/** @type {Vec3} */ this._origin = Vec3.from(origin);
+		/** @type {Quat} */ this._orientation = Quat.from(orientation);
+		/** @type {Vec3} */ this._scale = Vec3.from(scale);
+		/** @type {Boolean} */ this._is_model_valid = false;
+		/** @type {Mat4} */ this._local_model = Mat4.identity();
+		/** @type {Mat4} */ this._world_model = Mat4.identity();
+		/** @type {Quat} */ this._tmp_quaternion = new Quat(); 	// Temporary quaternion used for rotations. This avoids creating one each time.
 	}
 
 	/**
@@ -224,6 +234,8 @@ export default class Object3D extends Listenable {
 
 	/**
 	 * Returns an iterator over the children of this Object3D.
+	 *
+	 * @return {Iterator} - An iterator over the children of this Object3D.
 	 */
 	getChildren() {
 		return this._children.values();
@@ -250,11 +262,15 @@ export default class Object3D extends Listenable {
 
 	/**
 	 * Removes all children from this Object3D.
+	 *
+	 * @return {Boolean} - true if any child was removed, false otherwise.
 	 */
 	clearChildren() {
+		let removed = false;
 		for (let child of this._children) {
-			this.removeChild(child);
+			removed |= this.removeChild(child);
 		}
+		return removed;
 	}
 
 	/**
@@ -381,14 +397,14 @@ export default class Object3D extends Listenable {
 			this.parent.removeChild(this);
 		}
 
-		this.clearListeners();
-
 		for (let child of this._children) {
 			this.removeChild(child);
 			child.destroy();
 		}
 
 		this.notify('destroy');
+
+		this.clearListeners();
 	}
 
 	/**
